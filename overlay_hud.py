@@ -78,6 +78,7 @@ _SWP_SHOWWINDOW = 0x0040
 _SW_HIDE = 0
 _SW_SHOWNOACTIVATE = 4
 _SW_MINIMIZE = 6
+_SW_SHOWMINNOACTIVE = 7
 _SW_RESTORE = 9
 _DWMWA_CLOAKED = 14
 _SELF_PID = os.getpid()
@@ -164,6 +165,8 @@ _user32.EnumWindows.argtypes = [_WNDENUMPROC, wintypes.LPARAM]
 _user32.EnumWindows.restype = wintypes.BOOL
 _user32.GetAsyncKeyState.argtypes = [ctypes.c_int]
 _user32.GetAsyncKeyState.restype = ctypes.c_short
+_user32.GetCursorPos.argtypes = [ctypes.POINTER(wintypes.POINT)]
+_user32.GetCursorPos.restype = wintypes.BOOL
 _VK_F9 = 0x78
 
 
@@ -189,6 +192,17 @@ def _hide_win_noactivate(widget: tk.Misc | None):
     if hwnd and _user32.IsWindowVisible(hwnd):
         try:
             _user32.ShowWindow(hwnd, _SW_HIDE)
+        except Exception:
+            pass
+
+
+def _minimize_noactivate(widget: tk.Misc | None):
+    """Minimize window to Windows Taskbar without stealing focus (keeps taskbar icon visible!)."""
+    hwnd = _get_top_hwnd(widget)
+    if hwnd:
+        try:
+            if not _user32.IsIconic(hwnd) or not _user32.IsWindowVisible(hwnd):
+                _user32.ShowWindow(hwnd, _SW_SHOWMINNOACTIVE)
         except Exception:
             pass
 
@@ -416,9 +430,13 @@ def _show_noactivate(
                 target_ex &= ~_WS_EX_TRANSPARENT
             if target_ex != ex:
                 _user32.SetWindowLongW(hwnd, _GWL_EXSTYLE, target_ex)
+                _user32.SetWindowPos(
+                    hwnd, None, 0, 0, 0, 0,
+                    _SWP_NOMOVE | _SWP_NOSIZE | _SWP_NOZORDER | _SWP_NOACTIVATE | _SWP_FRAMECHANGED,
+                )
             z_after = ctypes.c_void_p(insert_after) if isinstance(insert_after, int) and insert_after > 0 else _HWND_TOPMOST
             _user32.SetWindowPos(
-                hwnd, z_after, x, y, w, h, _SWP_NOACTIVATE | _SWP_SHOWWINDOW
+                hwnd, z_after, x, y, w, h, _SWP_NOACTIVATE | _SWP_SHOWWINDOW | _SWP_FRAMECHANGED
             )
     except Exception:
         pass
@@ -442,6 +460,10 @@ def _ensure_topmost_noactivate(win: tk.Misc | None, clickthrough: bool = True, t
                 target_ex &= ~_WS_EX_TRANSPARENT
             if target_ex != ex:
                 _user32.SetWindowLongW(hwnd, _GWL_EXSTYLE, target_ex)
+                _user32.SetWindowPos(
+                    hwnd, None, 0, 0, 0, 0,
+                    _SWP_NOMOVE | _SWP_NOSIZE | _SWP_NOZORDER | _SWP_NOACTIVATE | _SWP_FRAMECHANGED,
+                )
             if not (ex & _WS_EX_TOPMOST) or _has_game_window_above(hwnd):
                 _user32.SetWindowPos(hwnd, _HWND_TOPMOST, 0, 0, 0, 0, _SWP_NOMOVE | _SWP_NOSIZE | _SWP_NOACTIVATE)
     except Exception:
@@ -698,6 +720,7 @@ class OoTOverlayHUD:
         self._right_last_rect: tuple[int, int, int, int] | None = None
         self._rail_nearby_slots: list[tuple[tk.Label, tk.Label | None, str]] = []
         self._fs_miss_streak: int = 0
+        self._fs_min_ts: float = 0.0
         self._banner_hold_until: float = 0.0
         self._toast_win: tk.Toplevel | None = None
         self._toast_card: tk.Frame | None = None
@@ -737,7 +760,8 @@ class OoTOverlayHUD:
         self._bg_pending: tuple[dict | None, int | None] | None = None
         self._bg_ever_received: bool = False
         try:
-            self._vk_f9_prev: bool = bool(_user32.GetAsyncKeyState(_VK_F9) & 0x8000)
+            # Clear any pre-existing 0x0001 latch so only fresh F9 presses trigger
+            self._vk_f9_prev: bool = bool(int(_user32.GetAsyncKeyState(_VK_F9)) & 0x8000)
         except Exception:
             self._vk_f9_prev = False
         self._last_f9_toggle_ts: float = 0.0
@@ -1012,11 +1036,18 @@ class OoTOverlayHUD:
             pass
 
     def _minimize_window(self):
+        if self.fs_hidden and self.fs_manual_peek:
+            self.fs_manual_peek = False
+            self._fs_min_ts = time.monotonic()
+            _minimize_noactivate(self.root)
+            if self._get_fs_mode() == "distributed" and (self.last_eval is not None or self.manual_fullscreen or self.hud_unlocked):
+                self._render_distributed_hud(self.last_eval, self._fs_monitor_rect, force=True)
+            return
         cur = self._capture_win_rect()
         if cur:
             self._saved_rect = cur
         self._user_minimized = True
-        self.root.iconify()
+        _minimize_noactivate(self.root)
 
     def _restore_window(self):
         self._user_minimized = False
@@ -1601,9 +1632,9 @@ class OoTOverlayHUD:
         _set_win_rect(win, x=nx, y=ny, topmost=True)
 
     def _end_ov_drag(self, _e, win: tk.Toplevel, mod_key: str):
+        self._ov_interacting = False
         if not self.hud_unlocked:
             return
-        self._ov_interacting = False
         mon = self._fs_monitor_rect or _get_window_monitor_rect(win)
         ml, mt, mr, mb = mon
         rx, ry, rw, rh = self._get_win_rect_fallback(win)
@@ -1648,9 +1679,9 @@ class OoTOverlayHUD:
         _set_win_rect(win, x=nx, y=ny, w=nw, h=nh, topmost=True)
 
     def _end_ov_resize(self, _e, win: tk.Toplevel, mod_key: str):
+        self._ov_interacting = False
         if not self.hud_unlocked:
             return
-        self._ov_interacting = False
         mon = self._fs_monitor_rect or _get_window_monitor_rect(win)
         ml, mt, mr, mb = mon
         rx, ry, rw, rh = self._get_win_rect_fallback(win)
@@ -1686,6 +1717,10 @@ class OoTOverlayHUD:
                         target &= ~_WS_EX_TRANSPARENT
                     if target != ex:
                         _user32.SetWindowLongW(hwnd, _GWL_EXSTYLE, target)
+                        _user32.SetWindowPos(
+                            hwnd, None, 0, 0, 0, 0,
+                            _SWP_NOMOVE | _SWP_NOSIZE | _SWP_NOZORDER | _SWP_NOACTIVATE | _SWP_FRAMECHANGED,
+                        )
                 self._sync_overlay_grips(w)
             except Exception:
                 pass
@@ -1722,6 +1757,49 @@ class OoTOverlayHUD:
             except Exception:
                 pass
 
+    def _is_hud_hovered_or_active(self) -> bool:
+        try:
+            fg = int(_user32.GetForegroundWindow() or 0)
+            if fg:
+                wpid = wintypes.DWORD(0)
+                _user32.GetWindowThreadProcessId(fg, ctypes.byref(wpid))
+                if int(wpid.value) == _SELF_PID:
+                    return True
+                cls_b = ctypes.create_unicode_buffer(128)
+                _user32.GetClassNameW(fg, cls_b, 128)
+                if _is_game_hwnd(fg, cls_b.value, int(wpid.value)):
+                    return True
+        except Exception:
+            pass
+        if not self._user_minimized:
+            try:
+                pt = wintypes.POINT()
+                if _user32.GetCursorPos(ctypes.byref(pt)):
+                    r = wintypes.RECT()
+                    for w in (self.root, self._dist_pill_win, self._dist_rail_win, self._dist_right_win):
+                        hwnd = _get_top_hwnd(w)
+                        if hwnd and _user32.IsWindowVisible(hwnd) and not _user32.IsIconic(hwnd):
+                            if _user32.GetWindowRect(hwnd, ctypes.byref(r)):
+                                if r.left <= pt.x <= r.right and r.top <= pt.y <= r.bottom:
+                                    return True
+            except Exception:
+                pass
+        return False
+
+    def _poll_f9_hotkey(self):
+        try:
+            st = int(_user32.GetAsyncKeyState(_VK_F9))
+        except Exception:
+            st = 0
+        down = bool(st & 0x8000)
+        tapped = bool(st & 0x0001)
+        prev = self._vk_f9_prev
+        self._vk_f9_prev = down
+        if not ((down or tapped) and not prev):
+            return
+        if self.fs_hidden or self.hud_unlocked or self._is_hud_hovered_or_active():
+            self._on_f9_hotkey()
+
     def _on_f9_hotkey(self):
         now = time.monotonic()
         if now - self._last_f9_toggle_ts < 0.25:
@@ -1731,6 +1809,8 @@ class OoTOverlayHUD:
 
     def _toggle_hud_unlock(self):
         self.hud_unlocked = not self.hud_unlocked
+        if not self.hud_unlocked:
+            self._ov_interacting = False
         if hasattr(self, "btn_hud_lock"):
             self.btn_hud_lock.config(fg=ACCENT_AMBER if self.hud_unlocked else FG_DIM)
         self._apply_overlay_clickthrough()
@@ -1830,7 +1910,8 @@ class OoTOverlayHUD:
                 self._show_root_noactivate()
                 self._refresh_display(force=True)
             else:
-                _hide_win_noactivate(self.root)
+                self._fs_min_ts = time.monotonic()
+                _minimize_noactivate(self.root)
                 if self._get_fs_mode() == "distributed":
                     self._render_distributed_hud(self.last_eval, self._fs_monitor_rect, force=True)
             return
@@ -1851,7 +1932,18 @@ class OoTOverlayHUD:
         if hasattr(self, "btn_fs_toggle"):
             self.btn_fs_toggle.config(fg=FG_DIM)
         self._save_user_cfg()
-        if self.fs_hidden and detect_fullscreen_monitor()[0]:
+        ignore = {
+            h for h in (
+                _get_top_hwnd(self.root),
+                _get_top_hwnd(self._toast_win) if self._toast_win else 0,
+                _get_top_hwnd(self._dist_pill_win) if self._dist_pill_win else 0,
+                _get_top_hwnd(self._dist_rail_win) if self._dist_rail_win else 0,
+                _get_top_hwnd(self._dist_rail_back_win) if self._dist_rail_back_win else 0,
+                _get_top_hwnd(self._dist_right_win) if self._dist_right_win else 0,
+                _get_top_hwnd(self._dist_right_back_win) if self._dist_right_back_win else 0,
+            ) if h
+        }
+        if self.fs_hidden and detect_fullscreen_monitor(ignore)[0]:
             self.fs_manual_peek = True
             self._destroy_distributed_hud()
             self._show_root_noactivate()
@@ -2218,7 +2310,8 @@ class OoTOverlayHUD:
                         self._show_root_noactivate()
                         self._refresh_display(force=True)
                     else:
-                        _hide_win_noactivate(self.root)
+                        self._fs_min_ts = time.monotonic()
+                        _minimize_noactivate(self.root)
                         if self._get_fs_mode() == "distributed":
                             self._render_distributed_hud(self.last_eval, self._fs_monitor_rect, force=True)
                 else:
@@ -2272,6 +2365,7 @@ class OoTOverlayHUD:
     def _poll_gamepad(self):
         active_motion = False
         try:
+            self._poll_f9_hotkey()
             snap, actions = self.gamepad.poll_actions()
             self.handle_gamepad_actions(snap, actions)
 
@@ -2353,7 +2447,8 @@ class OoTOverlayHUD:
         if cur:
             self._saved_rect = cur
         self.fs_hidden = True
-        _hide_win_noactivate(self.root)
+        self._fs_min_ts = time.monotonic()
+        _minimize_noactivate(self.root)
         if self._get_fs_mode() == "distributed" and (self.last_eval is not None or self.manual_fullscreen or self.hud_unlocked):
             self._render_distributed_hud(self.last_eval, monitor_rect, force=True)
 
@@ -2367,8 +2462,7 @@ class OoTOverlayHUD:
             return
         self.fs_hidden = False
         if self._user_minimized:
-            self._show_root_noactivate()
-            self._minimize_window()
+            _minimize_noactivate(self.root)
         else:
             self._show_root_noactivate()
             self._refresh_display(force=True)
@@ -3320,6 +3414,15 @@ class OoTOverlayHUD:
                 self._fs_monitor_rect = mon_rect
                 if not self.fs_hidden:
                     self._enter_fullscreen_mode(mon_rect)
+                elif not self.fs_manual_peek and (time.monotonic() - self._fs_min_ts >= 0.30) and _is_win_visible(self.root):
+                    # User clicked the persistent Taskbar icon during fullscreen!
+                    if self.manual_fullscreen and not is_fs:
+                        self._exit_to_desktop_window()
+                    else:
+                        self.fs_manual_peek = True
+                        self._destroy_distributed_hud()
+                        self._show_root_noactivate()
+                        self._refresh_display(force=True)
                 elif not self.fs_manual_peek and fs_mode == "distributed" and not self._ov_interacting:
                     if mon_rect != prev_rect:
                         self._render_distributed_hud(self.last_eval, mon_rect, force=True)
@@ -3339,23 +3442,12 @@ class OoTOverlayHUD:
                 self._fs_miss_streak = 0
                 if self._user_minimized and _is_win_visible(self.root):
                     self._user_minimized = False
+                    self._show_root_noactivate()
         elif self.fs_hidden:
             self._exit_fullscreen_mode()
         elif self._user_minimized and _is_win_visible(self.root):
             self._user_minimized = False
-
-        try:
-            f9_down = bool(_user32.GetAsyncKeyState(_VK_F9) & 0x8000)
-        except Exception:
-            f9_down = False
-        if f9_down and not self._vk_f9_prev and self.fs_hidden:
-            try:
-                focused = self.root.focus_displayof() is not None
-            except Exception:
-                focused = False
-            if not focused:
-                self._on_f9_hotkey()
-        self._vk_f9_prev = f9_down
+            self._show_root_noactivate()
 
         with self._bg_lock:
             pkt = self._bg_pending
