@@ -21,6 +21,12 @@ from save_reader import UnifiedStateReader
 from tracker_engine import TrackerAlert, TrackerEngine
 from win_proc import get_process_name
 
+try:
+    from auto_updater import check_and_apply_updates, load_local_manifest
+except Exception:
+    check_and_apply_updates = None
+    load_local_manifest = None
+
 _ext_db = APP_DIR / "oot_world_db.json"
 DB_PATH = _ext_db if _ext_db.is_file() else (BUNDLE_DIR / "oot_world_db.json")
 
@@ -45,12 +51,17 @@ _WS_SYSMENU = 0x00080000
 _WS_CAPTION = 0x00C00000
 _WS_EX_TRANSPARENT = 0x00000020
 _WS_EX_TOOLWINDOW = 0x00000080
+_WS_EX_TOPMOST = 0x00000008
 _WS_EX_APPWINDOW = 0x00040000
 _WS_EX_LAYERED = 0x00080000
 _WS_EX_NOACTIVATE = 0x08000000
 _WM_MOUSEACTIVATE = 0x0021
 _WM_NCCALCSIZE = 0x0083
 _MA_NOACTIVATE = 3
+_GW_HWNDPREV = 3
+_RDW_INVALIDATE = 0x0001
+_RDW_ALLCHILDREN = 0x0080
+_RDW_UPDATENOW = 0x0100
 _HWND_TOPMOST = ctypes.c_void_p(-1)
 _HWND_NOTOPMOST = ctypes.c_void_p(-2)
 _SWP_NOSIZE = 0x0001
@@ -137,6 +148,10 @@ _user32.SetWindowPos.argtypes = [
     wintypes.HWND, ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, wintypes.UINT
 ]
 _user32.SetWindowPos.restype = wintypes.BOOL
+_user32.GetWindow.argtypes = [wintypes.HWND, wintypes.UINT]
+_user32.GetWindow.restype = wintypes.HWND
+_user32.RedrawWindow.argtypes = [wintypes.HWND, ctypes.c_void_p, ctypes.c_void_p, wintypes.UINT]
+_user32.RedrawWindow.restype = wintypes.BOOL
 _WNDENUMPROC = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
 _user32.EnumWindows.argtypes = [_WNDENUMPROC, wintypes.LPARAM]
 _user32.EnumWindows.restype = wintypes.BOOL
@@ -299,8 +314,57 @@ def _is_game_hwnd(hwnd: int, cls_name: str, pid_val: int) -> bool:
         return False
 
 
-def _show_noactivate(win: tk.Misc, x: int, y: int, w: int, h: int, clickthrough: bool = True):
-    """Position and show a pre-mapped Tk window at HWND_TOPMOST with SWP_NOACTIVATE (zero focus steal, instant paint)."""
+def _flush_paint(win: tk.Misc | None):
+    """Synchronously flush Tk geometry & Win32 WM_PAINT for an offscreen/back-buffer window before swapping."""
+    if win is None:
+        return
+    try:
+        win.update_idletasks()
+        hwnd = _get_top_hwnd(win)
+        if hwnd:
+            _user32.RedrawWindow(hwnd, None, None, _RDW_INVALIDATE | _RDW_ALLCHILDREN | _RDW_UPDATENOW)
+    except Exception:
+        pass
+
+
+def _has_game_window_above(hwnd: int) -> bool:
+    """Return True if any large, overlapping game/fullscreen window sits above hwnd in Z-order."""
+    try:
+        r_self = wintypes.RECT()
+        has_self_rect = bool(_user32.GetWindowRect(hwnd, ctypes.byref(r_self)))
+        cur = _user32.GetWindow(hwnd, _GW_HWNDPREV)
+        cls_b = ctypes.create_unicode_buffer(128)
+        wpid = wintypes.DWORD(0)
+        r_cur = wintypes.RECT()
+        steps = 0
+        while cur and steps < 64:
+            steps += 1
+            c_int = int(cur)
+            if _user32.IsWindowVisible(c_int) and not _user32.IsIconic(c_int) and not _is_window_cloaked(c_int):
+                _user32.GetWindowThreadProcessId(c_int, ctypes.byref(wpid))
+                if wpid.value != _SELF_PID:
+                    _user32.GetClassNameW(c_int, cls_b, 128)
+                    if _is_game_hwnd(c_int, cls_b.value, wpid.value) and _user32.GetWindowRect(c_int, ctypes.byref(r_cur)):
+                        cw = r_cur.right - r_cur.left
+                        ch = r_cur.bottom - r_cur.top
+                        if cw >= 600 and ch >= 400:
+                            if not has_self_rect or (
+                                r_cur.left < r_self.right
+                                and r_cur.right > r_self.left
+                                and r_cur.top < r_self.bottom
+                                and r_cur.bottom > r_self.top
+                            ):
+                                return True
+            cur = _user32.GetWindow(cur, _GW_HWNDPREV)
+    except Exception:
+        pass
+    return False
+
+
+def _show_noactivate(
+    win: tk.Misc, x: int, y: int, w: int, h: int, clickthrough: bool = True, insert_after: int | object = _HWND_TOPMOST
+):
+    """Position and show a pre-mapped Tk window at insert_after with SWP_NOACTIVATE (zero focus steal, instant paint)."""
     try:
         win.geometry(f"{w}x{h}+{x}+{y}")
         win.update_idletasks()
@@ -314,8 +378,9 @@ def _show_noactivate(win: tk.Misc, x: int, y: int, w: int, h: int, clickthrough:
                 target_ex &= ~_WS_EX_TRANSPARENT
             if target_ex != ex:
                 _user32.SetWindowLongW(hwnd, _GWL_EXSTYLE, target_ex)
+            z_after = ctypes.c_void_p(insert_after) if isinstance(insert_after, int) and insert_after > 0 else _HWND_TOPMOST
             _user32.SetWindowPos(
-                hwnd, _HWND_TOPMOST, x, y, w, h, _SWP_NOACTIVATE | _SWP_SHOWWINDOW
+                hwnd, z_after, x, y, w, h, _SWP_NOACTIVATE | _SWP_SHOWWINDOW
             )
     except Exception:
         pass
@@ -339,7 +404,8 @@ def _ensure_topmost_noactivate(win: tk.Misc | None, clickthrough: bool = True, t
                 target_ex &= ~_WS_EX_TRANSPARENT
             if target_ex != ex:
                 _user32.SetWindowLongW(hwnd, _GWL_EXSTYLE, target_ex)
-            _user32.SetWindowPos(hwnd, _HWND_TOPMOST, 0, 0, 0, 0, _SWP_NOMOVE | _SWP_NOSIZE | _SWP_NOACTIVATE)
+            if not (ex & _WS_EX_TOPMOST) or _has_game_window_above(hwnd):
+                _user32.SetWindowPos(hwnd, _HWND_TOPMOST, 0, 0, 0, 0, _SWP_NOMOVE | _SWP_NOSIZE | _SWP_NOACTIVATE)
     except Exception:
         pass
 
@@ -415,13 +481,13 @@ def detect_fullscreen_monitor(ignore_hwnds: set[int] | None = None) -> tuple[boo
                 if is_fg_fs:
                     return True, fg_rect
 
-        # 3. Foreground is our own HUD/Toplevel, transiently null (F11 transition), or a non-fullscreen helper:
-        #    inspect the highest Z-order visible external non-cloaked top-level window on screen!
-        candidate_hwnd = 0
+        # 3. Foreground is our own HUD/Toplevel, transiently null (F11 transition), or a floating overlay/FPS bar:
+        #    scan top-to-bottom ignoring small/transparent/noactivate overlays until hitting fullscreen game or real desktop window.
+        fs_result: tuple[bool, tuple[int, int, int, int] | None] = (False, None)
 
         @_WNDENUMPROC
         def _enum_cb(hwnd, _lp):
-            nonlocal candidate_hwnd
+            nonlocal fs_result
             h_int = int(hwnd)
             if ignore_hwnds and h_int in ignore_hwnds:
                 return True
@@ -438,18 +504,24 @@ def detect_fullscreen_monitor(ignore_hwnds: set[int] | None = None) -> tuple[boo
             r = wintypes.RECT()
             if not _user32.GetWindowRect(h_int, ctypes.byref(r)):
                 return True
-            if (r.right - r.left) < 200 or (r.bottom - r.top) < 150:
+            rw = r.right - r.left
+            rh = r.bottom - r.top
+            if rw < 200 or rh < 150:
                 return True
+            is_fs_w, m_rect_w = _check_hwnd_fullscreen(h_int)
+            if is_fs_w:
+                fs_result = (True, m_rect_w)
+                return False
             ex = _user32.GetWindowLongW(h_int, _GWL_EXSTYLE)
-            if (ex & _WS_EX_TOOLWINDOW) and (r.right - r.left) < 800:
+            if (ex & (_WS_EX_TOOLWINDOW | _WS_EX_TRANSPARENT | _WS_EX_NOACTIVATE)) or rw < 600 or rh < 400:
                 return True
-            candidate_hwnd = h_int
-            return False
+            # Real large desktop application sitting above any fullscreen window
+            if not _is_game_hwnd(h_int, cls_b.value, pid_c.value):
+                return False
+            return True
 
         _user32.EnumWindows(_enum_cb, 0)
-        if candidate_hwnd:
-            return _check_hwnd_fullscreen(candidate_hwnd)
-        return False, None
+        return fs_result
     except Exception:
         return False, None
 
@@ -489,13 +561,25 @@ class OoTOverlayHUD:
         self.gamepad = UniversalGamepadPoller()
 
         try:
-            ctypes.WinDLL("shell32").SetCurrentProcessExplicitAppUserModelID("OoTTracker.OverlayHUD")
+            ctypes.WinDLL("shell32").SetCurrentProcessExplicitAppUserModelID("CSSZYF.OoTSwitch2Tracker.1")
         except Exception:
             pass
+        self._app_version = (
+            str(load_local_manifest(APP_DIR).get("version") or "1.2.0")
+            if load_local_manifest is not None
+            else "1.2.0"
+        )
+        self._update_busy = False
         self.root = tk.Tk()
-        self.root.title("塞尔达传说 时之笛 · 全程查漏与攻略助手")
+        self.root.title(f"塞尔达传说 时之笛 · 全程查漏与攻略助手 v{self._app_version}")
         self.root.configure(bg=BG)
         self.root.withdraw()
+        try:
+            ico_path = (APP_DIR / "triforce.ico") if (APP_DIR / "triforce.ico").is_file() else (BUNDLE_DIR / "triforce.ico")
+            if ico_path.is_file():
+                self.root.iconbitmap(default=str(ico_path))
+        except Exception:
+            pass
         try:
             self._icon_img = _make_triforce_icon(self.root)
             self.root.iconphoto(True, self._icon_img)
@@ -540,9 +624,20 @@ class OoTOverlayHUD:
         self._dist_pill_red_lbl: tk.Label | None = None
         self._dist_rail_win: tk.Toplevel | None = None
         self._dist_rail_body: tk.Frame | None = None
+        self._dist_rail_back_win: tk.Toplevel | None = None
+        self._dist_rail_back_body: tk.Frame | None = None
         self._dist_right_win: tk.Toplevel | None = None
         self._dist_right_body: tk.Frame | None = None
+        self._dist_right_back_win: tk.Toplevel | None = None
+        self._dist_right_back_body: tk.Frame | None = None
         self._dist_last_key = None
+        self._dist_last_dist_key = None
+        self._pill_last_key = None
+        self._pill_last_rect: tuple[int, int, int, int] | None = None
+        self._rail_last_rect: tuple[int, int, int, int] | None = None
+        self._right_last_key = None
+        self._right_last_rect: tuple[int, int, int, int] | None = None
+        self._rail_nearby_slots: list[tuple[tk.Label, tk.Label | None, str]] = []
         self._fs_miss_streak: int = 0
         self._banner_hold_until: float = 0.0
         self._toast_win: tk.Toplevel | None = None
@@ -572,6 +667,8 @@ class OoTOverlayHUD:
         self._dpad_hold_frames: int = 0
         self._last_pad_label_state: tuple[bool, str] | None = None
         self._last_banner_key: tuple | None = None
+        self._last_desktop_theme_key: tuple | None = None
+        self._last_desktop_hdr_key: tuple | None = None
 
         # Dedicated background game-state & NFC worker so UI thread NEVER blocks on disk/RAM I/O
         self._bg_stop: bool = False
@@ -591,7 +688,14 @@ class OoTOverlayHUD:
         self.root.attributes("-topmost", True)
         self.root.update()
         self._saved_rect = (30, 40, 468, 640)
-        for ov_win in (self._dist_pill_win, self._dist_rail_win, self._dist_right_win, self._toast_win):
+        for ov_win in (
+            self._dist_pill_win,
+            self._dist_rail_win,
+            self._dist_rail_back_win,
+            self._dist_right_win,
+            self._dist_right_back_win,
+            self._toast_win,
+        ):
             if ov_win is not None:
                 _make_clickthrough_noactivate(ov_win)
                 _hide_win_noactivate(ov_win)
@@ -670,27 +774,21 @@ class OoTOverlayHUD:
         self._dist_pill_status_lbl = s_lbl
         self._dist_pill_red_lbl = r_lbl
 
-        lw = tk.Toplevel(self.root)
-        lw.geometry("1x1+-10000+-10000")
-        lw.overrideredirect(True)
-        lw.configure(bg=BORDER_GOLD)
-        lw.attributes("-topmost", True)
-        lw.attributes("-alpha", 0.78)
-        lbody = tk.Frame(lw, bg=BG)
-        lbody.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
-        self._dist_rail_win = lw
-        self._dist_rail_body = lbody
+        def _make_rail_win(border_col: str, alpha: float) -> tuple[tk.Toplevel, tk.Frame]:
+            w = tk.Toplevel(self.root)
+            w.geometry("1x1+-10000+-10000")
+            w.overrideredirect(True)
+            w.configure(bg=border_col)
+            w.attributes("-topmost", True)
+            w.attributes("-alpha", alpha)
+            body = tk.Frame(w, bg=BG)
+            body.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
+            return w, body
 
-        rw = tk.Toplevel(self.root)
-        rw.geometry("1x1+-10000+-10000")
-        rw.overrideredirect(True)
-        rw.configure(bg=BORDER)
-        rw.attributes("-topmost", True)
-        rw.attributes("-alpha", 0.78)
-        rbody = tk.Frame(rw, bg=BG)
-        rbody.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
-        self._dist_right_win = rw
-        self._dist_right_body = rbody
+        self._dist_rail_win, self._dist_rail_body = _make_rail_win(BORDER_GOLD, 0.78)
+        self._dist_rail_back_win, self._dist_rail_back_body = _make_rail_win(BORDER_GOLD, 0.78)
+        self._dist_right_win, self._dist_right_body = _make_rail_win(BORDER, 0.78)
+        self._dist_right_back_win, self._dist_right_back_body = _make_rail_win(BORDER, 0.78)
 
         tw = tk.Toplevel(self.root)
         tw.geometry("1x1+-10000+-10000")
@@ -761,6 +859,71 @@ class OoTOverlayHUD:
         except Exception:
             pass
 
+    def _restart_after_update(self):
+        try:
+            if getattr(sys, "frozen", False):
+                cmd = [sys.executable, "--no-update"]
+            else:
+                entry = APP_DIR / "launcher.py"
+                cmd = [sys.executable, str(entry if entry.is_file() else Path(__file__).resolve()), "--no-update"]
+            subprocess.Popen(cmd, cwd=str(APP_DIR))
+        except Exception:
+            return
+        self._on_close()
+
+    def _check_updates_async(self):
+        if check_and_apply_updates is None or self._update_busy:
+            return
+        self._update_busy = True
+        self._show_banner(
+            TrackerAlert("info", "🔄 正在检测 GitHub / Gitee 代码更新…", f"当前版本 v{self._app_version}"),
+            hold_sec=4.0,
+        )
+
+        def _worker():
+            res = check_and_apply_updates(APP_DIR, self._cfg, force=False, apply_updates=True)
+            try:
+                self.root.after(0, lambda: self._on_update_checked(res))
+            except Exception:
+                pass
+
+        threading.Thread(target=_worker, daemon=True).start()
+
+    def _on_update_checked(self, res):
+        self._update_busy = False
+        if res.status == "updated":
+            src_zh = "Gitee" if res.source == "gitee" else "GitHub"
+            kb = max(1, res.total_bytes // 1024)
+            notes = f"\n更新内容：{res.notes}" if res.notes else ""
+            al = TrackerAlert(
+                "good",
+                f"✔ 已从 {src_zh} 热更新至 v{res.remote_version}（{len(res.updated_files)} 文件 / {kb} KB）",
+                f"2 秒后自动重启以加载新版代码…{notes}",
+            )
+            self._show_banner(al, hold_sec=6.0)
+            if self.fs_hidden and self.last_eval:
+                self._show_fs_toast([al], self._fs_monitor_rect, self.last_eval)
+            self.root.after(1600, self._restart_after_update)
+        elif res.status == "up_to_date":
+            src_zh = "Gitee" if res.source == "gitee" else "GitHub"
+            self._show_banner(
+                TrackerAlert(
+                    "good",
+                    f"✔ 当前已是最新版本 v{res.local_version}",
+                    f"已核对 {src_zh}（{int(res.latency_ms)}ms）｜{' · '.join(res.probe_summary)}",
+                ),
+                hold_sec=4.5,
+            )
+        else:
+            self._show_banner(
+                TrackerAlert(
+                    "warn",
+                    f"⚠ 暂未连上 GitHub / Gitee（当前 v{self._app_version}）",
+                    " · ".join(res.probe_summary) or res.error or "请检查网络或代理设置",
+                ),
+                hold_sec=4.5,
+            )
+
     def _build_ui(self):
         # Outer border frame
         self.frame = tk.Frame(self.root, bg=BG, highlightbackground=BORDER, highlightthickness=1)
@@ -785,12 +948,15 @@ class OoTOverlayHUD:
         self.btn_alpha.pack(side=tk.RIGHT)
         self.btn_folder = tk.Button(hdr, text="📁", command=self._open_app_folder, **btn_cfg)
         self.btn_folder.pack(side=tk.RIGHT)
+        if check_and_apply_updates is not None:
+            self.btn_update = tk.Button(hdr, text="🔄", command=self._check_updates_async, **btn_cfg)
+            self.btn_update.pack(side=tk.RIGHT)
         self.btn_pin = tk.Button(hdr, text="📌", command=self._toggle_topmost, **btn_cfg)
         self.btn_pin.config(fg=ACCENT_BLUE if self.topmost else FG_DIM)
         self.btn_pin.pack(side=tk.RIGHT)
 
         self.lbl_title = tk.Label(
-            hdr, text="🧭 时之笛进度助手", bg=BG_HEADER, fg=FG,
+            hdr, text=f"🧭 时之笛进度助手 v{self._app_version}", bg=BG_HEADER, fg=FG,
             font=("Microsoft YaHei UI", 10, "bold"), anchor="w"
         )
         self.lbl_title.pack(side=tk.LEFT, padx=(10, 4))
@@ -1543,7 +1709,20 @@ class OoTOverlayHUD:
 
     def _destroy_distributed_hud(self):
         self._dist_last_key = None
-        for attr in ("_dist_pill_win", "_dist_rail_win", "_dist_right_win"):
+        self._dist_last_dist_key = None
+        self._pill_last_key = None
+        self._pill_last_rect = None
+        self._rail_last_rect = None
+        self._right_last_key = None
+        self._right_last_rect = None
+        self._rail_nearby_slots = []
+        for attr in (
+            "_dist_pill_win",
+            "_dist_rail_win",
+            "_dist_rail_back_win",
+            "_dist_right_win",
+            "_dist_right_back_win",
+        ):
             w = getattr(self, attr, None)
             if w is not None:
                 _hide_win_noactivate(w)
@@ -1630,26 +1809,34 @@ class OoTOverlayHUD:
             pill_bg = BG
             red_txt = f"● 缺前置/成年 {unreach_cnt}" if (unreach_cnt > 0 and boss is None) else ""
 
-        self._dist_pill_win.configure(bg=pill_border)
-        self._dist_pill_inner.configure(bg=pill_bg)
-        self._dist_pill_main_lbl.config(text=main_txt, bg=pill_bg, fg=BORDER_FINAL_GOLD if (is_final or final_stage == "victory") else FG)
-        self._dist_pill_status_lbl.config(text=status_txt, fg=status_col, bg=pill_bg)
-        self._dist_pill_red_lbl.config(text=red_txt, bg=pill_bg)
-        if red_txt:
-            self._dist_pill_status_lbl.pack_configure(padx=(0, 0))
-            if not self._dist_pill_red_lbl.winfo_manager():
-                self._dist_pill_red_lbl.pack(side=tk.LEFT, padx=(6, 8))
-        else:
-            if self._dist_pill_red_lbl.winfo_manager():
-                self._dist_pill_red_lbl.pack_forget()
-            self._dist_pill_status_lbl.pack_configure(padx=(0, 8))
+        pill_fg_main = BORDER_FINAL_GOLD if (is_final or final_stage == "victory") else FG
+        pill_key = (main_txt, status_txt, status_col, red_txt, pill_bg, pill_border, pill_fg_main, monitor_rect)
+        if force or pill_key != self._pill_last_key or not _is_win_visible(self._dist_pill_win):
+            self._pill_last_key = pill_key
+            self._dist_pill_win.configure(bg=pill_border)
+            self._dist_pill_inner.configure(bg=pill_bg)
+            self._dist_pill_main_lbl.config(text=main_txt, bg=pill_bg, fg=pill_fg_main)
+            self._dist_pill_status_lbl.config(text=status_txt, fg=status_col, bg=pill_bg)
+            self._dist_pill_red_lbl.config(text=red_txt, bg=pill_bg)
+            if red_txt:
+                self._dist_pill_status_lbl.pack_configure(padx=(0, 0))
+                if not self._dist_pill_red_lbl.winfo_manager():
+                    self._dist_pill_red_lbl.pack(side=tk.LEFT, padx=(6, 8))
+            else:
+                if self._dist_pill_red_lbl.winfo_manager():
+                    self._dist_pill_red_lbl.pack_forget()
+                self._dist_pill_status_lbl.pack_configure(padx=(0, 8))
 
-        self._dist_pill_win.update_idletasks()
-        w_pill = min(int(mw * 0.50), max(340, self._dist_pill_inner.winfo_reqwidth() + 2))
-        h_pill = max(28, self._dist_pill_inner.winfo_reqheight() + 2)
-        x_pill = ml + (mw - w_pill) // 2
-        y_pill = mt + 8
-        _show_noactivate(self._dist_pill_win, x_pill, y_pill, w_pill, h_pill)
+            self._dist_pill_win.update_idletasks()
+            w_pill = min(int(mw * 0.50), max(340, self._dist_pill_inner.winfo_reqwidth() + 2))
+            h_pill = max(28, self._dist_pill_inner.winfo_reqheight() + 2)
+            x_pill = ml + (mw - w_pill) // 2
+            y_pill = mt + 8
+            pill_rect = (x_pill, y_pill, w_pill, h_pill)
+            if force or pill_rect != self._pill_last_rect or not _is_win_visible(self._dist_pill_win):
+                self._pill_last_rect = pill_rect
+                _show_noactivate(self._dist_pill_win, x_pill, y_pill, w_pill, h_pill)
+                _flush_paint(self._dist_pill_win)
 
         # 2. Left-Mid Safe Rail (strictly below Top-Left Hearts/Magic/Mask >= 29% H, above Rupees <= 68% H)
         #    & Right-Mid Safe Rail (adjacent cross-region items, strictly between Top-Right buttons & Minimap)
@@ -1666,32 +1853,6 @@ class OoTOverlayHUD:
                   else ("boss_fight" if boss is not None
                         else ("amiibo" if self.amiibo_scanning else self.dist_rail_mode)))
         )
-        rail_key = (
-            rail_content_kind,
-            boss["id"] if boss else None,
-            final_stage,
-            (boss or {}).get("final_phase"),
-            loc,
-            monitor_rect,
-            tuple((x.id, x.name) for x in reach_miss[:5]),
-            len(reach_miss),
-            tuple(x.id for _, x in adj_miss[:5]),
-            len(adj_miss),
-            tuple((c["id"], c["step_key"], c["in_target"]) for c in active_chains),
-            tuple((n["key"], n["reachable"], int(n["dist"]), n.get("radar", "")) for n in nearby_hints[:2]),
-            unreach_cnt,
-            story["stage"],
-            story["title"],
-            self.gamepad.last_snap.kind,
-            self.amiibo_idx if rail_content_kind == "amiibo" else -1,
-            len(self.amiibo_used_today) if rail_content_kind == "amiibo" else -1,
-        )
-        if not force and rail_key == self._dist_last_key:
-            _ensure_topmost_noactivate(self._dist_rail_win)
-            _ensure_topmost_noactivate(self._dist_right_win)
-            return
-        self._dist_last_key = rail_key
-
         should_show_rail = (
             boss is not None
             or final_stage in ("escape", "victory")
@@ -1701,19 +1862,91 @@ class OoTOverlayHUD:
             or bool(nearby_hints)
             or unreach_cnt > 0
         )
+        rail_struct_key = (
+            should_show_rail,
+            rail_content_kind,
+            boss["id"] if boss else None,
+            final_stage,
+            (boss or {}).get("final_phase"),
+            loc,
+            monitor_rect,
+            tuple((x.id, x.name) for x in reach_miss[:5]),
+            len(reach_miss),
+            tuple((x.id, tuple(x.missing_reqs[:2])) for x in unreach_list[:2]),
+            len(unreach_list),
+            tuple((c["id"], c["step_key"], c["in_target"]) for c in active_chains[:2]),
+            tuple(
+                (n["key"], n["reachable"], bool(n.get("radar")), bool(n.get("need_plant")), n.get("tier", ""), n.get("guide", ""))
+                for n in nearby_hints[:2]
+            ),
+            unreach_cnt,
+            story["stage"] if rail_content_kind == "story" else "",
+            story["title"] if rail_content_kind == "story" else "",
+            self.gamepad.last_snap.connected,
+            self.gamepad.last_snap.kind,
+            self.amiibo_idx if rail_content_kind == "amiibo" else -1,
+            len(self.amiibo_used_today) if rail_content_kind == "amiibo" else -1,
+        )
+        rail_dist_key = tuple(
+            (n["key"], n.get("dist"), n.get("radar", ""))
+            for n in nearby_hints[:2]
+        )
+
         if not should_show_rail:
+            self._dist_last_key = rail_struct_key
+            self._dist_last_dist_key = rail_dist_key
+            self._rail_last_rect = None
+            self._rail_nearby_slots = []
             _hide_win_noactivate(self._dist_rail_win)
+            _hide_win_noactivate(self._dist_rail_back_win)
+        elif (
+            not force
+            and rail_struct_key == self._dist_last_key
+            and _is_win_visible(self._dist_rail_win)
+        ):
+            if (
+                rail_dist_key != self._dist_last_dist_key
+                and self._rail_nearby_slots
+                and len(self._rail_nearby_slots) == len(nearby_hints[:2])
+            ):
+                for (st_lbl, rd_lbl, st_prefix), nh in zip(self._rail_nearby_slots, nearby_hints[:2]):
+                    st_lbl.config(text=f"{st_prefix} · 水平{nh['dist']}m")
+                    if rd_lbl is not None and nh.get("radar"):
+                        rd_lbl.config(text=f"🧭 {nh['radar']}")
+                self._dist_last_dist_key = rail_dist_key
+                if self._rail_last_rect is not None:
+                    rx, ry, rw, rh = self._rail_last_rect
+                    self._dist_rail_win.update_idletasks()
+                    new_h = min(int(mh * 0.395), max(48, self._dist_rail_body.winfo_reqheight() + 2))
+                    if abs(new_h - rh) > 2:
+                        self._rail_last_rect = (rx, ry, rw, new_h)
+                        _show_noactivate(self._dist_rail_win, rx, ry, rw, new_h)
+            _ensure_topmost_noactivate(self._dist_rail_win)
         else:
+            self._dist_last_key = rail_struct_key
+            self._dist_last_dist_key = rail_dist_key
             self._render_left_rail_contents(
                 boss, rail_content_kind, reg, loc, reach_miss, unreach_list, active_chains, nearby_hints, unreach_cnt, story, boss_tips, ml, mt, mw, mh, final_stage=final_stage
             )
 
         # 3. Right-Mid Safe Rail: Other-region reachable items (never overlapped with Left current-region rail)
         should_show_right = (boss is None and not is_final and final_stage not in ("escape", "victory") and rail_content_kind == "auto" and bool(adj_miss))
+        right_key = (
+            should_show_right,
+            tuple(x.id for _, x in adj_miss[:5]) if should_show_right else (),
+            len(adj_miss) if should_show_right else 0,
+            monitor_rect,
+        )
         if not should_show_right:
+            self._right_last_key = right_key
+            self._right_last_rect = None
             _hide_win_noactivate(self._dist_right_win)
-        else:
+            _hide_win_noactivate(self._dist_right_back_win)
+        elif force or right_key != self._right_last_key or not _is_win_visible(self._dist_right_win):
+            self._right_last_key = right_key
             self._render_right_rail_contents(ev, adj_miss, mt, mr, mw, mh)
+        else:
+            _ensure_topmost_noactivate(self._dist_right_win)
 
     def _render_left_rail_contents(
         self, boss, rail_content_kind, reg, loc, reach_miss, unreach_list, active_chains, nearby_hints, unreach_cnt, story, boss_tips, ml, mt, mw, mh, final_stage=None
@@ -1745,10 +1978,16 @@ class OoTOverlayHUD:
             hdr_bg = "#3A151B"
             w_rail = min(285 if boss else 265, max(215, int(mw * (0.155 if boss else 0.145))))
 
-        self._dist_rail_win.configure(bg=rail_border)
-        self._dist_rail_win.attributes("-alpha", rail_alpha)
-        self._dist_rail_body.configure(bg=rail_bg)
-        for ch in self._dist_rail_body.winfo_children():
+        old_win = self._dist_rail_win
+        old_body = self._dist_rail_body
+        win = self._dist_rail_back_win or old_win
+        body = self._dist_rail_back_body or old_body
+        nearby_slots: list[tuple[tk.Label, tk.Label | None, str]] = []
+
+        win.configure(bg=rail_border)
+        win.attributes("-alpha", rail_alpha)
+        body.configure(bg=rail_bg)
+        for ch in body.winfo_children():
             ch.destroy()
 
         if boss is not None and is_final_boss:
@@ -1763,60 +2002,60 @@ class OoTOverlayHUD:
                 hdr_t = "🔱 最终决战 · 魔王加侬多夫"
                 navi_q = "🧚 娜薇：「林克，终于到这一刻了！无论多危险，我都会陪你一起面对加侬多夫！」"
             tk.Label(
-                self._dist_rail_body, text=hdr_t,
+                body, text=hdr_t,
                 bg=hdr_bg, fg=BORDER_FINAL_GOLD,
                 font=("Microsoft YaHei UI", 9, "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=4
             ).pack(fill=tk.X)
             tk.Label(
-                self._dist_rail_body, text=navi_q,
+                body, text=navi_q,
                 bg=rail_bg, fg=NAVI_CYAN,
                 font=("Microsoft YaHei UI", 7, "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
             ).pack(fill=tk.X)
             tk.Label(
-                self._dist_rail_body, text=f"✦ 有利的道具：{boss['valid_items']}",
+                body, text=f"✦ 有利的道具：{boss['valid_items']}",
                 bg=rail_bg, fg=BORDER_FINAL_GOLD,
                 font=("Microsoft YaHei UI", 8, "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
             ).pack(fill=tk.X)
             for step in boss["tactics"]:
                 is_hi = (phase == "ganon_p2" and "第二阶段" in step) or (phase == "ganon_p1" and "第一阶段" in step)
                 tk.Label(
-                    self._dist_rail_body, text=step,
+                    body, text=step,
                     bg=rail_bg, fg=BORDER_FINAL_GOLD if is_hi else FG,
                     font=("Microsoft YaHei UI", 7, "bold" if is_hi else "normal"),
                     anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=1
                 ).pack(fill=tk.X)
         elif boss is None and final_stage == "escape":
             tk.Label(
-                self._dist_rail_body, text="🔥 最终战中场 · 城堡崩塌逃离",
+                body, text="🔥 最终战中场 · 城堡崩塌逃离",
                 bg=hdr_bg, fg=BORDER_FINAL_GOLD,
                 font=("Microsoft YaHei UI", 9, "bold"), anchor="w", padx=7, pady=4
             ).pack(fill=tk.X)
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text="🧚 娜薇：「城堡快塌了，林克！快跟紧塞尔达公主冲出去，决战还没有结束！！」",
                 bg=rail_bg, fg=NAVI_CYAN,
                 font=("Microsoft YaHei UI", 7, "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
             ).pack(fill=tk.X)
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text="• 跟着塞尔达下楼躲避落石；途经阻路的铁甲武士需击败后再继续逃脱。",
                 bg=rail_bg, fg=FG,
                 font=("Microsoft YaHei UI", 8), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
             ).pack(fill=tk.X)
         elif boss is None and final_stage == "victory":
             tk.Label(
-                self._dist_rail_body, text="✨ 终局胜利 · 漫长的冒险结束了",
+                body, text="✨ 终局胜利 · 漫长的冒险结束了",
                 bg=hdr_bg, fg=BORDER_FINAL_GOLD,
                 font=("Microsoft YaHei UI", 9, "bold"), anchor="w", padx=7, pady=4
             ).pack(fill=tk.X)
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text="🧚 娜薇：「一切……都结束了呢……\n海拉鲁重回和平的这一天……也是我们分别的时刻呢。」",
                 bg=rail_bg, fg=NAVI_CYAN,
                 font=("Microsoft YaHei UI", 8, "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=3
             ).pack(fill=tk.X)
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text="「好了，回去吧，林克！去取回原本属于你的时光吧！」",
                 bg=rail_bg, fg=BORDER_FINAL_GOLD,
                 font=("Microsoft YaHei UI", 8, "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
@@ -1824,52 +2063,52 @@ class OoTOverlayHUD:
         elif boss is not None:
             # BOSS BATTLE OVERRIDE: Replace collectibles with instant Boss Combat Strategy!
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text=f"⚔ 激战 · {boss['name_zh']}",
                 bg="#3A151B", fg=ACCENT_RED,
                 font=("Microsoft YaHei UI", 9, "bold"), anchor="w", padx=7, pady=4
             ).pack(fill=tk.X)
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text=f"✦ 有利的道具：{boss['valid_items']}",
                 bg=rail_bg, fg=ACCENT_AMBER,
                 font=("Microsoft YaHei UI", 8, "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
             ).pack(fill=tk.X)
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text=f"✦ 娜薇提示：{boss['navi_hint']}",
                 bg=rail_bg, fg=ACCENT_BLUE,
                 font=("Microsoft YaHei UI", 7), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=1
             ).pack(fill=tk.X)
             for step in boss["tactics"]:
                 tk.Label(
-                    self._dist_rail_body,
+                    body,
                     text=step,
                     bg=rail_bg, fg=FG,
                     font=("Microsoft YaHei UI", 8), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=1
                 ).pack(fill=tk.X)
         elif rail_content_kind == "story":
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text=f"🎯 {story['stage']}",
                 bg=BG_HEADER, fg=ACCENT_AMBER,
                 font=("Microsoft YaHei UI", 8, "bold"), anchor="w", padx=7, pady=3
             ).pack(fill=tk.X)
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text=story["title"],
                 bg=rail_bg, fg=FG,
                 font=("Microsoft YaHei UI", 8, "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
             ).pack(fill=tk.X)
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text=f"📍 {story['target_zh']}\n↳ {story['how_to']}",
                 bg=rail_bg, fg="#DCE7F5",
                 font=("Microsoft YaHei UI", 7), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
             ).pack(fill=tk.X)
         elif rail_content_kind == "boss":
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text=f"⚔ {reg.name_zh if reg else loc} · 机关/Boss",
                 bg=BG_HEADER, fg=ACCENT_PURPLE,
                 font=("Microsoft YaHei UI", 8, "bold"), anchor="w", padx=7, pady=3
@@ -1877,14 +2116,14 @@ class OoTOverlayHUD:
             if boss_tips:
                 for bt, bd in boss_tips[:3]:
                     tk.Label(
-                        self._dist_rail_body,
+                        body,
                         text=f"• {bt}：{bd}",
                         bg=rail_bg, fg=FG,
                         font=("Microsoft YaHei UI", 7), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
                     ).pack(fill=tk.X)
             else:
                 tk.Label(
-                    self._dist_rail_body,
+                    body,
                     text="本区域无迷宫Boss，滑触控板←或按 R3+← 切回查漏。",
                     bg=rail_bg, fg=FG_DIM,
                     font=("Microsoft YaHei UI", 7), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=4
@@ -1894,7 +2133,7 @@ class OoTOverlayHUD:
             used = self.amiibo_used_today
             supply_left = sum(1 for x in cards if x["daily_limit"] and x["key"] not in used)
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text=f"🎁 Amiibo 选卡（{self.amiibo_idx + 1 if cards else 0}/{len(cards)} · 余{supply_left}）",
                 bg=BG_HEADER, fg=ACCENT_AMBER,
                 font=("Microsoft YaHei UI", 8, "bold"), anchor="w", padx=7, pady=3
@@ -1917,7 +2156,7 @@ class OoTOverlayHUD:
                     prefix = "▶ " if is_sel else ("✔ " if is_used else ("🎭 " if not item["daily_limit"] else "● "))
                     row_bg = "#262015" if is_sel else rail_bg
                     row_fg = FG if is_sel else (FG_DIM if is_used else FG)
-                    row = tk.Frame(self._dist_rail_body, bg=row_bg)
+                    row = tk.Frame(body, bg=row_bg)
                     row.pack(fill=tk.X, padx=4, pady=1)
                     lbl_nm = f"{prefix}{item['name']}"
                     if len(lbl_nm) > 13:
@@ -1932,7 +2171,7 @@ class OoTOverlayHUD:
                     ).pack(side=tk.RIGHT)
                 c = cards[cur_idx]
                 tk.Label(
-                    self._dist_rail_body, text=f"掉落：{c['reward_short']}",
+                    body, text=f"掉落：{c['reward_short']}",
                     bg=rail_bg, fg=ACCENT_AMBER, font=("Microsoft YaHei UI", 7),
                     anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
                 ).pack(fill=tk.X)
@@ -1940,13 +2179,13 @@ class OoTOverlayHUD:
                 pad_kind = getattr(self.gamepad.last_snap, "kind", "none")
                 am_hint = f"触控板←→换面具 · ↑↓选卡 · L3+{east}载入" if pad_kind == "ps5" else f"R3+←→换面具 · R3+↑↓选卡 · L3+{east}载入"
                 tk.Label(
-                    self._dist_rail_body, text=am_hint,
+                    body, text=am_hint,
                     bg=BG_HEADER, fg=ACCENT_BLUE, font=("Microsoft YaHei UI", 7, "bold"),
                     anchor="w", padx=7, pady=2
                 ).pack(fill=tk.X)
             else:
                 tk.Label(
-                    self._dist_rail_body, text="未检测到 Amiibo .bin 文件",
+                    body, text="未检测到 Amiibo .bin 文件",
                     bg=rail_bg, fg=FG_DIM, font=("Microsoft YaHei UI", 7), anchor="w", padx=7, pady=4
                 ).pack(fill=tk.X)
         else:
@@ -1954,7 +2193,7 @@ class OoTOverlayHUD:
                 for ch in active_chains[:2]:
                     ch_bg = "#351616" if ch["timed"] else ("#1C2B1D" if ch["in_target"] else "#1E222A")
                     ch_fg = ACCENT_RED if ch["timed"] else (ACCENT_GREEN if ch["in_target"] else ACCENT_AMBER)
-                    ch_box = tk.Frame(self._dist_rail_body, bg=ch_bg)
+                    ch_box = tk.Frame(body, bg=ch_bg)
                     ch_box.pack(fill=tk.X, padx=4, pady=(2, 2))
                     loc_tag = "✅就在本区" if ch["in_target"] else f"📍立刻去{ch['target_zh']}" if ch["timed"] else f"📍下一步去{ch['target_zh']}"
                     tk.Label(
@@ -1984,7 +2223,7 @@ class OoTOverlayHUD:
                 else f"✔ {reg.name_zh if reg else loc} · 本区可补已清"
             )
             tk.Label(
-                self._dist_rail_body,
+                body,
                 text=hdr_txt,
                 bg=BG_HEADER, fg=ACCENT_AMBER if reach_miss else ACCENT_GREEN,
                 font=("Microsoft YaHei UI", 8, "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=3
@@ -1999,7 +2238,7 @@ class OoTOverlayHUD:
                 short_name = full_nm if len(full_nm) <= max_nm_chars else full_nm[:max_nm_chars - 1] + "…"
                 if it.night_only:
                     short_name = "🌙" + short_name
-                row = tk.Frame(self._dist_rail_body, bg=rail_bg)
+                row = tk.Frame(body, bg=rail_bg)
                 row.pack(fill=tk.X, padx=5, pady=1)
                 tk.Label(row, text=badge, bg=rail_bg, fg=col, font=("Microsoft YaHei UI", 8), width=2).pack(side=tk.LEFT, anchor="n")
                 tk.Label(
@@ -2009,13 +2248,13 @@ class OoTOverlayHUD:
 
             if len(reach_miss) > max_show:
                 tk.Label(
-                    self._dist_rail_body, text=f"… 另有 {len(reach_miss) - max_show} 项",
+                    body, text=f"… 另有 {len(reach_miss) - max_show} 项",
                     bg=rail_bg, fg=FG_DIM, font=("Microsoft YaHei UI", 7), anchor="w", padx=7, pady=1
                 ).pack(fill=tk.X)
 
             if unreach_cnt > 0:
                 tk.Label(
-                    self._dist_rail_body, text=f"● 本区另有 {unreach_cnt} 项缺前置/成年",
+                    body, text=f"● 本区另有 {unreach_cnt} 项缺前置/成年",
                     bg=rail_bg, fg=ACCENT_RED, font=("Microsoft YaHei UI", 7, "bold"),
                     anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
                 ).pack(fill=tk.X)
@@ -2025,7 +2264,7 @@ class OoTOverlayHUD:
                     uname = u_full if len(u_full) <= 36 else u_full[:35] + "…"
                     ureq = "、".join(uit.missing_reqs[:2])
                     tk.Label(
-                        self._dist_rail_body, text=f"🔒 {uname}（缺:{ureq}）",
+                        body, text=f"🔒 {uname}（缺:{ureq}）",
                         bg=rail_bg, fg="#E08F8F", font=("Microsoft YaHei UI", 7),
                         anchor="w", justify=tk.LEFT, wraplength=w_rail - 16, padx=7, pady=1
                     ).pack(fill=tk.X)
@@ -2034,24 +2273,28 @@ class OoTOverlayHUD:
                 is_soil = (nh["kind"] == "bean_soil")
                 nbg = "#2C1818" if not nh["reachable"] else ("#1C2B1D" if is_soil else "#18242C")
                 nfg = ACCENT_RED if not nh["reachable"] else (ACCENT_AMBER if (is_soil and nh.get("need_plant")) else (ACCENT_GREEN if nh["kind"] != "grotto" else ACCENT_BLUE))
-                nbox = tk.Frame(self._dist_rail_body, bg=nbg)
+                nbox = tk.Frame(body, bg=nbg)
                 nbox.pack(fill=tk.X, padx=4, pady=(2, 1))
                 fl_n = f"[{nh['floor']}] " if nh.get("floor") else ""
                 status_s = (
                     "🌱 软土坑提示" if is_soil
                     else (f"🔒 {fl_n}暂不可拿(缺:{'、'.join(nh['missing_reqs'][:2])})" if not nh["reachable"] else (f"🔔 {fl_n}可拿!" if nh["kind"] != "grotto" else "🔔 隐藏洞"))
                 )
-                tk.Label(
+                st_lbl = tk.Label(
                     nbox, text=f"{status_s} · 水平{nh['dist']}m",
                     bg=nbg, fg=nfg, font=("Microsoft YaHei UI", 7, "bold"),
                     anchor="w", justify=tk.LEFT, wraplength=w_rail - 20, padx=5, pady=1
-                ).pack(fill=tk.X)
+                )
+                st_lbl.pack(fill=tk.X)
+                rd_lbl = None
                 if nh.get("radar"):
-                    tk.Label(
+                    rd_lbl = tk.Label(
                         nbox, text=f"🧭 {nh['radar']}",
                         bg=nbg, fg=ACCENT_AMBER, font=("Microsoft YaHei UI", 7, "bold"),
                         anchor="w", justify=tk.LEFT, wraplength=w_rail - 20, padx=5, pady=1
-                    ).pack(fill=tk.X)
+                    )
+                    rd_lbl.pack(fill=tk.X)
+                nearby_slots.append((st_lbl, rd_lbl, status_s))
                 tk.Label(
                     nbox, text=nh["name"],
                     bg=nbg, fg=FG, font=("Microsoft YaHei UI", 7), anchor="w", justify=tk.LEFT, wraplength=w_rail - 20, padx=5, pady=1
@@ -2070,23 +2313,37 @@ class OoTOverlayHUD:
         if self.gamepad.last_snap.connected:
             pad_hint = "触控板滑动切/按呼全窗" if self.gamepad.last_snap.kind == "ps5" else "L3+R3全窗 · R3+←→切"
             tk.Label(
-                self._dist_rail_body, text=f"🎮 {pad_hint}",
+                body, text=f"🎮 {pad_hint}",
                 bg=BG_HEADER, fg=FG_DIM, font=("Microsoft YaHei UI", 7), anchor="w", padx=7, pady=1
             ).pack(fill=tk.X)
 
-        self._dist_rail_win.update_idletasks()
-        h_rail = min(int(mh * 0.395), max(48, self._dist_rail_body.winfo_reqheight() + 2))
+        self._rail_nearby_slots = nearby_slots
+        win.update_idletasks()
+        h_rail = min(int(mh * 0.395), max(48, body.winfo_reqheight() + 2))
         x_rail = ml + 14
         y_rail = mt + int(mh * 0.455)
-        _show_noactivate(self._dist_rail_win, x_rail, y_rail, w_rail, h_rail)
+        self._rail_last_rect = (x_rail, y_rail, w_rail, h_rail)
+        insert_after = _get_top_hwnd(old_win) if (win is not old_win and _is_win_visible(old_win)) else _HWND_TOPMOST
+        _show_noactivate(win, x_rail, y_rail, w_rail, h_rail, insert_after=insert_after)
+        _flush_paint(win)
+        if win is not old_win:
+            _hide_win_noactivate(old_win)
+            _ensure_topmost_noactivate(win)
+            self._dist_rail_win, self._dist_rail_back_win = win, old_win
+            self._dist_rail_body, self._dist_rail_back_body = body, old_body
 
     def _render_right_rail_contents(self, ev: dict, adj_miss: list, mt: int, mr: int, mw: int, mh: int):
-        for ch in self._dist_right_body.winfo_children():
+        old_win = self._dist_right_win
+        old_body = self._dist_right_body
+        win = self._dist_right_back_win or old_win
+        body = self._dist_right_back_body or old_body
+
+        for ch in body.winfo_children():
             ch.destroy()
 
         w_right = min(280, max(220, int(mw * 0.15)))
         tk.Label(
-            self._dist_right_body,
+            body,
             text=f"🔗 相连其他区域可拿（{len(adj_miss)} 项）",
             bg=BG_HEADER, fg=ACCENT_BLUE,
             font=("Microsoft YaHei UI", 8, "bold"), anchor="w", justify=tk.LEFT, wraplength=w_right - 14, padx=7, pady=3
@@ -2102,7 +2359,7 @@ class OoTOverlayHUD:
             short_hint = hint.split("（", 1)[0]
             if len(short_hint) > 20:
                 short_hint = short_hint[:19] + "…"
-            row = tk.Frame(self._dist_right_body, bg=BG)
+            row = tk.Frame(body, bg=BG)
             row.pack(fill=tk.X, padx=5, pady=1)
             tk.Label(row, text=ktag, bg=BG, fg=ACCENT_BLUE, font=("Microsoft YaHei UI", 8), width=2).pack(side=tk.LEFT, anchor="n")
             txt_col = tk.Frame(row, bg=BG)
@@ -2118,15 +2375,23 @@ class OoTOverlayHUD:
 
         if len(adj_miss) > max_show:
             tk.Label(
-                self._dist_right_body, text=f"… 另有 {len(adj_miss) - max_show} 项",
+                body, text=f"… 另有 {len(adj_miss) - max_show} 项",
                 bg=BG, fg=FG_DIM, font=("Microsoft YaHei UI", 7), anchor="w", padx=7, pady=1
             ).pack(fill=tk.X)
 
-        self._dist_right_win.update_idletasks()
-        h_right = min(int(mh * 0.33), max(48, self._dist_right_body.winfo_reqheight() + 2))
+        win.update_idletasks()
+        h_right = min(int(mh * 0.33), max(48, body.winfo_reqheight() + 2))
         x_right = mr - w_right - 14
         y_right = mt + int(mh * 0.32)
-        _show_noactivate(self._dist_right_win, x_right, y_right, w_right, h_right)
+        self._right_last_rect = (x_right, y_right, w_right, h_right)
+        insert_after = _get_top_hwnd(old_win) if (win is not old_win and _is_win_visible(old_win)) else _HWND_TOPMOST
+        _show_noactivate(win, x_right, y_right, w_right, h_right, insert_after=insert_after)
+        _flush_paint(win)
+        if win is not old_win:
+            _hide_win_noactivate(old_win)
+            _ensure_topmost_noactivate(win)
+            self._dist_right_win, self._dist_right_back_win = win, old_win
+            self._dist_right_body, self._dist_right_back_body = body, old_body
 
     def _hide_fs_toast(self):
         if self._toast_after_id:
@@ -2209,6 +2474,7 @@ class OoTOverlayHUD:
         y_offset = 46 if _is_win_visible(self._dist_pill_win) else 12
         y = mt + y_offset
         _show_noactivate(self._toast_win, x, y, w, h)
+        _flush_paint(self._toast_win)
 
         hold_ms = (
             14000 if is_final_victory
@@ -2226,7 +2492,9 @@ class OoTOverlayHUD:
                     _get_top_hwnd(self._toast_win) if self._toast_win else 0,
                     _get_top_hwnd(self._dist_pill_win) if self._dist_pill_win else 0,
                     _get_top_hwnd(self._dist_rail_win) if self._dist_rail_win else 0,
+                    _get_top_hwnd(self._dist_rail_back_win) if self._dist_rail_back_win else 0,
                     _get_top_hwnd(self._dist_right_win) if self._dist_right_win else 0,
+                    _get_top_hwnd(self._dist_right_back_win) if self._dist_right_back_win else 0,
                 ) if h
             }
             is_fs, mon_rect = detect_fullscreen_monitor(ignore)
@@ -2512,10 +2780,13 @@ class OoTOverlayHUD:
         else:
             frame_bg, frame_bd = BG, BORDER
             ban_bg, ban_bd, det_fg = BG_CARD, BORDER, FG_DIM
-        self.frame.configure(bg=frame_bg, highlightbackground=frame_bd)
-        self.banner.configure(bg=ban_bg, highlightbackground=ban_bd)
-        self.lbl_banner_title.configure(bg=ban_bg)
-        self.lbl_banner_detail.configure(bg=ban_bg, fg=det_fg)
+        theme_key = (frame_bg, frame_bd, ban_bg, ban_bd, det_fg)
+        if theme_key != self._last_desktop_theme_key:
+            self._last_desktop_theme_key = theme_key
+            self.frame.configure(bg=frame_bg, highlightbackground=frame_bd)
+            self.banner.configure(bg=ban_bg, highlightbackground=ban_bd)
+            self.lbl_banner_title.configure(bg=ban_bg)
+            self.lbl_banner_detail.configure(bg=ban_bg, fg=det_fg)
 
     def _show_idle_region_banner(self, ev: dict):
         boss = ev.get("active_boss")
@@ -2605,19 +2876,22 @@ class OoTOverlayHUD:
         final_stage = ev.get("final_battle_stage")
         self._apply_final_desktop_theme(final_stage, boss)
         if final_stage == "victory":
-            self.lbl_title.config(text="✨ 终局胜利 · 娜薇的告别", fg=BORDER_FINAL_GOLD)
+            title_txt, title_fg = "✨ 终局胜利 · 娜薇的告别", BORDER_FINAL_GOLD
         elif final_stage in ("ganondorf", "ganon_p1", "ganon_p2") or (boss and boss.get("is_final")):
-            self.lbl_title.config(text=f"🔱 最终决战 · {ev['location_zh']} · {era_str}", fg=BORDER_FINAL_GOLD)
+            title_txt, title_fg = f"🔱 最终决战 · {ev['location_zh']} · {era_str}", BORDER_FINAL_GOLD
         elif final_stage == "escape":
-            self.lbl_title.config(text=f"🔥 逃离加侬城堡 · {era_str}", fg=BORDER_FINAL_GOLD)
+            title_txt, title_fg = f"🔥 逃离加侬城堡 · {era_str}", BORDER_FINAL_GOLD
         else:
-            self.lbl_title.config(text=f"🧭 {ev['location_zh']} · {era_str}", fg=FG)
-        self.lbl_source.config(text=src_txt, fg=src_col)
+            title_txt, title_fg = f"🧭 {ev['location_zh']} · {era_str}", FG
 
         rem_sk = max(0, 100 - ev["total_skulls_got"])
-        self.lbl_global.config(
-            text=f"🕷 黄金骷髅蜘蛛 {ev['total_skulls_got']}/100(缺{rem_sk})  ❤ 心之碎片 {ev['total_hp_got']}/36  🎵 {caps['_songs_count']}/12  🧪 {caps['_bottles_count']}/4"
-        )
+        global_txt = f"🕷 黄金骷髅蜘蛛 {ev['total_skulls_got']}/100(缺{rem_sk})  ❤ 心之碎片 {ev['total_hp_got']}/36  🎵 {caps['_songs_count']}/12  🧪 {caps['_bottles_count']}/4"
+        hdr_key = (title_txt, title_fg, src_txt, src_col, global_txt)
+        if force or hdr_key != self._last_desktop_hdr_key:
+            self._last_desktop_hdr_key = hdr_key
+            self.lbl_title.config(text=title_txt, fg=title_fg)
+            self.lbl_source.config(text=src_txt, fg=src_col)
+            self.lbl_global.config(text=global_txt)
 
         target_loc = self._get_selected_location(ev["location"])
         bj = ev.get("boss_journal") or {}
@@ -3200,8 +3474,26 @@ class OoTOverlayHUD:
         self.root.mainloop()
 
 
+def main(argv: list[str] | None = None, update_notice: object | None = None):
+    args = list(sys.argv[1:] if argv is None else argv)
+    hud = OoTOverlayHUD()
+    if update_notice is not None and getattr(update_notice, "status", "") == "updated":
+        src_zh = "Gitee" if getattr(update_notice, "source", "") == "gitee" else "GitHub"
+        files = getattr(update_notice, "updated_files", [])
+        kb = max(1, int(getattr(update_notice, "total_bytes", 0)) // 1024)
+        ver = getattr(update_notice, "remote_version", hud._app_version)
+        notes = getattr(update_notice, "notes", "")
+        al = TrackerAlert(
+            "good",
+            f"🔄 启动前已从 {src_zh} 热更新至 v{ver}（{len(files)} 个文件 / {kb} KB）",
+            notes or "已自动同步最新纯代码与数据库",
+        )
+        hud.alert_history.insert(0, (datetime.now().strftime("%H:%M:%S"), al))
+        hud._show_banner(al, hold_sec=7.0)
+    if "--minimized" in args:
+        hud.root.after(60, hud._minimize_window)
+    hud.run()
+
+
 if __name__ == "__main__":
-    _hud = OoTOverlayHUD()
-    if "--minimized" in sys.argv[1:]:
-        _hud._minimize_window()
-    _hud.run()
+    main(sys.argv[1:])

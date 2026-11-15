@@ -586,54 +586,20 @@
       ]
     },
     {
-      "id": "gs_a1632e322c612b97",
+      "id": "gs_6a8d9b2373d08fcb",
       "kind": "skulltula",
       "location": "KakarikoVillage",
       "scene": "KakarikoVillage",
-      "name": "幼年夜间·入口大树（翻滚撞树）",
+      "name": "幼年·村口广场大树（翻滚撞树震落）",
       "flag_type": "b64",
-      "flag_key": 11629189455828560791,
+      "flag_key": 7677963516305772491,
       "era": "child",
-      "night_only": true,
+      "night_only": false,
       "reqs": [],
       "pos": [
-        -75.0,
-        105.3,
-        2.2
-      ]
-    },
-    {
-      "id": "gs_c3c68d0ac4b85831",
-      "kind": "skulltula",
-      "location": "KakarikoVillage",
-      "scene": "KakarikoVillage",
-      "name": "幼年夜间·蜘蛛屋旁砖墙",
-      "flag_type": "b64",
-      "flag_key": 14107117960174262321,
-      "era": "child",
-      "night_only": true,
-      "reqs": [],
-      "pos": [
-        -60.7,
-        102.1,
-        59.5
-      ]
-    },
-    {
-      "id": "gs_d1cef51cf294fb86",
-      "kind": "skulltula",
-      "location": "KakarikoVillage",
-      "scene": "KakarikoVillage",
-      "name": "幼年夜间·守卫哨所（死亡之山入口）墙面",
-      "flag_type": "b64",
-      "flag_key": 15118290503807073158,
-      "era": "child",
-      "night_only": true,
-      "reqs": [],
-      "pos": [
-        -48.1,
-        110.9,
-        18.4
+        -73.6,
+        104.5,
+        43.5
       ]
     },
     {
@@ -641,7 +607,7 @@
       "kind": "skulltula",
       "location": "KakarikoVillage",
       "scene": "KakarikoVillage",
-      "name": "幼年夜间·建筑施工砖墙",
+      "name": "幼年夜间·蜘蛛屋旁砖墙",
       "flag_type": "b64",
       "flag_key": 15314554401574296838,
       "era": "child",
@@ -654,22 +620,56 @@
       ]
     },
     {
-      "id": "gs_6a8d9b2373d08fcb",
+      "id": "gs_c3c68d0ac4b85831",
       "kind": "skulltula",
       "location": "KakarikoVillage",
       "scene": "KakarikoVillage",
-      "name": "幼年·英帕家旁梯子爬上瞭望台高墙（妖精弹弓/回旋镖）",
+      "name": "幼年夜间·施工建筑（未来射箭屋）砖墙",
       "flag_type": "b64",
-      "flag_key": 7677963516305772491,
+      "flag_key": 14107117960174262321,
       "era": "child",
-      "night_only": false,
+      "night_only": true,
+      "reqs": [],
+      "pos": [
+        -60.7,
+        102.1,
+        59.5
+      ]
+    },
+    {
+      "id": "gs_a1632e322c612b97",
+      "kind": "skulltula",
+      "location": "KakarikoVillage",
+      "scene": "KakarikoVillage",
+      "name": "幼年夜间·村西北房屋（道具屋）后墙",
+      "flag_type": "b64",
+      "flag_key": 11629189455828560791,
+      "era": "child",
+      "night_only": true,
+      "reqs": [],
+      "pos": [
+        -75.0,
+        105.3,
+        2.2
+      ]
+    },
+    {
+      "id": "gs_d1cef51cf294fb86",
+      "kind": "skulltula",
+      "location": "KakarikoVillage",
+      "scene": "KakarikoVillage",
+      "name": "幼年夜间·村中心高木塔（瞭望台）高墙（妖精弹弓/回旋镖）",
+      "flag_type": "b64",
+      "flag_key": 15118290503807073158,
+      "era": "child",
+      "night_only": true,
       "reqs": [
         "slingshot|boomerang"
       ],
       "pos": [
-        -73.6,
-        104.5,
-        43.5
+        -48.1,
+        110.9,
+        18.4
       ]
     },
     {
@@ -677,7 +677,7 @@
       "kind": "skulltula",
       "location": "KakarikoVillage",
       "scene": "KakarikoVillage",
-      "name": "成年夜间·英帕家屋顶侧墙（需钩索）",
+      "name": "成年夜间·英帕家屋顶上方侧墙（需钩索）",
       "flag_type": "b64",
       "flag_key": 3310819903461047792,
       "era": "adult",
@@ -4031,10 +4031,6 @@
     "FinalBattleField_Create_Ganon_SecondHalfBattle": 1430662853,
     "Enemy_DungeonBossGanon_IsOpenedThirdEye": 1361949048,
     "HaveDefeatedEnemy_Enemy_DungeonBoss_Ganon": 3897267726,
-    "Get_Epona_State_Enum": 2453871701,
-    "Biggoron_State_Enum": 648208412,
-    "MaskSalesman_State_Enum": 3925934864,
-    "Scarecrow_State_Enum": 2490511403,
     "Sequence_CurrentBanc": 492931546,
     "Sequence_ReservedBootEventName": 2722286786,
     "Sequence_ReservedNextBanc": 3995582321,
@@ -4075,7 +4071,11 @@
     "HavePlayedEvent.Dm_TimeTemple_0086": 4164986692,
     "HavePlayedEvent.Dm_TimeTemple_0087": 410580046,
     "HavePlayedEvent.Dm_TimeTemple_0088": 1497309525,
-    "HavePlayedEvent.Dm_TimeTemple_0090": 4236468144
+    "HavePlayedEvent.Dm_TimeTemple_0090": 4236468144,
+    "Get_Epona_State_Enum": 2453871701,
+    "Biggoron_State_Enum": 648208412,
+    "MaskSalesman_State_Enum": 3925934864,
+    "Scarecrow_State_Enum": 2490511403
   },
   "table_counts": {
     "Binary": 11,

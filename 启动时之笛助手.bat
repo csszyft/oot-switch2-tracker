@@ -2,6 +2,9 @@
 chcp 65001 >nul
 cd /d "%~dp0"
 
+set "ENTRY=launcher.py"
+if not exist "%~dp0launcher.py" set "ENTRY=overlay_hud.py"
+
 set "PYW="
 set "PYC="
 
@@ -19,7 +22,7 @@ if not defined PYW for /d %%D in ("%LocalAppData%\Programs\Python\Python3*" "%Pr
 if not defined PYW (
     where pyw.exe >nul 2>nul
     if not errorlevel 1 (
-        start "" pyw -3 "%~dp0overlay_hud.py"
+        start "" pyw -3 "%~dp0%ENTRY%" %*
         exit /b 0
     )
     echo [错误] 未在本机检测到 Python 3。
@@ -40,7 +43,7 @@ if defined PYC (
     )
 )
 
-start "" "%PYW%" "%~dp0overlay_hud.py"
+start "" "%PYW%" "%~dp0%ENTRY%" %*
 exit /b 0
 
 :pick_pyw

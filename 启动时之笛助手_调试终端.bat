@@ -2,6 +2,9 @@
 chcp 65001 >nul
 cd /d "%~dp0"
 
+set "ENTRY=launcher.py"
+if not exist "%~dp0launcher.py" set "ENTRY=overlay_hud.py"
+
 set "PYC="
 if exist "%~dp0python\python.exe" set "PYC=%~dp0python\python.exe"
 if not defined PYC for /f "delims=" %%I in ('where python.exe 2^>nul') do call :pick_pyc "%%~I"
@@ -13,7 +16,7 @@ if not defined PYC for /d %%D in ("%LocalAppData%\Programs\Python\Python3*" "%Pr
 if not defined PYC (
     where py.exe >nul 2>nul
     if not errorlevel 1 (
-        py -3 -u "%~dp0overlay_hud.py"
+        py -3 -u "%~dp0%ENTRY%" %*
         if errorlevel 1 pause
         exit /b %errorlevel%
     )
@@ -23,7 +26,7 @@ if not defined PYC (
 )
 
 echo 正在启动时之笛全程助手（调试日志模式）...
-"%PYC%" -u "%~dp0overlay_hud.py"
+"%PYC%" -u "%~dp0%ENTRY%" %*
 if errorlevel 1 (
     echo.
     echo 程序异常退出，错误码：%errorlevel%

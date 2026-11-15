@@ -4,5 +4,9 @@
   "slot": "auto",
   "fs_mode": "distributed",
   "sound_enabled": true,
-  "note": "save_dir 和 amiibo_dir 留空时会自动读取当前正在运行的游戏进程或本目录下的 saves/、amiibo/ 文件夹；如需手动指定，填入完整文件夹路径即可。"
+  "auto_update": true,
+  "github_repo": "csszyft/oot-switch2-tracker",
+  "gitee_repo": "csszyf/oot-switch2-tracker",
+  "update_branch": "main",
+  "note": "save_dir 和 amiibo_dir 留空时会自动读取当前正在运行的游戏进程或本目录下的 saves/、amiibo/ 文件夹；auto_update 控制启动时是否检测 GitHub 与 Gitee 纯代码更新。"
 }

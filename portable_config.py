@@ -18,6 +18,11 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "slot": "auto",
     "fs_mode": "distributed",
     "sound_enabled": True,
+    "auto_update": True,
+    "github_repo": "csszyft/oot-switch2-tracker",
+    "gitee_repo": "csszyf/oot-switch2-tracker",
+    "update_branch": "main",
+    "update_timeout_sec": 3.0,
 }
 
 

@@ -10,7 +10,7 @@
 
 ## ✨ 核心特性
 
-- **开箱即用 EXE 包 + 纯源码双支持**：[GitHub Releases](https://github.com/csszyft/oot-switch2-tracker/releases) 提供自带配置文件夹的免 Python 压缩包与纯代码轻量源码包（不含截图）；源码版仅依赖 Windows 自带 Python 3.10–3.13 标准库（`tkinter` + `ctypes` Win32 API），无需 `pip install`，不注入游戏进程、不抢夺游戏窗口焦点。
+- **开箱即用瘦启动器 + 纯代码热更新（GitHub / Gitee 双源）**：[GitHub Releases](https://github.com/csszyft/oot-switch2-tracker/releases)（及 [Gitee 镜像](https://gitee.com/csszyf/oot-switch2-tracker)）提供免 Python 压缩包与纯代码轻量源码包（不含截图）。EXE 采用**前后端分离启动器**设计：自带黄金三角神力图标，启动时毫秒级并行检测 GitHub 与 Gitee 上游的纯代码与数据库清单（`version.json`），仅增量拉取有变动的 `.py` / `oot_world_db.json` 文件（SHA-256 校验原子替换），无需重新下载整个 EXE；主界面标题栏亦内置 `🔄` 手动热更新按钮。源码版仅依赖 Windows 自带 Python 3.10–3.13 标准库，无需 `pip install`，不注入游戏进程、不抢夺游戏窗口焦点。
 - **双源自动同步（实时内存 + 存档回退）**：毫秒级轮询 **NX2navi (`ocarina.exe`)**、**Fritchii / Lichii (`lichii.exe`)** 与 **Hookshot (`hookshot.exe`)** 实时内存，无需手动指定目录；未开兼容端或仅排查存档时，自动读取 **Eden / Yuzu / Citron / Suyu / Ryujinx** 存档槽位。实时结合 `Sequence_CurrentBanc` 与 `Sequence_ReservedBootEventName` 裁决位置，跨区传送过场不再滞留旧地名。
 - **175 项全收集精准判定**：完整覆盖 **100 只黄金骷髅蜘蛛、36 块心之碎片、12 首时之笛乐曲、4 个空瓶**，附带 **37 个隐藏洞** 图鉴。结合当前时代（幼年/成年）与已获道具自动拆分为「**当前可补**」与「**缺前置/成年暂不可拿**」，离开区域仍有可补项时自动防漏提醒。
 - **主线导航 + 大戈隆剑限时链 + 防剧透 Boss 图鉴**：主线进度条精确到当前精灵石/贤者奖章并附完整走法；大戈隆剑 11 步交易链在限时阶段自动红色高优先提醒；Boss/中Boss 攻略随推进渐进解锁，进入 Boss 房自动接管左侧栏、击败后基于 `IsBossBattle` 与演出旗标瞬时结束战斗并恢复查漏。
@@ -33,6 +33,7 @@
 | `● 实时内存 / 存档` | 当前数据源状态指示灯（绿灯为实时内存，蓝/灰为存档） |
 | `🎮 手柄状态` | 显示已连接手柄类型（如 `PS5 DualSense` / `Xbox` / `通用手柄`） |
 | `📌` | 切换窗口是否保持桌面置顶 |
+| `🔄` | **手动检查 GitHub / Gitee 上游纯代码热更新**，有新版时自动增量拉取并重启生效 |
 | `📁` | **一键打开工具所在文件夹**（方便放置存档、Amiibo 或排查日志） |
 | `◐` | 循环调节悬浮窗透明度 |
 | `▾ / ▸`（`展开 / 收起`） | 折叠为精简条或展开全量卡片；**展开状态下同时完整展示当前主线走法** |
@@ -153,7 +154,11 @@ cd oot-switch2-tracker
   "amiibo_dir": "",
   "slot": "auto",
   "fs_mode": "distributed",
-  "sound_enabled": true
+  "sound_enabled": true,
+  "auto_update": true,
+  "github_repo": "csszyft/oot-switch2-tracker",
+  "gitee_repo": "csszyf/oot-switch2-tracker",
+  "update_branch": "main"
 }
 ```
 
@@ -161,6 +166,7 @@ cd oot-switch2-tracker
 - `amiibo_dir`：留空自动探测，或填入 `.bin` 卡片所在文件夹（也可直接放进本目录下的 `amiibo/`）。
 - `slot`：`auto`（自动跟踪最新保存槽位）或指定槽位名。
 - `fs_mode`：`distributed`（全屏分布式避让微浮窗）、`toast_only`（全屏仅提示弹窗）或 `off`（全屏不隐藏）。
+- `auto_update`：是否在启动时并行检测 GitHub / Gitee 纯代码热更新（离线或超时会秒级自动跳过；也可传参 `--no-update`）。
 
 ---
 
@@ -168,8 +174,11 @@ cd oot-switch2-tracker
 
 ```text
 oot-switch2-tracker/
-├── 启动时之笛助手.bat            # 一键启动（无控制台黑框）
+├── 启动时之笛助手.bat            # 一键启动（先过启动器检测更新，无控制台黑框）
 ├── 启动时之笛助手_调试终端.bat    # 带日志终端启动
+├── launcher.py                   # 轻量前端启动器（启动界面 + 并行热更新调度）
+├── auto_updater.py               # GitHub / Gitee 双源增量代码热更新与 SHA-256 校验
+├── exe_bootstrap.py              # EXE 打包引导入口（运行时直接加载外部纯代码）
 ├── overlay_hud.py                # 桌面悬浮窗 + 全屏安全区分布式微浮窗主程序
 ├── tracker_engine.py             # 175 项判定引擎、主线/限时支线、Boss 图鉴与 3D 坐标计算
 ├── save_reader.py                # 实时内存读取 + 多模拟器存档自动发现
@@ -178,6 +187,8 @@ oot-switch2-tracker/
 ├── win_proc.py                   # Windows 进程探测工具
 ├── portable_config.py            # 便携配置文件读写
 ├── oot_world_db.json             # 175 项收集品 + 隐藏洞 + 区域哈希数据库
+├── version.json                  # 当前代码清单与文件 SHA-256 校验表
+├── triforce.ico                  # 三角神力图标（EXE / 任务栏）
 ├── tracker_config.json           # 默认运行配置
 ├── amiibo_daily_log.json         # 每日 Amiibo 已刷记录（初始为空）
 ├── docs/                         # README 展示图与安全区布局图
