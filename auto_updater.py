@@ -25,6 +25,7 @@ DEFAULT_TIMEOUT = 3.0
 MANAGED_FILES = [
     "launcher.py",
     "auto_updater.py",
+    "triforce_icon.py",
     "overlay_hud.py",
     "tracker_engine.py",
     "save_reader.py",
@@ -33,7 +34,6 @@ MANAGED_FILES = [
     "win_proc.py",
     "portable_config.py",
     "oot_world_db.json",
-    "triforce.ico",
     "启动时之笛助手.bat",
     "启动时之笛助手_调试终端.bat",
 ]

@@ -10,14 +10,13 @@
 
 ## ✨ 核心特性
 
-- **开箱即用瘦启动器 + 纯代码热更新（GitHub / Gitee 双源）**：[GitHub Releases](https://github.com/csszyft/oot-switch2-tracker/releases)（及 [Gitee 镜像](https://gitee.com/csszyf/oot-switch2-tracker)）提供免 Python 压缩包与纯代码轻量源码包（不含截图）。EXE 采用**前后端分离启动器**设计：自带黄金三角神力图标，启动时毫秒级并行检测 GitHub 与 Gitee 上游的纯代码与数据库清单（`version.json`），仅增量拉取有变动的 `.py` / `oot_world_db.json` 文件（SHA-256 校验原子替换），无需重新下载整个 EXE；主界面标题栏亦内置 `🔄` 手动热更新按钮。源码版仅依赖 Windows 自带 Python 3.10–3.13 标准库，无需 `pip install`，不注入游戏进程、不抢夺游戏窗口焦点。
-- **双源自动同步（实时内存 + 存档回退）**：毫秒级轮询 **NX2navi (`ocarina.exe`)**、**Fritchii / Lichii (`lichii.exe`)** 与 **Hookshot (`hookshot.exe`)** 实时内存，无需手动指定目录；未开兼容端或仅排查存档时，自动读取 **Eden / Yuzu / Citron / Suyu / Ryujinx** 存档槽位。实时结合 `Sequence_CurrentBanc` 与 `Sequence_ReservedBootEventName` 裁决位置，跨区传送过场不再滞留旧地名。
-- **175 项全收集精准判定**：完整覆盖 **100 只黄金骷髅蜘蛛、36 块心之碎片、12 首时之笛乐曲、4 个空瓶**，附带 **37 个隐藏洞** 图鉴。结合当前时代（幼年/成年）与已获道具自动拆分为「**当前可补**」与「**缺前置/成年暂不可拿**」，离开区域仍有可补项时自动防漏提醒。
-- **主线导航 + 大戈隆剑限时链 + 防剧透 Boss 图鉴**：主线进度条精确到当前精灵石/贤者奖章并附完整走法；大戈隆剑 11 步交易链在限时阶段自动红色高优先提醒；Boss/中Boss 攻略随推进渐进解锁，进入 Boss 房自动接管左侧栏、击败后基于 `IsBossBattle` 与演出旗标瞬时结束战斗并恢复查漏。
-- **最终决战仪式感界面 & 娜薇（Navi）全分段彩蛋**：进入大魔王加侬多夫 / 高塔崩塌逃离 / 魔兽加侬（夺回大师之剑） / 终局胜利告别四阶段时，自动切换紫金/暗红/凯旋专属配色与全屏微浮窗样式，并以 Switch 2 官中官方译名「娜薇」的口吻弹出开局助威与终局告别彩蛋。
-- **3D 方位与高低差雷达**：实时读取玩家 3D 坐标并计算水平距离与高度差，明确提示「正上方/头顶高墙（开第一人称抬头看）」「正下方/水底」及距离米数。
-- **全屏分布式安全区微浮窗**：检测到游戏全屏时自动切换为顶部胶囊 + 左右安全区微浮窗 + 收集/附近 Toast，严格避开 Switch 2 版游戏四角原生 UI，且窗体鼠标完全穿透。
-- **Amiibo 免菜单直连刷卡**：游戏进入「呼唤 Amiibo」界面时自动弹出选卡列表，内置 **2 张独占面具快切** 与 **24 张每日补给追踪**，直接向游戏传入 `.bin` 卡片数据。
+- **EXE 版与纯源码双版支持（后台自动热更新）**：[GitHub Releases](https://github.com/csszyft/oot-switch2-tracker/releases) 与 [Gitee Releases](https://gitee.com/csszyf/oot-switch2-tracker/releases) 均提供打包版和纯代码版。两版启动均直接进入主界面，并在后台自动检测 GitHub / Gitee 代码更新，有新版时增量同步并重启生效（标题栏也可点 `🔄` 手动检查）。纯源码仅需 Python 3.10–3.13 标准库，无需 `pip install`。
+- **双源自动同步（实时内存 + 存档回退）**：支持 **NX2navi (`ocarina.exe`)**、**Fritchii / Lichii (`lichii.exe`)** 与 **Hookshot (`hookshot.exe`)** 实时内存与存档，以及 **Eden / Yuzu / Citron / Suyu / Ryujinx** 存档槽位，实时识别场景切换与位置坐标。
+- **175 项全收集精准判定**：完整覆盖 **100 只黄金骷髅蜘蛛、36 块心之碎片、12 首乐曲、4 个空瓶** 及 **37 个隐藏洞**，按当前形态与道具拆分为「可补」与「缺前置」，离开区域漏项自动提醒。
+- **主线导航 + 限时支线 + Boss 图鉴**：主线进度实时导航、大戈隆剑限时链高优先提醒、Boss/中Boss 攻略随推进解锁并在开战时自动切换。
+- **3D 方位与高低差雷达**：实时计算当前站位与附近收集品/隐藏洞的距离和高低差方向。
+- **全屏分布式安全区微浮窗**：全屏下自动切换为顶部状态胶囊与左右安全区微浮窗（鼠标穿透），避开游戏四角原生 UI。
+- **Amiibo 直连刷卡**：游戏进入「呼唤 Amiibo」时自动弹出选卡列表，支持 **2 张独占面具快切** 与 **24 张每日补给追踪**。
 
 ---
 
@@ -126,27 +125,22 @@
 
 ## 🚀 快速开始
 
-### 方式一：下载 Release 压缩包直接运行（推荐，无需安装 Python）
-1. 前往本仓库右侧 [**Releases 页面**](https://github.com/csszyft/oot-switch2-tracker/releases)，下载 `OoT-Switch2-Tracker-*-Win64.zip`，解压后获得自带独立目录，双击 **`时之笛进度助手.exe`** 即可运行（所有配置与每日记录均保存在解压目录内）。
-2. 先开助手或先开游戏均可自动探测连接，支持传入 `--minimized` 静默最小化到任务栏启动。
+### 方式一：打包版（免 Python）
+1. 在 [GitHub Releases](https://github.com/csszyft/oot-switch2-tracker/releases) 或 [Gitee Releases](https://gitee.com/csszyf/oot-switch2-tracker/releases) 下载 `OoT-Switch2-Tracker-*-Win64.zip`，解压后双击 **`时之笛进度助手.exe`**。
+2. 支持 `--minimized` 静默最小化启动。
 
-### 方式二：纯源码运行（Python 3.10 ~ 3.13 标准库）
-1. 安装官方标准版 **Python 3.10 ~ 3.13**（[python.org](https://www.python.org/downloads/)），勾选 `Add Python to PATH` 与 `tcl/tk and IDLE`（无需任何 `pip` 第三方库）。
-2. 在 Releases 下载纯源码包 `OoT-Switch2-Tracker-*-Source.zip`（无图片，仅约 500 KB 纯代码）或直接克隆仓库：
+### 方式二：纯源码版（Python 3.10 ~ 3.13）
+1. 安装官方标准版 **Python 3.10 ~ 3.13**（[python.org](https://www.python.org/downloads/)），勾选 `Add Python to PATH` 与 `tcl/tk and IDLE`。
+2. 下载 `OoT-Switch2-Tracker-*-Source.zip` 或克隆仓库：
 ```bash
 git clone https://github.com/csszyft/oot-switch2-tracker.git
 cd oot-switch2-tracker
 ```
-- **正常启动**：直接双击 **`启动时之笛助手.bat`**（无黑框后台运行）。
-- **调试排错**：双击 **`启动时之笛助手_调试终端.bat`**（保留控制台窗口查看实时日志）。
-- **静默最小化启动**：命令行传入 `--minimized` 启动，初始最小化在任务栏，进游戏后由手柄呼出：
-  ```bash
-  pythonw overlay_hud.py --minimized
-  ```
+- **正常启动**：双击 **`启动时之笛助手.bat`**
+- **调试启动**：双击 **`启动时之笛助手_调试终端.bat`**
+- **最小化启动**：`pythonw launcher.py --minimized`
 
 ### 3. 可选配置 (`tracker_config.json`)
-
-默认留空即可自动扫描正在运行的游戏进程与常规目录；如需固定路径或关闭音效，可编辑根目录下的 `tracker_config.json`：
 
 ```json
 {
@@ -162,36 +156,34 @@ cd oot-switch2-tracker
 }
 ```
 
-- `save_dir`：留空自动探测，或手动填入具体存档目录（也可直接把 `slot_00` 等放进本目录下的 `saves/`）。
-- `amiibo_dir`：留空自动探测，或填入 `.bin` 卡片所在文件夹（也可直接放进本目录下的 `amiibo/`）。
-- `slot`：`auto`（自动跟踪最新保存槽位）或指定槽位名。
-- `fs_mode`：`distributed`（全屏分布式避让微浮窗）、`toast_only`（全屏仅提示弹窗）或 `off`（全屏不隐藏）。
-- `auto_update`：是否在启动时并行检测 GitHub / Gitee 纯代码热更新（离线或超时会秒级自动跳过；也可传参 `--no-update`）。
+- `save_dir` / `amiibo_dir`：留空自动探测，或填入路径。
+- `slot`：`auto` 或指定槽位名。
+- `fs_mode`：`distributed` / `toast_only` / `off`。
+- `auto_update`：启动后是否在后台检查 GitHub / Gitee 代码更新（也可传 `--no-update`）。
 
 ---
 
-## 📁 文件结构
+## 📁 目录说明
 
 ```text
 oot-switch2-tracker/
-├── 启动时之笛助手.bat            # 一键启动（先过启动器检测更新，无控制台黑框）
-├── 启动时之笛助手_调试终端.bat    # 带日志终端启动
-├── launcher.py                   # 轻量前端启动器（启动界面 + 并行热更新调度）
-├── auto_updater.py               # GitHub / Gitee 双源增量代码热更新与 SHA-256 校验
-├── exe_bootstrap.py              # EXE 打包引导入口（运行时直接加载外部纯代码）
-├── overlay_hud.py                # 桌面悬浮窗 + 全屏安全区分布式微浮窗主程序
-├── tracker_engine.py             # 175 项判定引擎、主线/限时支线、Boss 图鉴与 3D 坐标计算
-├── save_reader.py                # 实时内存读取 + 多模拟器存档自动发现
-├── gamepad_ctrl.py               # DualSense 触控板 HID + XInput / DirectInput 快捷键监听
-├── amiibo_helper.py              # Amiibo .bin 扫描、每日记录管理与直连刷卡
-├── win_proc.py                   # Windows 进程探测工具
-├── portable_config.py            # 便携配置文件读写
-├── oot_world_db.json             # 175 项收集品 + 隐藏洞 + 区域哈希数据库
-├── version.json                  # 当前代码清单与文件 SHA-256 校验表
-├── triforce.ico                  # 三角神力图标（EXE / 任务栏）
-├── tracker_config.json           # 默认运行配置
-├── amiibo_daily_log.json         # 每日 Amiibo 已刷记录（初始为空）
-├── docs/                         # README 展示图与安全区布局图
-├── saves/                        # 可选手动放置存档目录
-└── amiibo/                       # 可选手动放置 Amiibo .bin 目录
+├── 启动时之笛助手.bat
+├── 启动时之笛助手_调试终端.bat
+├── launcher.py
+├── auto_updater.py
+├── triforce_icon.py
+├── overlay_hud.py
+├── tracker_engine.py
+├── save_reader.py
+├── gamepad_ctrl.py
+├── amiibo_helper.py
+├── win_proc.py
+├── portable_config.py
+├── oot_world_db.json
+├── version.json
+├── tracker_config.json
+├── amiibo_daily_log.json
+├── docs/
+├── saves/
+└── amiibo/
 ```

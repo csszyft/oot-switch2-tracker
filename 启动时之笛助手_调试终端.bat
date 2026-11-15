@@ -20,12 +20,12 @@ if not defined PYC (
         if errorlevel 1 pause
         exit /b %errorlevel%
     )
-    echo [错误] 未检测到 Python 3，请先安装标准版 Python 3.10+。
+    echo [错误] 未检测到 Python 3，请先安装 Python 3.10+。
     pause
     exit /b 1
 )
 
-echo 正在启动时之笛全程助手（调试日志模式）...
+echo 正在启动时之笛进度助手（调试日志模式）...
 "%PYC%" -u "%~dp0%ENTRY%" %*
 if errorlevel 1 (
     echo.

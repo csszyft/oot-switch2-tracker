@@ -1,6 +1,6 @@
 *.py text eol=lf
 *.json text eol=lf
-*.bat text eol=lf
+*.bat binary
 *.md text eol=lf
 *.txt text eol=lf
 *.ico binary

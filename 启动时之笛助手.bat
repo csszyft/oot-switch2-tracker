@@ -25,10 +25,7 @@ if not defined PYW (
         start "" pyw -3 "%~dp0%ENTRY%" %*
         exit /b 0
     )
-    echo [错误] 未在本机检测到 Python 3。
-    echo 请先安装 Python 3.10 或更高版本（https://www.python.org/downloads/），
-    echo 安装时请勾选 "Add Python to PATH" 与 "tcl/tk" 组件。
-    echo 本工具不依赖任何第三方 pip 包，装好标准版 Python 即可直接双击启动。
+    echo [错误] 未检测到 Python 3，请先安装 Python 3.10+ 并勾选 Add Python to PATH 与 tcl/tk。
     pause
     exit /b 1
 )
@@ -36,8 +33,7 @@ if not defined PYW (
 if defined PYC (
     "%PYC%" -c "import tkinter" >nul 2>nul
     if errorlevel 1 (
-        echo [错误] 当前 Python 缺少 tkinter 图形界面组件。
-        echo 请在控制面板修复 Python 安装，确保勾选 "tcl/tk and IDLE"。
+        echo [错误] 当前 Python 缺少 tkinter，请在安装程序修复并勾选 tcl/tk and IDLE。
         pause
         exit /b 1
     )

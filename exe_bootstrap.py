@@ -1,15 +1,14 @@
 """Minimal thin PyInstaller frontend bootloader.
-Pre-bundles Python stdlib + tkinter, ensures external pure-code files exist in APP_DIR,
+Pre-bundles Python stdlib + tkinter, seeds external pure-code files if absent in APP_DIR,
 and dynamically executes APP_DIR/launcher.py so GitHub/Gitee pure-code updates take effect immediately.
 """
-# Explicit stdlib pre-imports so PyInstaller bundles complete stdlib support for hot-updated backend code
 import atexit  # noqa: F401
 import base64  # noqa: F401
 import binascii  # noqa: F401
 import collections  # noqa: F401
 from concurrent.futures import ThreadPoolExecutor, as_completed  # noqa: F401
 import copy  # noqa: F401
-import ctypes  # noqa: F401
+import ctypes
 from ctypes import wintypes  # noqa: F401
 import dataclasses  # noqa: F401
 from datetime import date, datetime  # noqa: F401
@@ -20,7 +19,7 @@ import gzip  # noqa: F401
 import hashlib  # noqa: F401
 import hmac  # noqa: F401
 import importlib  # noqa: F401
-import importlib.util  # noqa: F401
+import importlib.util
 import io  # noqa: F401
 import itertools  # noqa: F401
 import json  # noqa: F401
@@ -39,6 +38,7 @@ import threading  # noqa: F401
 import time  # noqa: F401
 import tkinter as tk  # noqa: F401
 from tkinter import ttk  # noqa: F401
+import traceback  # noqa: F401
 from typing import Any  # noqa: F401
 import urllib.error  # noqa: F401
 import urllib.parse  # noqa: F401

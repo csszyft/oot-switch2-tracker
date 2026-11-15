@@ -26,6 +26,11 @@ try:
 except Exception:
     check_and_apply_updates = None
     load_local_manifest = None
+try:
+    from triforce_icon import apply_win32_triforce_icon, render_triforce_bgra
+except Exception:
+    apply_win32_triforce_icon = None
+    render_triforce_bgra = None
 
 _ext_db = APP_DIR / "oot_world_db.json"
 DB_PATH = _ext_db if _ext_db.is_file() else (BUNDLE_DIR / "oot_world_db.json")
@@ -152,49 +157,11 @@ _user32.GetWindow.argtypes = [wintypes.HWND, wintypes.UINT]
 _user32.GetWindow.restype = wintypes.HWND
 _user32.RedrawWindow.argtypes = [wintypes.HWND, ctypes.c_void_p, ctypes.c_void_p, wintypes.UINT]
 _user32.RedrawWindow.restype = wintypes.BOOL
-_user32.LoadImageW.argtypes = [wintypes.HINSTANCE, wintypes.LPCWSTR, wintypes.UINT, ctypes.c_int, ctypes.c_int, wintypes.UINT]
-_user32.LoadImageW.restype = wintypes.HANDLE
-_user32.SendMessageW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM]
-_user32.SendMessageW.restype = ctypes.c_ssize_t
 _user32.DestroyIcon.argtypes = [wintypes.HICON]
 _user32.DestroyIcon.restype = wintypes.BOOL
-_user32.SetClassLongPtrW.argtypes = [wintypes.HWND, ctypes.c_int, ctypes.c_void_p]
-_user32.SetClassLongPtrW.restype = ctypes.c_void_p
 _WNDENUMPROC = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
 _user32.EnumWindows.argtypes = [_WNDENUMPROC, wintypes.LPARAM]
 _user32.EnumWindows.restype = wintypes.BOOL
-
-
-def _apply_win32_window_icon(hwnd: int, ico_path: Path | None) -> list[int]:
-    """Bind DPI-exact ICON_BIG & ICON_SMALL handles from triforce.ico onto Win32 taskbar HWND."""
-    if not hwnd or not ico_path or not ico_path.is_file():
-        return []
-    handles: list[int] = []
-    try:
-        try:
-            dpi = int(_user32.GetDpiForWindow(hwnd) or 96)
-        except Exception:
-            dpi = 96
-        try:
-            cx_big = int(_user32.GetSystemMetricsForDpi(11, dpi) or 32)
-            cx_sm = int(_user32.GetSystemMetricsForDpi(49, dpi) or 16)
-        except Exception:
-            cx_big = int(_user32.GetSystemMetrics(11) or 32)
-            cx_sm = int(_user32.GetSystemMetrics(49) or 16)
-        ico_s = str(ico_path)
-        h_big = int(_user32.LoadImageW(None, ico_s, 1, cx_big, cx_big, 0x0010) or 0)
-        h_sm = int(_user32.LoadImageW(None, ico_s, 1, cx_sm, cx_sm, 0x0010) or 0)
-        if h_big:
-            handles.append(h_big)
-            _user32.SendMessageW(hwnd, 0x0080, 1, h_big)
-            _user32.SetClassLongPtrW(hwnd, -14, h_big)
-        if h_sm:
-            handles.append(h_sm)
-            _user32.SendMessageW(hwnd, 0x0080, 0, h_sm)
-            _user32.SetClassLongPtrW(hwnd, -34, h_sm)
-    except Exception:
-        pass
-    return handles
 
 
 def _get_top_hwnd(widget: tk.Misc | None) -> int:
@@ -249,19 +216,26 @@ def _make_noactivate_root(win: tk.Misc):
         pass
 
 
-def _make_triforce_icon(win: tk.Tk) -> tk.PhotoImage:
-    """Create a high-contrast 32x32 golden Triforce taskbar icon (zero external .ico dependency)."""
-    img = tk.PhotoImage(master=win, width=32, height=32)
-    img.put("#0E131D", to=(0, 0, 32, 32))
-    img.put("#26324B", to=(0, 0, 32, 1))
-    img.put("#26324B", to=(0, 31, 32, 32))
-    img.put("#26324B", to=(0, 0, 1, 32))
-    img.put("#26324B", to=(31, 0, 32, 32))
-    for dy in range(11):
-        half = (dy * 7) // 10
-        img.put("#F2C968", to=(16 - half, 4 + dy, 16 + half + 1, 5 + dy))
-        img.put("#F2C968", to=(9 - half, 16 + dy, 9 + half + 1, 17 + dy))
-        img.put("#F2C968", to=(23 - half, 16 + dy, 23 + half + 1, 17 + dy))
+def _make_triforce_icon(win: tk.Tk, size: int = 32) -> tk.PhotoImage:
+    """Create a procedural golden Triforce PhotoImage (zero external .ico dependency)."""
+    img = tk.PhotoImage(master=win, width=size, height=size)
+    if render_triforce_bgra is not None:
+        bgra = render_triforce_bgra(size)
+        stride = size * 4
+        rows = []
+        for y in range(size):
+            row = bgra[y * stride : (y + 1) * stride]
+            cols = []
+            for x in range(0, stride, 4):
+                a = row[x + 3] / 255.0
+                r = int(round(row[x + 2] * a + 13 * (1.0 - a)))
+                g = int(round(row[x + 1] * a + 18 * (1.0 - a)))
+                b = int(round(row[x] * a + 24 * (1.0 - a)))
+                cols.append(f"#{r:02x}{g:02x}{b:02x}")
+            rows.append("{" + " ".join(cols) + "}")
+        img.put(" ".join(rows))
+        return img
+    img.put("#0E131D", to=(0, 0, size, size))
     return img
 
 
@@ -591,7 +565,7 @@ ACCENT_PURPLE = "#B48EFF"   # 希卡紫
 
 
 class OoTOverlayHUD:
-    def __init__(self, save_dir: Path | str | None = None, slot: int | str | None = None):
+    def __init__(self, save_dir: Path | str | None = None, slot: int | str | None = None, auto_update: bool = True):
         self._cfg = load_config()
         eff_save_dir = save_dir if save_dir is not None else (self._cfg.get("save_dir") or None)
         eff_slot = slot if slot is not None else self._cfg.get("slot", "auto")
@@ -610,28 +584,13 @@ class OoTOverlayHUD:
             else "1.2.0"
         )
         self._update_busy = False
+        self._auto_update_enabled = bool(auto_update)
         self.root = tk.Tk()
         self.root.title(f"塞尔达传说 时之笛 · 全程查漏与攻略助手 v{self._app_version}")
         self.root.configure(bg=BG)
         self.root.withdraw()
-        self._ico_path: Path | None = None
-        ico_loaded = False
-        try:
-            ico_path = (APP_DIR / "triforce.ico") if (APP_DIR / "triforce.ico").is_file() else (BUNDLE_DIR / "triforce.ico")
-            if ico_path.is_file():
-                self._ico_path = ico_path
-                self.root.iconbitmap(default=str(ico_path))
-                ico_loaded = True
-        except Exception:
-            pass
         self._icon_img = None
         self._hicons: list[int] = []
-        if not ico_loaded:
-            try:
-                self._icon_img = _make_triforce_icon(self.root)
-                self.root.iconphoto(True, self._icon_img)
-            except Exception:
-                self._icon_img = None
         self._wndproc_hwnd = 0
         self._wndproc_old = None
         self._wndproc_cb = None
@@ -729,7 +688,14 @@ class OoTOverlayHUD:
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.root.update_idletasks()
         self._wndproc_hwnd, self._wndproc_old, self._wndproc_cb = _install_borderless_taskbar(self.root)
-        self._hicons = _apply_win32_window_icon(self._wndproc_hwnd, self._ico_path)
+        if apply_win32_triforce_icon is not None:
+            self._hicons = apply_win32_triforce_icon(self._wndproc_hwnd)
+        if not self._hicons:
+            try:
+                self._icon_img = _make_triforce_icon(self.root)
+                self.root.iconphoto(True, self._icon_img)
+            except Exception:
+                self._icon_img = None
         self.root.deiconify()
         self.root.update()
         _set_win_rect(self.root, 30, 40, 468, 640, topmost=self.topmost, show=True)
@@ -768,6 +734,8 @@ class OoTOverlayHUD:
         self._bg_thread.start()
         self._poll()
         self._poll_gamepad()
+        if self._auto_update_enabled and bool(self._cfg.get("auto_update", True)) and check_and_apply_updates is not None:
+            self.root.after(450, lambda: self._check_updates_async(silent=True))
 
     def _bg_state_loop(self):
         """Background worker: reads save/RAM + NFC + evaluates 175 items off the UI thread."""
@@ -913,35 +881,39 @@ class OoTOverlayHUD:
 
     def _restart_after_update(self):
         try:
+            extra = ["--no-update"]
+            if self._user_minimized:
+                extra.append("--minimized")
             if getattr(sys, "frozen", False):
-                cmd = [sys.executable, "--no-update"]
+                cmd = [sys.executable, *extra]
             else:
                 entry = APP_DIR / "launcher.py"
-                cmd = [sys.executable, str(entry if entry.is_file() else Path(__file__).resolve()), "--no-update"]
+                cmd = [sys.executable, str(entry if entry.is_file() else Path(__file__).resolve()), *extra]
             subprocess.Popen(cmd, cwd=str(APP_DIR))
         except Exception:
             return
         self._on_close()
 
-    def _check_updates_async(self):
+    def _check_updates_async(self, silent: bool = False):
         if check_and_apply_updates is None or self._update_busy:
             return
         self._update_busy = True
-        self._show_banner(
-            TrackerAlert("info", "🔄 正在检测 GitHub / Gitee 代码更新…", f"当前版本 v{self._app_version}"),
-            hold_sec=4.0,
-        )
+        if not silent:
+            self._show_banner(
+                TrackerAlert("info", "🔄 正在检测 GitHub / Gitee 代码更新…", f"当前版本 v{self._app_version}"),
+                hold_sec=4.0,
+            )
 
         def _worker():
             res = check_and_apply_updates(APP_DIR, self._cfg, force=False, apply_updates=True)
             try:
-                self.root.after(0, lambda: self._on_update_checked(res))
+                self.root.after(0, lambda: self._on_update_checked(res, silent=silent))
             except Exception:
                 pass
 
         threading.Thread(target=_worker, daemon=True).start()
 
-    def _on_update_checked(self, res):
+    def _on_update_checked(self, res, silent: bool = False):
         self._update_busy = False
         if res.status == "updated":
             src_zh = "Gitee" if res.source == "gitee" else "GitHub"
@@ -949,14 +921,14 @@ class OoTOverlayHUD:
             notes = f"\n更新内容：{res.notes}" if res.notes else ""
             al = TrackerAlert(
                 "good",
-                f"✔ 已从 {src_zh} 热更新至 v{res.remote_version}（{len(res.updated_files)} 文件 / {kb} KB）",
-                f"2 秒后自动重启以加载新版代码…{notes}",
+                f"✔ 后台已热更新至 v{res.remote_version}（{src_zh} · {len(res.updated_files)} 文件 / {kb} KB）",
+                f"即将自动重启加载新版代码…{notes}",
             )
             self._show_banner(al, hold_sec=6.0)
             if self.fs_hidden and self.last_eval:
                 self._show_fs_toast([al], self._fs_monitor_rect, self.last_eval)
-            self.root.after(1600, self._restart_after_update)
-        elif res.status == "up_to_date":
+            self.root.after(1400, self._restart_after_update)
+        elif not silent and res.status == "up_to_date":
             src_zh = "Gitee" if res.source == "gitee" else "GitHub"
             self._show_banner(
                 TrackerAlert(
@@ -966,7 +938,7 @@ class OoTOverlayHUD:
                 ),
                 hold_sec=4.5,
             )
-        else:
+        elif not silent and res.status not in ("disabled", "cancelled"):
             self._show_banner(
                 TrackerAlert(
                     "warn",
@@ -3526,22 +3498,9 @@ class OoTOverlayHUD:
         self.root.mainloop()
 
 
-def main(argv: list[str] | None = None, update_notice: object | None = None):
+def main(argv: list[str] | None = None):
     args = list(sys.argv[1:] if argv is None else argv)
-    hud = OoTOverlayHUD()
-    if update_notice is not None and getattr(update_notice, "status", "") == "updated":
-        src_zh = "Gitee" if getattr(update_notice, "source", "") == "gitee" else "GitHub"
-        files = getattr(update_notice, "updated_files", [])
-        kb = max(1, int(getattr(update_notice, "total_bytes", 0)) // 1024)
-        ver = getattr(update_notice, "remote_version", hud._app_version)
-        notes = getattr(update_notice, "notes", "")
-        al = TrackerAlert(
-            "good",
-            f"🔄 启动前已从 {src_zh} 热更新至 v{ver}（{len(files)} 个文件 / {kb} KB）",
-            notes or "已自动同步最新纯代码与数据库",
-        )
-        hud.alert_history.insert(0, (datetime.now().strftime("%H:%M:%S"), al))
-        hud._show_banner(al, hold_sec=7.0)
+    hud = OoTOverlayHUD(auto_update=("--no-update" not in args))
     if "--minimized" in args:
         hud.root.after(60, hud._minimize_window)
     hud.run()
