@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+*.7z
+*.zip
+*.log
+saves/slot_*
+amiibo/*.bin
+!amiibo/*.txt
+!saves/*.txt

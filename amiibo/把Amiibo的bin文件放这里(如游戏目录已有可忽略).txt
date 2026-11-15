@@ -1,0 +1,5 @@
+本目录用于手动放置 Amiibo 文件（.bin）：
+
+1. 工具默认会自动查找当前运行的 NX2navi（游戏目录\amiibo）或 Fritchii / Lichii / Eden（模拟器目录\user\amiibo）里的 Amiibo 文件，一般不用重复复制。
+2. 如果游戏目录里没有，或者想统一集中管理，把 540 字节的 Amiibo .bin 文件放到这里即可自动识别。
+3. 也可以在上一级的 tracker_config.json 里填写 "amiibo_dir" 指定固定路径。

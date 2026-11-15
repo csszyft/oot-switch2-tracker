@@ -1,0 +1,5 @@
+本目录用于手动放置存档文件：
+
+1. 直接游玩时无需放存档，启动游戏后工具会自动识别 NX2navi (ocarina.exe)、Fritchii / Lichii (lichii.exe)、Eden / Yuzu / Citron / Suyu / Ryujinx 的存档位置和实时内存。
+2. 若想在不打开游戏的情况下离线查看进度，把游戏存档里的 slot_00 ~ slot_05 文件夹（含 progress.sav 与 caption.sav）放进这里即可读取。
+3. 也可以在上一级的 tracker_config.json 里填写 "save_dir" 指定固定存档路径。

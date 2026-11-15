@@ -1,0 +1,4066 @@
+{
+  "locations": {
+    "KokiriForest": "科奇里森林",
+    "InsideTheDekuTree": "德库树长老体内",
+    "LostWood": "迷途森林",
+    "SacredForestMeadow": "森之圣域",
+    "ForestTemple": "森之神殿",
+    "HyruleField": "海拉鲁平原",
+    "LonLonRanch": "荣蓉牧场",
+    "IngoRanch": "印格牧场",
+    "Market": "海拉鲁城邑",
+    "TimeTemple": "时之神殿",
+    "HyruleCastle": "海拉鲁城堡",
+    "GanonCastle": "加侬多夫城堡",
+    "InsideGanonCastle": "加侬多夫城堡内部",
+    "KakarikoVillage": "卡卡利科村",
+    "Graveyard": "墓地",
+    "BottomOfTheWell": "井底",
+    "ShadowTemple": "暗之神殿",
+    "DeathMountainTrail": "死亡之山登山道",
+    "GoronCity": "鼓隆城",
+    "DodongoCavern": "多东哥洞窟",
+    "DeathMountainCrater": "死亡之山火山口",
+    "FireTemple": "火之神殿",
+    "ZoraRiver": "卓拉河",
+    "ZoraDomain": "卓拉领地",
+    "ZoraFountain": "卓拉之泉",
+    "InsideJabuJabuBelly": "加卜加卜大人腹中",
+    "IceCavern": "冰之洞窟",
+    "LakeHylia": "海利亚湖畔",
+    "WaterTemple": "水之神殿",
+    "GerudoValley": "格鲁德之谷",
+    "GerudoFortress": "格鲁德要塞",
+    "GerudoTrainingGround": "格鲁德训练场",
+    "HountedWasteland": "幻影沙漠",
+    "DesertColossus": "巨大邪神像",
+    "SpiritTemple": "魂之神殿",
+    "DreamWorld": "万魔殿"
+  },
+  "location_order": [
+    "KokiriForest",
+    "InsideTheDekuTree",
+    "LostWood",
+    "SacredForestMeadow",
+    "ForestTemple",
+    "HyruleField",
+    "LonLonRanch",
+    "IngoRanch",
+    "Market",
+    "TimeTemple",
+    "HyruleCastle",
+    "GanonCastle",
+    "InsideGanonCastle",
+    "KakarikoVillage",
+    "Graveyard",
+    "BottomOfTheWell",
+    "ShadowTemple",
+    "DeathMountainTrail",
+    "GoronCity",
+    "DodongoCavern",
+    "DeathMountainCrater",
+    "FireTemple",
+    "ZoraRiver",
+    "ZoraDomain",
+    "ZoraFountain",
+    "InsideJabuJabuBelly",
+    "IceCavern",
+    "LakeHylia",
+    "WaterTemple",
+    "GerudoValley",
+    "GerudoFortress",
+    "GerudoTrainingGround",
+    "HountedWasteland",
+    "DesertColossus",
+    "SpiritTemple",
+    "DreamWorld"
+  ],
+  "skulltulas": [
+    {
+      "id": "gs_ecdc46b409ed7d38",
+      "kind": "skulltula",
+      "location": "KokiriForest",
+      "scene": "KokiriForest",
+      "name": "幼年夜间·了解之家后墙面",
+      "flag_type": "b64",
+      "flag_key": 17067594426901953848,
+      "era": "child",
+      "night_only": true,
+      "reqs": [],
+      "pos": [
+        -83.8,
+        117.9,
+        -17.6
+      ]
+    },
+    {
+      "id": "gs_858f5000ad57b2cc",
+      "kind": "skulltula",
+      "location": "KokiriForest",
+      "scene": "KokiriForest",
+      "name": "幼年·商店旁软土放虫子",
+      "flag_type": "b64",
+      "flag_key": 9623998892552467148,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bottle"
+      ],
+      "pos": [
+        8.2,
+        112.6,
+        -23.3
+      ]
+    },
+    {
+      "id": "gs_62c340f0b876c195",
+      "kind": "skulltula",
+      "location": "KokiriForest",
+      "scene": "KokiriForest",
+      "name": "成年夜间·双子屋屋顶（需钩索）",
+      "flag_type": "b64",
+      "flag_key": 7116603238806634901,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        18.0,
+        117.2,
+        18.9
+      ]
+    },
+    {
+      "id": "gs_f2e27d6a27026acf",
+      "kind": "skulltula",
+      "location": "InsideTheDekuTree",
+      "scene": "InsideTheDekuTree",
+      "name": "B1带刺滚木后方房间·西北角高墙藤蔓上（烧掉B1底层蛛网进门，踩开关点火过滚木后爬上西侧平台，抬头看角落藤蔓高墙用弹弓/回旋镖打）",
+      "flag_type": "b64",
+      "flag_key": 17501688996789643983,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "slingshot|boomerang|deku_stick|sword"
+      ],
+      "pos": [
+        -81.9,
+        86.7,
+        -7.4
+      ],
+      "floor": "B1",
+      "room": 11
+    },
+    {
+      "id": "gs_bce05898ce61f1c0",
+      "kind": "skulltula",
+      "location": "InsideTheDekuTree",
+      "scene": "InsideTheDekuTree",
+      "name": "2F弹弓路线中段房间·进门立刻回头看门框正上方藤蔓高墙（踩浮台进门后转身抬头看门顶藤蔓，用弹弓/回旋镖打）",
+      "flag_type": "b64",
+      "flag_key": 13609975487234437568,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "slingshot|boomerang"
+      ],
+      "pos": [
+        -29.8,
+        121.0,
+        13.0
+      ],
+      "floor": "2F",
+      "room": 3
+    },
+    {
+      "id": "gs_fad8931a0011e1d4",
+      "kind": "skulltula",
+      "location": "InsideTheDekuTree",
+      "scene": "InsideTheDekuTree",
+      "name": "B1中心水池房·西侧出水口铁栅栏正上方墙面（站B1岸边面朝西侧铁栅栏抬头看，用弹弓打落爬藤蔓拿或用回旋镖取）",
+      "flag_type": "b64",
+      "flag_key": 18075358844331090388,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "slingshot|boomerang"
+      ],
+      "pos": [
+        -18.1,
+        78.7,
+        -13.0
+      ],
+      "floor": "B1",
+      "room": 4
+    },
+    {
+      "id": "gs_df73f3739cef466b",
+      "kind": "skulltula",
+      "location": "InsideTheDekuTree",
+      "scene": "InsideTheDekuTree",
+      "name": "B1中心水池房·东北角高台炸开裂纹墙隐藏室内（用炸弹炸开B1东北平台裂纹墙，抬头看室内右侧藤蔓高墙用回旋镖取）",
+      "flag_type": "b64",
+      "flag_key": 16101480770659370603,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bomb",
+        "boomerang"
+      ],
+      "pos": [
+        3.3,
+        86.9,
+        1.1
+      ],
+      "floor": "B1",
+      "room": 4
+    },
+    {
+      "id": "gs_8186bcb07d6c2cf9",
+      "kind": "skulltula",
+      "location": "LostWood",
+      "scene": "LostWood",
+      "name": "幼年·科奇里入口左转过木桥区域（或从鼓隆城进：直走→右转→直走穿过入口间往南）软土放虫子",
+      "flag_type": "b64",
+      "flag_key": 9333354743976439033,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bottle"
+      ],
+      "pos": [
+        -33.2,
+        100.2,
+        31.4
+      ]
+    },
+    {
+      "id": "gs_f6fa6ef0ca152948",
+      "kind": "skulltula",
+      "location": "LostWood",
+      "scene": "LostWood",
+      "name": "幼年·森之舞台草坪（科奇里进走右→左→右→左→左 / 鼓隆城进走左→左→左）软土放虫子",
+      "flag_type": "b64",
+      "flag_key": 17796658857969527112,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bottle"
+      ],
+      "pos": [
+        10.9,
+        99.8,
+        -52.1
+      ]
+    },
+    {
+      "id": "gs_3c2b585ac5c0443e",
+      "kind": "skulltula",
+      "location": "LostWood",
+      "scene": "LostWood",
+      "name": "成年·森之舞台草坪高树树干（科奇里进走右→左→右→左→左 / 鼓隆城进走左→左→左，已种魔法豆或长钩索）",
+      "flag_type": "b64",
+      "flag_key": 4335656213162247230,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "longshot|bean_lw01"
+      ],
+      "pos": [
+        14.5,
+        105.9,
+        -56.4
+      ]
+    },
+    {
+      "id": "gs_c8db3346f78ea31b",
+      "kind": "skulltula",
+      "location": "SacredForestMeadow",
+      "scene": "SacredForestMeadow",
+      "name": "成年·迷宫东侧高墙顶侧（需钩索，白天也有）",
+      "flag_type": "b64",
+      "flag_key": 14473218207379268379,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        7.8,
+        107.4,
+        13.2
+      ]
+    },
+    {
+      "id": "gs_99ca89963485df11",
+      "kind": "skulltula",
+      "location": "ForestTemple",
+      "scene": "ForestTemple",
+      "name": "2F入口狼人庭院·进门右侧(东面)藤蔓墙壁最顶端死角（一进神殿大门往右转大仰角抬头看藤蔓最顶处，或爬藤蔓到半空平台用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 11081821111317815057,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        11.3,
+        119.8,
+        64.0
+      ],
+      "floor": "2F",
+      "room": 0
+    },
+    {
+      "id": "gs_f46b1710ed0620d1",
+      "kind": "skulltula",
+      "location": "ForestTemple",
+      "scene": "ForestTemple",
+      "name": "1F中央大厅·北侧升降台旁、通往东走廊石阶右侧的贴顶高墙（站大厅北侧边缘面朝东北抬头看高墙，用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 17612196129225973969,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        8.8,
+        109.6,
+        -23.6
+      ],
+      "floor": "1F",
+      "room": 2
+    },
+    {
+      "id": "gs_984021bc20419ebe",
+      "kind": "skulltula",
+      "location": "ForestTemple",
+      "scene": "ForestTemple",
+      "name": "2F西侧庭院·南面高台石柱与墙壁夹角高处（从2F西走廊推门进西庭院左转看南壁高处，或站东北阳台用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 10970805784153267902,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        -38.1,
+        112.9,
+        -4.4
+      ],
+      "floor": "2F",
+      "room": 12
+    },
+    {
+      "id": "gs_1bf5f0176ef03bda",
+      "kind": "skulltula",
+      "location": "ForestTemple",
+      "scene": "ForestTemple",
+      "name": "2F东侧庭院·东北角独立石柱高台背面内壁（站东庭院北侧平台对东北门上方发光点吹《稻草人之歌》钩索飞过去，抬头看高台内壁用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 2014780391754316762,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "scarecrow",
+        "hookshot"
+      ],
+      "pos": [
+        44.3,
+        112.1,
+        -38.2
+      ],
+      "floor": "2F",
+      "room": 14
+    },
+    {
+      "id": "gs_2aa39f00aaa2d331",
+      "kind": "skulltula",
+      "location": "ForestTemple",
+      "scene": "ForestTemple",
+      "name": "B1 Boss门前地下旋转走廊·推动墙壁转通南侧隐藏小室，进门立刻抬头看右侧高墙凹槽死角（用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 3072474196008424241,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        -3.4,
+        65.6,
+        17.2
+      ],
+      "floor": "B1",
+      "room": 27
+    },
+    {
+      "id": "gs_1e38e8d23596eecf",
+      "kind": "skulltula",
+      "location": "HyruleField",
+      "scene": "HyruleField",
+      "name": "卡卡利科村西门外路口单树（翻滚撞树落下）",
+      "flag_type": "b64",
+      "flag_key": 2177746409373494991,
+      "era": "both",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        70.5,
+        167.4,
+        263.8
+      ]
+    },
+    {
+      "id": "gs_a6a4e87da18fa678",
+      "kind": "skulltula",
+      "location": "HyruleField",
+      "scene": "HyruleField",
+      "name": "荣蓉牧场正后方(西南外墙外紧邻树丛)·地面隐蔽炸弹洞（贴牧场南外墙找地面石洞用【炸弹】炸开跳下，烧蛛网+回旋镖/钩索）",
+      "flag_type": "b64",
+      "flag_key": 12007978132755687032,
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "bomb|hammer",
+        "dins_fire|fire_arrow|deku_stick",
+        "boomerang|hookshot"
+      ],
+      "pos": [
+        -147.9,
+        129.9,
+        322.5
+      ]
+    },
+    {
+      "id": "gs_7d8ec14bdd1f6341",
+      "kind": "skulltula",
+      "location": "HyruleField",
+      "scene": "HyruleField",
+      "name": "成年·荣蓉牧场东南侧平原地洞（需先在幼年进此洞击杀墙上普通蜘蛛，再回成年进来撞碎刷出的木箱）",
+      "flag_type": "b64",
+      "flag_key": 9047381233010434881,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bomb|hammer",
+        "note12_spider_cleared"
+      ],
+      "pos": [
+        56.5,
+        126.3,
+        342.6
+      ]
+    },
+    {
+      "id": "gs_04be4a8ff29f2099",
+      "kind": "skulltula",
+      "location": "LonLonRanch",
+      "scene": "HyruleField",
+      "name": "牧场入口右侧大树（翻滚撞树落下）",
+      "flag_type": "b64",
+      "flag_key": 341792603838029977,
+      "era": "both",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        -39.6,
+        158.2,
+        200.7
+      ]
+    },
+    {
+      "id": "gs_dc8113831c56b194",
+      "kind": "skulltula",
+      "location": "LonLonRanch",
+      "scene": "HyruleField",
+      "name": "幼年夜间·牛棚外侧木窗墙面",
+      "flag_type": "b64",
+      "flag_key": 15889002414176907668,
+      "era": "child",
+      "night_only": true,
+      "reqs": [
+        "boomerang|slingshot|sword"
+      ],
+      "pos": [
+        -63.2,
+        156.4,
+        212.4
+      ]
+    },
+    {
+      "id": "gs_25e6072d4df023b3",
+      "kind": "skulltula",
+      "location": "LonLonRanch",
+      "scene": "HyruleField",
+      "name": "夜间·牧场西侧围栏/塔楼外墙",
+      "flag_type": "b64",
+      "flag_key": 2730878115209290675,
+      "era": "both",
+      "night_only": true,
+      "reqs": [
+        "boomerang|hookshot|slingshot"
+      ],
+      "pos": [
+        -147.4,
+        159.2,
+        268.2
+      ]
+    },
+    {
+      "id": "gs_7c1a05315f83c34d",
+      "kind": "skulltula",
+      "location": "Market",
+      "scene": "Market",
+      "name": "幼年·城门守卫室内打破木箱",
+      "flag_type": "b64",
+      "flag_key": 8942465719711548237,
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        17.4,
+        102.1,
+        58.4
+      ]
+    },
+    {
+      "id": "gs_22c0f7dff5ebb86d",
+      "kind": "skulltula",
+      "location": "HyruleCastle",
+      "scene": "HyruleCastle",
+      "name": "幼年·护城河大树（翻滚撞树）",
+      "flag_type": "b64",
+      "flag_key": 2504273934093629549,
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        -12.4,
+        121.8,
+        -94.9
+      ]
+    },
+    {
+      "id": "gs_7f28485fa5d3688f",
+      "kind": "skulltula",
+      "location": "HyruleCastle",
+      "scene": "HyruleCastle",
+      "name": "幼年·大树旁吹岚之歌开隐藏洞穴",
+      "flag_type": "b64",
+      "flag_key": 9162653017526462607,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "storm_song",
+        "bomb",
+        "boomerang|slingshot"
+      ],
+      "pos": [
+        39.0,
+        101.1,
+        -116.1
+      ]
+    },
+    {
+      "id": "gs_4e13cc311cd04df4",
+      "kind": "skulltula",
+      "location": "GanonCastle",
+      "scene": "GanonCastle",
+      "name": "成年·废墟外墙后拱门高处（需钩索）",
+      "flag_type": "b64",
+      "flag_key": 5626064870824758772,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        78.4,
+        94.1,
+        328.4
+      ]
+    },
+    {
+      "id": "gs_a1632e322c612b97",
+      "kind": "skulltula",
+      "location": "KakarikoVillage",
+      "scene": "KakarikoVillage",
+      "name": "幼年夜间·入口大树（翻滚撞树）",
+      "flag_type": "b64",
+      "flag_key": 11629189455828560791,
+      "era": "child",
+      "night_only": true,
+      "reqs": [],
+      "pos": [
+        -75.0,
+        105.3,
+        2.2
+      ]
+    },
+    {
+      "id": "gs_c3c68d0ac4b85831",
+      "kind": "skulltula",
+      "location": "KakarikoVillage",
+      "scene": "KakarikoVillage",
+      "name": "幼年夜间·蜘蛛屋旁砖墙",
+      "flag_type": "b64",
+      "flag_key": 14107117960174262321,
+      "era": "child",
+      "night_only": true,
+      "reqs": [],
+      "pos": [
+        -60.7,
+        102.1,
+        59.5
+      ]
+    },
+    {
+      "id": "gs_d1cef51cf294fb86",
+      "kind": "skulltula",
+      "location": "KakarikoVillage",
+      "scene": "KakarikoVillage",
+      "name": "幼年夜间·守卫哨所（死亡之山入口）墙面",
+      "flag_type": "b64",
+      "flag_key": 15118290503807073158,
+      "era": "child",
+      "night_only": true,
+      "reqs": [],
+      "pos": [
+        -48.1,
+        110.9,
+        18.4
+      ]
+    },
+    {
+      "id": "gs_d4883a16973b1d06",
+      "kind": "skulltula",
+      "location": "KakarikoVillage",
+      "scene": "KakarikoVillage",
+      "name": "幼年夜间·建筑施工砖墙",
+      "flag_type": "b64",
+      "flag_key": 15314554401574296838,
+      "era": "child",
+      "night_only": true,
+      "reqs": [],
+      "pos": [
+        -29.1,
+        103.1,
+        60.5
+      ]
+    },
+    {
+      "id": "gs_6a8d9b2373d08fcb",
+      "kind": "skulltula",
+      "location": "KakarikoVillage",
+      "scene": "KakarikoVillage",
+      "name": "幼年·英帕家旁梯子爬上瞭望台高墙（妖精弹弓/回旋镖）",
+      "flag_type": "b64",
+      "flag_key": 7677963516305772491,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "slingshot|boomerang"
+      ],
+      "pos": [
+        -73.6,
+        104.5,
+        43.5
+      ]
+    },
+    {
+      "id": "gs_2df265292516bdf0",
+      "kind": "skulltula",
+      "location": "KakarikoVillage",
+      "scene": "KakarikoVillage",
+      "name": "成年夜间·英帕家屋顶侧墙（需钩索）",
+      "flag_type": "b64",
+      "flag_key": 3310819903461047792,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        -38.7,
+        113.7,
+        115.5
+      ]
+    },
+    {
+      "id": "gs_e91f6be796358ffc",
+      "kind": "skulltula",
+      "location": "Graveyard",
+      "scene": "Graveyard",
+      "name": "幼年·墓地左侧软土放虫子",
+      "flag_type": "b64",
+      "flag_key": 16798263777516949500,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bottle"
+      ],
+      "pos": [
+        -12.1,
+        103.4,
+        -12.2
+      ]
+    },
+    {
+      "id": "gs_032f42f523be6425",
+      "kind": "skulltula",
+      "location": "Graveyard",
+      "scene": "Graveyard",
+      "name": "夜间·东侧高墙（幼年回旋镖或成年钩索）",
+      "flag_type": "b64",
+      "flag_key": 229475726653285413,
+      "era": "both",
+      "night_only": true,
+      "reqs": [
+        "boomerang|hookshot"
+      ],
+      "pos": [
+        -20.2,
+        104.3,
+        26.4
+      ]
+    },
+    {
+      "id": "gs_6789388e9fb9c92c",
+      "kind": "skulltula",
+      "location": "BottomOfTheWell",
+      "scene": "BottomOfTheWell",
+      "name": "B1中央十字走廊北端·左侧(西)钥匙门内小室·进门右前方陶罐后的高墙上（先吹岚之歌抽干井水拿钥匙开门，站门口抬头看内壁用回旋镖取）",
+      "flag_type": "b64",
+      "flag_key": 7460556442932201772,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "storm_song",
+        "boomerang"
+      ],
+      "pos": [
+        -8.2,
+        103.8,
+        -31.9
+      ],
+      "floor": "B1",
+      "room": 5
+    },
+    {
+      "id": "gs_a8d6182a5c956e16",
+      "kind": "skulltula",
+      "location": "BottomOfTheWell",
+      "scene": "BottomOfTheWell",
+      "name": "B1中央十字走廊北端·右侧(东)钥匙门内暗坑房·刚进门立刻看左侧墙壁火把旁（别往前走掉坑，站门口朝左上方用回旋镖取）",
+      "flag_type": "b64",
+      "flag_key": 12165938013608963606,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "storm_song",
+        "boomerang"
+      ],
+      "pos": [
+        2.6,
+        103.8,
+        -30.5
+      ],
+      "floor": "B1",
+      "room": 4
+    },
+    {
+      "id": "gs_35fb354fac262d36",
+      "kind": "skulltula",
+      "location": "BottomOfTheWell",
+      "scene": "BottomOfTheWell",
+      "name": "B1外圈东北角铁栅栏内·莱克莱克小室正深处两支火把之间的高墙上（从外圈东北角钻洞拿钥匙开铁门，进门抬头看两火把中间用回旋镖取）",
+      "flag_type": "b64",
+      "flag_key": 3889761319471426870,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "storm_song",
+        "boomerang"
+      ],
+      "pos": [
+        32.0,
+        104.8,
+        -14.9
+      ],
+      "floor": "B1",
+      "room": 7
+    },
+    {
+      "id": "gs_d23a7a2c9eced9ce",
+      "kind": "skulltula",
+      "location": "ShadowTemple",
+      "scene": "ShadowTemple",
+      "name": "B2坠落钉板天花板房·东南侧铁栅栏牢房内17米极高天花板井道顶死角（收齐银卢比进东南铁栅栏门，停在门内开第一人称垂直90度抬头看井道最顶上，用钩索打！）",
+      "flag_type": "b64",
+      "flag_key": 15148554628675590606,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "nocturne",
+        "dins_fire",
+        "hookshot"
+      ],
+      "pos": [
+        33.4,
+        73.8,
+        86.2
+      ],
+      "floor": "B2",
+      "room": 11
+    },
+    {
+      "id": "gs_d7ffbe169189e50d",
+      "kind": "skulltula",
+      "location": "ShadowTemple",
+      "scene": "ShadowTemple",
+      "name": "B3大风扇走廊·第一段风扇区尽头左侧(西面)断崖下沿侧壁死角（过入口移动刺球左转，趁正面大风扇停风走到平台左边缘，低头往对面两石柱下的断崖壁看，用钩索打！）",
+      "flag_type": "b64",
+      "flag_key": 15564367841356014861,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "nocturne",
+        "dins_fire",
+        "hookshot"
+      ],
+      "pos": [
+        75.8,
+        53.4,
+        6.3
+      ],
+      "floor": "B3",
+      "room": 14
+    },
+    {
+      "id": "gs_7a74bc651f9fe024",
+      "kind": "skulltula",
+      "location": "ShadowTemple",
+      "scene": "ShadowTemple",
+      "name": "B3鬼船码头前大厅·爬上西侧高台走过断桥前，对左上方笼形高台吹《稻草人之歌》用钩索登台，在两只陶罐中间的墙壁上",
+      "flag_type": "b64",
+      "flag_key": 8823884712433934372,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "nocturne",
+        "dins_fire",
+        "scarecrow",
+        "hookshot"
+      ],
+      "pos": [
+        104.6,
+        52.0,
+        -39.8
+      ],
+      "floor": "B3",
+      "room": 17
+    },
+    {
+      "id": "gs_8e87908cb035e950",
+      "kind": "skulltula",
+      "location": "ShadowTemple",
+      "scene": "ShadowTemple",
+      "name": "B4鬼船对岸·西南角三座旋转骷髅罐房·绕到三座骷髅罐正背后的北侧贴地墙角死角（走到骷髅罐背后平视北壁用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 10270336409167849808,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "nocturne",
+        "dins_fire",
+        "zelda_lullaby",
+        "hookshot"
+      ],
+      "pos": [
+        -212.3,
+        41.3,
+        -37.4
+      ],
+      "floor": "B4",
+      "room": 20
+    },
+    {
+      "id": "gs_eafe60e592e9a3fb",
+      "kind": "skulltula",
+      "location": "ShadowTemple",
+      "scene": "ShadowTemple",
+      "name": "B2隐形旋转镰刀大厅·东侧铁栅栏内双宝箱小室的正后方东壁上（清掉大厅莱克莱克与蝙蝠开门进小室，越过可见宝箱与隐形宝箱看东墙，用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 16933078188088206331,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "nocturne",
+        "dins_fire",
+        "hookshot"
+      ],
+      "pos": [
+        179.8,
+        62.5,
+        96.9
+      ],
+      "floor": "B2",
+      "room": 31
+    },
+    {
+      "id": "gs_f1d32c06612da232",
+      "kind": "skulltula",
+      "location": "DeathMountainTrail",
+      "scene": "DeathMountainTrail",
+      "name": "幼年·多东哥洞窟入口旁软土放虫子",
+      "flag_type": "b64",
+      "flag_key": 17425319789138387506,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bottle"
+      ],
+      "pos": [
+        -45.5,
+        109.2,
+        -20.2
+      ]
+    },
+    {
+      "id": "gs_04e03ac27985e328",
+      "kind": "skulltula",
+      "location": "DeathMountainTrail",
+      "scene": "DeathMountainTrail",
+      "name": "鼓隆城路口附近·山壁可炸开洞内",
+      "flag_type": "b64",
+      "flag_key": 351345377871782696,
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "bomb|hammer"
+      ],
+      "pos": [
+        -51.2,
+        102.8,
+        27.2
+      ]
+    },
+    {
+      "id": "gs_f5359b24fc86ac22",
+      "kind": "skulltula",
+      "location": "DeathMountainTrail",
+      "scene": "DeathMountainTrail",
+      "name": "成年·山道中段巨石后面（需百万吨锤）",
+      "flag_type": "b64",
+      "flag_key": 17669199296215821346,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hammer"
+      ],
+      "pos": [
+        -31.0,
+        125.1,
+        -18.0
+      ]
+    },
+    {
+      "id": "gs_0b8e43abfa0b5f86",
+      "kind": "skulltula",
+      "location": "DeathMountainTrail",
+      "scene": "DeathMountainTrail",
+      "name": "成年·通往山顶路上的落石区岩石后（需百万吨锤）",
+      "flag_type": "b64",
+      "flag_key": 832677387023638406,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hammer"
+      ],
+      "pos": [
+        3.2,
+        187.3,
+        -111.3
+      ]
+    },
+    {
+      "id": "gs_07e6e21142cc54db",
+      "kind": "skulltula",
+      "location": "GoronCity",
+      "scene": "GoronCity",
+      "name": "幼年·迷宫大厅石壁木箱内（需炸弹开路）",
+      "flag_type": "b64",
+      "flag_key": 569390966671955163,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bomb"
+      ],
+      "pos": [
+        -48.2,
+        113.7,
+        -7.8
+      ]
+    },
+    {
+      "id": "gs_fbbc2d490276c68e",
+      "kind": "skulltula",
+      "location": "GoronCity",
+      "scene": "GoronCity",
+      "name": "成年·中央吊灯平台背面（需钩索）",
+      "flag_type": "b64",
+      "flag_key": 18139423190738716302,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        0.5,
+        113.4,
+        -1.2
+      ]
+    },
+    {
+      "id": "gs_0d53e429a1ef383d",
+      "kind": "skulltula",
+      "location": "DodongoCavern",
+      "scene": "DodongoCavern",
+      "name": "1F东侧小多东哥走廊·北面高处壁龛内（成年站走廊中段面对北侧高台吹《稻草人之歌》召唤稻草人，用钩索飞上去打）",
+      "flag_type": "b64",
+      "flag_key": 960362013021648957,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "scarecrow",
+        "hookshot"
+      ],
+      "pos": [
+        58.2,
+        104.5,
+        -19.9
+      ],
+      "floor": "1F",
+      "room": 2
+    },
+    {
+      "id": "gs_10434342a3917ebd",
+      "kind": "skulltula",
+      "location": "DodongoCavern",
+      "scene": "DodongoCavern",
+      "name": "1F东侧走廊尽头·爬上石阶后的藤蔓墙正中央（清掉3只蝙蝠，抬头看正面藤蔓墙用弹弓/回旋镖打）",
+      "flag_type": "b64",
+      "flag_key": 1171854281537584829,
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "bomb|boomerang|slingshot"
+      ],
+      "pos": [
+        64.0,
+        98.5,
+        15.9
+      ],
+      "floor": "1F",
+      "room": 3
+    },
+    {
+      "id": "gs_758ce7b4868447fb",
+      "kind": "skulltula",
+      "location": "DodongoCavern",
+      "scene": "DodongoCavern",
+      "name": "2F西侧炸弹花大楼梯房·顶部北面藤蔓高墙死角（炸完楼梯爬到2F顶层先别进门，抬头看北壁藤蔓高处；或从2F东门进隔空用回旋镖取）",
+      "flag_type": "b64",
+      "flag_key": 8470399761714006011,
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "boomerang|hookshot"
+      ],
+      "pos": [
+        -48.4,
+        120.3,
+        -40.1
+      ],
+      "floor": "2F",
+      "room": 10
+    },
+    {
+      "id": "gs_3f5b150f16d84603",
+      "kind": "skulltula",
+      "location": "DodongoCavern",
+      "scene": "DodongoCavern",
+      "name": "2F东侧走廊北面炸墙隐藏室·深处内壁（用炸弹炸开裂纹墙进入，看正北墙面）",
+      "flag_type": "b64",
+      "flag_key": 4565265801822094851,
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "bomb"
+      ],
+      "pos": [
+        21.5,
+        112.4,
+        -55.9
+      ],
+      "floor": "2F",
+      "room": 18
+    },
+    {
+      "id": "gs_bdfe13c37f356829",
+      "kind": "skulltula",
+      "location": "DodongoCavern",
+      "scene": "DodongoCavern",
+      "name": "1F大骷髅头嘴内·Boss门前东北侧炸墙隐藏小室·阿莫斯石像正背后的墙壁死角（炸开东壁进入后绕到石像背后看西侧墙面）",
+      "flag_type": "b64",
+      "flag_key": 13690401647626643497,
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "bomb"
+      ],
+      "pos": [
+        -48.8,
+        96.6,
+        -104.2
+      ],
+      "floor": "1F",
+      "room": 20
+    },
+    {
+      "id": "gs_fcd7f04dcf755e8e",
+      "kind": "skulltula",
+      "location": "DeathMountainCrater",
+      "scene": "DeathMountainCrater",
+      "name": "幼年·鼓隆城出口附近木箱内",
+      "flag_type": "b64",
+      "flag_key": 18219295034534354574,
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        -2.9,
+        128.2,
+        48.7
+      ]
+    },
+    {
+      "id": "gs_58c75badf059ca54",
+      "kind": "skulltula",
+      "location": "DeathMountainCrater",
+      "scene": "DeathMountainCrater",
+      "name": "幼年·传送点旁软土放虫子",
+      "flag_type": "b64",
+      "flag_key": 6397182598322965076,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bottle"
+      ],
+      "pos": [
+        3.8,
+        111.2,
+        -0.8
+      ]
+    },
+    {
+      "id": "gs_b0f77b17cfb37458",
+      "kind": "skulltula",
+      "location": "FireTemple",
+      "scene": "FireTemple",
+      "name": "3F滚石迷宫·东侧偏南浅色假墙后的隐藏小室（贴着滚石迷宫东壁找颜色不同且有蜘蛛声的墙壁，用炸弹炸开进去看正对面墙）",
+      "flag_type": "b64",
+      "flag_key": 12751796212121957464,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bolero|hookshot",
+        "bomb"
+      ],
+      "pos": [
+        59.0,
+        148.4,
+        -30.0
+      ],
+      "floor": "3F",
+      "room": 5
+    },
+    {
+      "id": "gs_7f498ada1c2e9c7a",
+      "kind": "skulltula",
+      "location": "FireTemple",
+      "scene": "FireTemple",
+      "name": "5F稻草人顶层圆环室·从4F乘升降台到5F后沿圆环外沿走到东北侧高墙（抬头看圆环东侧墙壁，用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 9172014785497046138,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bolero|hookshot",
+        "scarecrow",
+        "hookshot"
+      ],
+      "pos": [
+        36.6,
+        187.7,
+        -5.2
+      ],
+      "floor": "5F",
+      "room": 8
+    },
+    {
+      "id": "gs_4d1b7e35ca0c6484",
+      "kind": "skulltula",
+      "location": "FireTemple",
+      "scene": "FireTemple",
+      "name": "5F隐藏攀爬层·在3F滚石迷宫北侧高台边缘对上方吹《稻草人之歌》用钩索登4F再乘升降台到5F，刚上去看左侧高墙",
+      "flag_type": "b64",
+      "flag_key": 5556173334779815044,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bolero|hookshot",
+        "scarecrow",
+        "hookshot"
+      ],
+      "pos": [
+        40.0,
+        189.1,
+        -19.8
+      ],
+      "floor": "5F",
+      "room": 7
+    },
+    {
+      "id": "gs_cc175a90e0014905",
+      "kind": "skulltula",
+      "location": "FireTemple",
+      "scene": "FireTemple",
+      "name": "1F入口大厅左侧(西)·达鲁尼亚门前用百万吨锤砸飞石像柱开门，进飞砖房间看正后方北侧墙壁中间",
+      "flag_type": "b64",
+      "flag_key": 14706322686481615109,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bolero|hookshot",
+        "hammer",
+        "hookshot|bow"
+      ],
+      "pos": [
+        11.2,
+        101.5,
+        -43.2
+      ],
+      "floor": "1F",
+      "room": 18
+    },
+    {
+      "id": "gs_5e3ae6a7cf3ac292",
+      "kind": "skulltula",
+      "location": "FireTemple",
+      "scene": "FireTemple",
+      "name": "1F右侧熔岩桥大房间·对东侧高台下的蓝色时间块吹《时之歌》垫脚跳入门内，在莱克莱克旁东壁两支火把中间",
+      "flag_type": "b64",
+      "flag_key": 6789992996625105554,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bolero|hookshot",
+        "song_of_time",
+        "hookshot|bow"
+      ],
+      "pos": [
+        67.7,
+        115.3,
+        -47.0
+      ],
+      "floor": "1F",
+      "room": 19
+    },
+    {
+      "id": "gs_abad0e9f0d471156",
+      "kind": "skulltula",
+      "location": "ZoraRiver",
+      "scene": "ZoraRiver",
+      "name": "幼年·入口阶梯下方河边树",
+      "flag_type": "b64",
+      "flag_key": 12370559827741970774,
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        -54.6,
+        100.6,
+        -11.9
+      ]
+    },
+    {
+      "id": "gs_78ae4fd90b3cfaaa",
+      "kind": "skulltula",
+      "location": "ZoraRiver",
+      "scene": "ZoraRiver",
+      "name": "幼年夜间·通往卓拉领地瀑布前梯子墙",
+      "flag_type": "b64",
+      "flag_key": 8695975724114049706,
+      "era": "child",
+      "night_only": true,
+      "reqs": [
+        "boomerang|slingshot"
+      ],
+      "pos": [
+        112.6,
+        111.8,
+        -48.8
+      ]
+    },
+    {
+      "id": "gs_97824c2ffeaa877c",
+      "kind": "skulltula",
+      "location": "ZoraRiver",
+      "scene": "ZoraRiver",
+      "name": "成年夜间·入口旁高台壁面（需钩索）",
+      "flag_type": "b64",
+      "flag_key": 10917372215719266172,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        -35.0,
+        118.8,
+        12.5
+      ]
+    },
+    {
+      "id": "gs_8325fea55edfbe97",
+      "kind": "skulltula",
+      "location": "ZoraRiver",
+      "scene": "ZoraRiver",
+      "name": "成年夜间·桥附近高崖壁面（需钩索）",
+      "flag_type": "b64",
+      "flag_key": 9450239379321634455,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        76.3,
+        126.8,
+        -46.4
+      ]
+    },
+    {
+      "id": "gs_853b892663c0215d",
+      "kind": "skulltula",
+      "location": "ZoraDomain",
+      "scene": "ZoraDomain",
+      "name": "成年·冰冻瀑布左侧高墙（需钩索，白天也有）",
+      "flag_type": "b64",
+      "flag_key": 9600417828645642589,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        17.3,
+        115.5,
+        2.7
+      ]
+    },
+    {
+      "id": "gs_63446d12663daa83",
+      "kind": "skulltula",
+      "location": "ZoraFountain",
+      "scene": "ZoraFountain",
+      "name": "幼年夜间·树旁原木上（需先交瓶中信开泉+回旋镖）",
+      "flag_type": "b64",
+      "flag_key": 7152962033963346563,
+      "era": "child",
+      "night_only": true,
+      "reqs": [
+        "zora_fountain_child",
+        "boomerang"
+      ],
+      "pos": [
+        14.0,
+        107.8,
+        22.8
+      ]
+    },
+    {
+      "id": "gs_f0dac245e2fc448e",
+      "kind": "skulltula",
+      "location": "ZoraFountain",
+      "scene": "ZoraFountain",
+      "name": "幼年·大树（翻滚撞树，需先给卓拉王瓶中信）",
+      "flag_type": "b64",
+      "flag_key": 17355397719442343054,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "zora_fountain_child"
+      ],
+      "pos": [
+        49.3,
+        110.4,
+        32.0
+      ]
+    },
+    {
+      "id": "gs_845ba51dc18c855e",
+      "kind": "skulltula",
+      "location": "ZoraFountain",
+      "scene": "ZoraFountain",
+      "name": "成年夜间·银护手巨石后秘密小径墙（需银护手+长钩索）",
+      "flag_type": "b64",
+      "flag_key": 9537398183107003742,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "silver_gauntlets",
+        "longshot"
+      ],
+      "pos": [
+        80.0,
+        133.4,
+        12.9
+      ]
+    },
+    {
+      "id": "gs_9c95fd41b89c058a",
+      "kind": "skulltula",
+      "location": "InsideJabuJabuBelly",
+      "scene": "InsideJabuJabuBelly",
+      "name": "B1三坑大厅落洞底层·西侧水母通道拐角的高墙上（从三坑大厅跳洞落到B1，往西侧通道走几步抬头看北面高墙，用回旋镖取）",
+      "flag_type": "b64",
+      "flag_key": 11283202900158580106,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "zora_fountain_child",
+        "boomerang"
+      ],
+      "pos": [
+        -15.4,
+        90.3,
+        -82.9
+      ],
+      "floor": "B1",
+      "room": 3
+    },
+    {
+      "id": "gs_c03f282ff60942b6",
+      "kind": "skulltula",
+      "location": "InsideJabuJabuBelly",
+      "scene": "InsideJabuJabuBelly",
+      "name": "B1三坑大厅落洞底层·北侧绿色触手正后方的墙壁上（先去1F用回旋镖打掉红色触手，再回B1看原绿触手背后的北面墙壁，用回旋镖取）",
+      "flag_type": "b64",
+      "flag_key": 13852835165271311030,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "zora_fountain_child",
+        "boomerang"
+      ],
+      "pos": [
+        -2.2,
+        88.4,
+        -95.0
+      ],
+      "floor": "B1",
+      "room": 3
+    },
+    {
+      "id": "gs_ddd260afb6f2989a",
+      "kind": "skulltula",
+      "location": "InsideJabuJabuBelly",
+      "scene": "InsideJabuJabuBelly",
+      "name": "1F水位升降大厅·南侧藤蔓墙壁上（在底层仰头看南壁藤蔓或踩开关升水位后平视，用回旋镖取）",
+      "flag_type": "b64",
+      "flag_key": 15983944335296207002,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "zora_fountain_child",
+        "boomerang"
+      ],
+      "pos": [
+        38.3,
+        106.1,
+        -49.1
+      ],
+      "floor": "1F",
+      "room": 5
+    },
+    {
+      "id": "gs_9fc92497f014dbd5",
+      "kind": "skulltula",
+      "location": "InsideJabuJabuBelly",
+      "scene": "InsideJabuJabuBelly",
+      "name": "B1 Boss门前房间·西侧贴墙的巨型藤蔓网高处（过章鱼中Boss乘石台下来进入Boss门前房间，转身看西面爬墙藤蔓高处，用回旋镖取）",
+      "flag_type": "b64",
+      "flag_key": 11513774157335944149,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "zora_fountain_child",
+        "boomerang"
+      ],
+      "pos": [
+        17.4,
+        81.7,
+        -59.3
+      ],
+      "floor": "B1",
+      "room": 14
+    },
+    {
+      "id": "gs_63701a2cf70b201c",
+      "kind": "skulltula",
+      "location": "IceCavern",
+      "scene": "IceCavern",
+      "name": "1F旋转冰刃银卢比大厅·西南角冰柱后方的高墙凹槽死角（进大厅往右后方西南角看，在冰柱背后的高墙上，用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 7165255787572043804,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        -1.4,
+        107.2,
+        -6.2
+      ],
+      "floor": "1F",
+      "room": 3
+    },
+    {
+      "id": "gs_165fc0bc0aca1f6c",
+      "kind": "skulltula",
+      "location": "IceCavern",
+      "scene": "IceCavern",
+      "name": "1F东侧蓝火与罗盘冰洞·刚进门右侧(南面)冰柱后方的高墙死角（进东侧冰洞立刻右转抬头看南侧冰壁高处，用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 1612219105489330028,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        83.7,
+        108.3,
+        -0.5
+      ],
+      "floor": "1F",
+      "room": 6
+    },
+    {
+      "id": "gs_cdb49f5d0a67fcf6",
+      "kind": "skulltula",
+      "location": "IceCavern",
+      "scene": "IceCavern",
+      "name": "1F西侧推冰块谜题大厅·东面(刚进门同侧)左侧深渊上方的贴顶高墙死角（站入口左侧或推冰块去东北角，回头大仰角仰望东侧高墙，用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 14822647495538506998,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hookshot"
+      ],
+      "pos": [
+        -18.1,
+        108.7,
+        -16.6
+      ],
+      "floor": "1F",
+      "room": 8
+    },
+    {
+      "id": "gs_61576befd16c499a",
+      "kind": "skulltula",
+      "location": "LakeHylia",
+      "scene": "HyruleField",
+      "name": "幼年·湖畔实验室旁软土放虫子",
+      "flag_type": "b64",
+      "flag_key": 7014193622407727514,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bottle"
+      ],
+      "pos": [
+        -167.7,
+        137.9,
+        413.5
+      ]
+    },
+    {
+      "id": "gs_c1858a4fcd84a28e",
+      "kind": "skulltula",
+      "location": "LakeHylia",
+      "scene": "HyruleField",
+      "name": "幼年夜间·湖畔实验室墙壁",
+      "flag_type": "b64",
+      "flag_key": 13944703896577680014,
+      "era": "child",
+      "night_only": true,
+      "reqs": [
+        "boomerang|slingshot"
+      ],
+      "pos": [
+        -178.3,
+        142.0,
+        426.4
+      ]
+    },
+    {
+      "id": "gs_6689bdebc95368eb",
+      "kind": "skulltula",
+      "location": "LakeHylia",
+      "scene": "HyruleField",
+      "name": "成年·水底实验室池底木箱（需铁靴+钩索）",
+      "flag_type": "b64",
+      "flag_key": 7388645484070660331,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "iron_boots",
+        "hookshot"
+      ],
+      "pos": [
+        -175.1,
+        128.5,
+        415.6
+      ]
+    },
+    {
+      "id": "gs_0af4d6f063d3ae9f",
+      "kind": "skulltula",
+      "location": "LakeHylia",
+      "scene": "HyruleField",
+      "name": "成年夜间·水之神殿小岛枯树上方（需长钩索）",
+      "flag_type": "b64",
+      "flag_key": 789492162651991711,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "longshot"
+      ],
+      "pos": [
+        -197.0,
+        150.3,
+        517.4
+      ]
+    },
+    {
+      "id": "gs_781e0de8eed42373",
+      "kind": "skulltula",
+      "location": "LakeHylia",
+      "scene": "HyruleField",
+      "name": "成年·巨大枯树树干（需已种魔法豆或长钩索，白天也有）",
+      "flag_type": "b64",
+      "flag_key": 8655370827943125875,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "longshot|bean_lh"
+      ],
+      "pos": [
+        -295.6,
+        132.0,
+        597.8
+      ]
+    },
+    {
+      "id": "gs_e03a2965df9f7b30",
+      "kind": "skulltula",
+      "location": "WaterTemple",
+      "scene": "WaterTemple",
+      "name": "1F南侧底层铁栅栏室·内室天花板铁网旁的柱头高墙死角（降干水位走1F南道下到底层，踩开关并贴紧铁栅栏用【回旋斩】隔栏劈水晶开门，进内室抬头看天花板柱头用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 16157272130665282352,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "iron_boots",
+        "zelda_lullaby",
+        "hookshot"
+      ],
+      "pos": [
+        1.4,
+        95.2,
+        0.5
+      ],
+      "floor": "1F",
+      "room": 2
+    },
+    {
+      "id": "gs_a0973706f6415ecd",
+      "kind": "skulltula",
+      "location": "WaterTemple",
+      "scene": "WaterTemple",
+      "name": "3F中央塔内部顶层·西北角贴近天花板的极高内壁死角（升中水位进中央塔吹摇篮曲升至高水位，站塔内顶层平台开第一人称大仰角抬头看天花板下方，必须用长钩索打）",
+      "flag_type": "b64",
+      "flag_key": 11571778270592589517,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "iron_boots",
+        "zelda_lullaby",
+        "longshot"
+      ],
+      "pos": [
+        -1.2,
+        126.0,
+        -7.9
+      ],
+      "floor": "3F",
+      "room": 1
+    },
+    {
+      "id": "gs_02974596f92cf377",
+      "kind": "skulltula",
+      "location": "WaterTemple",
+      "scene": "WaterTemple",
+      "name": "1F北侧Boss钥匙房外滚石急流水道·两道瀑布水流夹角的天花板最顶死角（走1F北门水蜘蛛滚石室→推石块炸墙→喷泉室→Boss钥匙房南门出，穿铁靴站左侧铁栅栏前开第一人称垂直抬头看两股瀑布夹角的天花板顶，用长钩索打！）",
+      "flag_type": "b64",
+      "flag_key": 186694424287048567,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "iron_boots",
+        "zelda_lullaby",
+        "longshot"
+      ],
+      "pos": [
+        18.6,
+        107.5,
+        -65.7
+      ],
+      "floor": "1F",
+      "room": 24
+    },
+    {
+      "id": "gs_d731ea6a04d0fd01",
+      "kind": "skulltula",
+      "location": "WaterTemple",
+      "scene": "WaterTemple",
+      "name": "2F漩涡暗河水道（从3F过黑暗林克拿长钩索后，在宝箱后方对蓝色时间块吹《时之歌》跳下暗河）·河道中段南侧高墙上（穿铁靴顺急流走到第2个漩涡旁或终点铁门前，转身抬头看南侧岩壁高处，用长钩索打）",
+      "flag_type": "b64",
+      "flag_key": 15506432733081566465,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "iron_boots",
+        "zelda_lullaby",
+        "longshot"
+      ],
+      "pos": [
+        -54.5,
+        114.0,
+        -59.3
+      ],
+      "floor": "2F",
+      "room": 21
+    },
+    {
+      "id": "gs_3d0de5adaeb73cc9",
+      "kind": "skulltula",
+      "location": "WaterTemple",
+      "scene": "WaterTemple",
+      "name": "2F东侧中水位裂纹墙隐藏小室·刚进门右侧壁灯旁的墙壁死角（在中央塔升至中水位后去2F东侧走廊用炸弹炸开裂纹墙，一进门立刻向右转头看门边墙壁，用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 4399424945134189769,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "iron_boots",
+        "zelda_lullaby",
+        "bomb",
+        "hookshot"
+      ],
+      "pos": [
+        35.1,
+        112.5,
+        -9.5
+      ],
+      "floor": "2F",
+      "room": 25
+    },
+    {
+      "id": "gs_d3d86d3d6988ed8c",
+      "kind": "skulltula",
+      "location": "GerudoValley",
+      "scene": "GerudoValley",
+      "name": "幼年夜间·木桥尽头右侧墙面（需回旋镖）",
+      "flag_type": "b64",
+      "flag_key": 15265071047503310220,
+      "era": "child",
+      "night_only": true,
+      "reqs": [
+        "boomerang"
+      ],
+      "pos": [
+        50.8,
+        97.4,
+        5.1
+      ]
+    },
+    {
+      "id": "gs_738f5746cc517702",
+      "kind": "skulltula",
+      "location": "GerudoValley",
+      "scene": "GerudoValley",
+      "name": "幼年·桥下水边软土放虫子",
+      "flag_type": "b64",
+      "flag_key": 8326970197618554626,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bottle"
+      ],
+      "pos": [
+        -11.0,
+        48.0,
+        2.4
+      ]
+    },
+    {
+      "id": "gs_a017ce09904c2dce",
+      "kind": "skulltula",
+      "location": "GerudoValley",
+      "scene": "GerudoValley",
+      "name": "成年夜间·断桥西侧帐篷后岩石（骑伊波娜跳桥或用长钩索过桥后，用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 11535915511003753934,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "gerudo_bridge",
+        "hookshot"
+      ],
+      "pos": [
+        -34.5,
+        110.0,
+        10.3
+      ]
+    },
+    {
+      "id": "gs_bc85efca2b222cd9",
+      "kind": "skulltula",
+      "location": "GerudoValley",
+      "scene": "GerudoValley",
+      "name": "成年夜间·断桥西侧石拱门上方（骑伊波娜跳桥或用长钩索过桥后，用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 13584527502619061465,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "gerudo_bridge",
+        "hookshot"
+      ],
+      "pos": [
+        -45.7,
+        106.2,
+        -35.6
+      ]
+    },
+    {
+      "id": "gs_81ed4ed76699e3d8",
+      "kind": "skulltula",
+      "location": "GerudoFortress",
+      "scene": "GerudoFortress",
+      "name": "成年夜间·要塞北侧高墙靶心（从牢房窗台或要塞中层用钩索上去击杀）",
+      "flag_type": "b64",
+      "flag_key": 9362225887419425752,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "gerudo_bridge",
+        "hookshot"
+      ],
+      "pos": [
+        55.3,
+        131.9,
+        -70.2
+      ]
+    },
+    {
+      "id": "gs_b4ece769e6f3a206",
+      "kind": "skulltula",
+      "location": "GerudoFortress",
+      "scene": "GerudoFortress",
+      "name": "成年夜间·东侧骑马射箭场最远端标靶背面（需救出4名木匠取得格鲁德会员证开启后方通路+钩索）",
+      "flag_type": "b64",
+      "flag_key": 13037049463363052038,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "gerudo_card",
+        "hookshot"
+      ],
+      "pos": [
+        181.7,
+        125.6,
+        -88.6
+      ]
+    },
+    {
+      "id": "gs_ceed596f17934971",
+      "kind": "skulltula",
+      "location": "HountedWasteland",
+      "scene": "HountedWasteland",
+      "name": "幻影沙漠·中途石屋内墙壁（需魂之慰灵曲或格鲁德会员证入沙漠+钩索/回旋镖）",
+      "flag_type": "b64",
+      "flag_key": 14910672274965350769,
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "desert_access",
+        "hookshot|boomerang"
+      ],
+      "pos": [
+        16.0,
+        88.8,
+        -99.8
+      ]
+    },
+    {
+      "id": "gs_0341f2c03598c861",
+      "kind": "skulltula",
+      "location": "DesertColossus",
+      "scene": "DesertColossus",
+      "name": "幼年·魂之神殿入口右侧软土放虫子",
+      "flag_type": "b64",
+      "flag_key": 234735562946824289,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bottle",
+        "requiem"
+      ],
+      "pos": [
+        -157.5,
+        95.7,
+        17.2
+      ]
+    },
+    {
+      "id": "gs_9ae3d0ac392e6cda",
+      "kind": "skulltula",
+      "location": "DesertColossus",
+      "scene": "DesertColossus",
+      "name": "夜间·绿洲棕榈树高处（需入沙漠+钩索）",
+      "flag_type": "b64",
+      "flag_key": 11160993739666517210,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "desert_access",
+        "hookshot"
+      ],
+      "pos": [
+        -73.9,
+        105.3,
+        -5.7
+      ]
+    },
+    {
+      "id": "gs_d0f7e5ffa76ba288",
+      "kind": "skulltula",
+      "location": "DesertColossus",
+      "scene": "DesertColossus",
+      "name": "成年夜间·乘邪神像门口幼年种下的魔法豆飞叶跳上东北石台（需入沙漠+已种邪神像魔法豆）",
+      "flag_type": "b64",
+      "flag_key": 15057756765324812936,
+      "era": "adult",
+      "night_only": true,
+      "reqs": [
+        "desert_access",
+        "bean_dc"
+      ],
+      "pos": [
+        -170.1,
+        101.8,
+        -47.9
+      ]
+    },
+    {
+      "id": "gs_9222e742b73d3d2c",
+      "kind": "skulltula",
+      "location": "SpiritTemple",
+      "scene": "SpiritTemple",
+      "name": "1F幼年区·左路过了桥的蝙蝠银卢比铁栅栏房·东侧铁栅栏内壁上（站在铁栅栏外隔着铁网平视东壁，用回旋镖打）",
+      "flag_type": "b64",
+      "flag_key": 10530233152473742636,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "requiem",
+        "boomerang"
+      ],
+      "pos": [
+        -9.6,
+        107.4,
+        -56.0
+      ],
+      "floor": "1F",
+      "room": 4
+    },
+    {
+      "id": "gs_4696b2730de0516c",
+      "kind": "skulltula",
+      "location": "SpiritTemple",
+      "scene": "SpiritTemple",
+      "name": "2F幼年区·爬上藤蔓高墙后的顶层平台·西侧稻草人点对面的破损高墙上（爬到藤蔓最顶层铁甲武士门前，往左侧西壁断墙看，用回旋镖打）",
+      "flag_type": "b64",
+      "flag_key": 5086449036385341804,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "requiem",
+        "boomerang"
+      ],
+      "pos": [
+        -23.1,
+        129.7,
+        -66.7
+      ],
+      "floor": "2F",
+      "room": 7
+    },
+    {
+      "id": "gs_b3d9f353599eea53",
+      "kind": "skulltula",
+      "location": "SpiritTemple",
+      "scene": "SpiritTemple",
+      "name": "2F幼年区·爬藤蔓高墙前的底层大厅·东北角飞天罐后方的立柱背面死角（先别爬藤蔓墙！在底层东侧清掉飞天罐，绕看东北角柱子侧面墙壁，用回旋镖打）",
+      "flag_type": "b64",
+      "flag_key": 12959656942046734931,
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "requiem",
+        "boomerang"
+      ],
+      "pos": [
+        14.7,
+        115.2,
+        -68.8
+      ],
+      "floor": "2F",
+      "room": 7
+    },
+    {
+      "id": "gs_70b0fca66ca4808a",
+      "kind": "skulltula",
+      "location": "SpiritTemple",
+      "scene": "SpiritTemple",
+      "name": "1F成年区·东侧滚石银卢比大厅·西北角蓝色时间块后方的隐藏壁龛内（站到西北角蓝色方块前吹《时之歌》消掉时间块，平视壁龛内墙用钩索打）",
+      "flag_type": "b64",
+      "flag_key": 8120267919866495114,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "desert_access",
+        "song_of_time",
+        "hookshot"
+      ],
+      "pos": [
+        39.0,
+        104.2,
+        -62.9
+      ],
+      "floor": "1F",
+      "room": 15
+    },
+    {
+      "id": "gs_8c8bb95471d20d02",
+      "kind": "skulltula",
+      "location": "SpiritTemple",
+      "scene": "SpiritTemple",
+      "name": "3F成年区·巨像大厅西侧高台·西侧铁门正上方的壁灯顶死角（站在巨像右手掌或西侧3F平台抬头看西侧门框正上方壁灯处，用长钩索打）",
+      "flag_type": "b64",
+      "flag_key": 10127391959410674946,
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "desert_access",
+        "silver_gauntlets",
+        "longshot"
+      ],
+      "pos": [
+        -55.7,
+        136.6,
+        -7.3
+      ],
+      "floor": "3F",
+      "room": 10
+    }
+  ],
+  "heart_pieces": [
+    {
+      "id": "hp_lw_skullkid",
+      "kind": "heart_piece",
+      "location": "LostWood",
+      "name": "对骷髅小子吹奏莎莉亚之歌",
+      "flag_type": "bool",
+      "flag_key": 1610066480,
+      "flag_name": "Npc_SkullKid_Child_IsGetHeartPiece",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "saria"
+      ],
+      "pos": [
+        -34.0,
+        104.5,
+        -3.7
+      ]
+    },
+    {
+      "id": "hp_lw_memory",
+      "kind": "heart_piece",
+      "location": "LostWood",
+      "name": "森林深处两只骷髅小子记忆演奏游戏",
+      "flag_type": "bool",
+      "flag_key": 374855640,
+      "flag_name": "Minigame_SkullKidSession_IsGetHeartPiece",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "ocarina"
+      ],
+      "pos": [
+        48.8,
+        98.3,
+        16.0
+      ]
+    },
+    {
+      "id": "hp_hf_scrub",
+      "kind": "heart_piece",
+      "location": "HyruleField",
+      "name": "卡卡利科村西门外单树旁·地面隐蔽炸弹洞内德库商人（成年先在洞外读发光笔记得暗号「卖点东西呗」，幼年用【炸弹】炸洞下去10卢比买）",
+      "flag_type": "bool",
+      "flag_key": 3827176855,
+      "flag_name": "HyruleField_Enemy_Scrub_Business_HeartPiece_01",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bomb|hammer",
+        "note07_password"
+      ],
+      "pos": [
+        39.9,
+        152.4,
+        26.6
+      ]
+    },
+    {
+      "id": "hp_hf_fence",
+      "kind": "heart_piece",
+      "location": "HyruleField",
+      "name": "格鲁德之谷路口/牧场西侧平原·巨石旁隐蔽炸弹洞水底宝箱（【炸弹/百万吨锤】炸开石盖跳下，用铁靴或金鳞片潜底）",
+      "flag_type": "bool",
+      "flag_key": 3667787564,
+      "flag_name": "0xda9dff2c",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "bomb|hammer",
+        "iron_boots|gold_scale"
+      ],
+      "pos": [
+        -213.4,
+        133.4,
+        138.4
+      ]
+    },
+    {
+      "id": "hp_mkt_dog",
+      "kind": "heart_piece",
+      "location": "Market",
+      "name": "夜晚帮小巷女士找回小狗理查德",
+      "flag_type": "bool",
+      "flag_key": 4076516624,
+      "flag_name": "SubEvent_FindRichard_GetHeartPiece",
+      "era": "child",
+      "night_only": true,
+      "reqs": [],
+      "pos": [
+        1.7,
+        100.1,
+        26.6
+      ]
+    },
+    {
+      "id": "hp_mkt_chest",
+      "kind": "heart_piece",
+      "location": "Market",
+      "name": "夜晚宝箱屋小游戏（需井底【真实眼镜】透视必中；非真实面具）",
+      "flag_type": "any_bool",
+      "flag_key": [
+        3046747885,
+        1847301288
+      ],
+      "flag_name": "MiniGame_ChoiceTreasure_IsClear",
+      "era": "child",
+      "night_only": true,
+      "reqs": [
+        "lens_truth"
+      ],
+      "pos": [
+        -62.9,
+        110.7,
+        12.6
+      ]
+    },
+    {
+      "id": "hp_mkt_bowling",
+      "kind": "heart_piece",
+      "location": "Market",
+      "name": "炸弹鼠保龄球小游戏赢第 3 次奖品（需有炸弹袋）",
+      "flag_type": "bool",
+      "flag_key": 1640987553,
+      "flag_name": "MiniGame_BombchuBowling_ClearThirdTime",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bomb"
+      ],
+      "pos": [
+        -22.0,
+        110.0,
+        9.2
+      ]
+    },
+    {
+      "id": "hp_llr_shed",
+      "kind": "heart_piece",
+      "location": "LonLonRanch",
+      "name": "幼年·牧场西南角牛棚推开木箱钻洞",
+      "flag_type": "b64",
+      "flag_key": 9814903750835309225,
+      "flag_name": "0x88358af5b5300aa9",
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        -157.2,
+        150.9,
+        266.4
+      ]
+    },
+    {
+      "id": "hp_kak_cow",
+      "kind": "heart_piece",
+      "location": "KakarikoVillage",
+      "name": "英帕家后方牛棚笼内（从死亡之山山顶抓猫头鹰飞降到村南英帕家屋顶后跳进笼窗，或抱鸡高处滑行）",
+      "flag_type": "b64",
+      "flag_key": 17926402522258180222,
+      "flag_name": "0xf8c7601da7dd887e",
+      "era": "both",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        -44.1,
+        108.0,
+        112.0
+      ]
+    },
+    {
+      "id": "hp_kak_windmill",
+      "kind": "heart_piece",
+      "location": "KakarikoVillage",
+      "name": "风车小屋高台上（成年从墓地丹培赛跑终点门出来直接拿；注：回旋镖无法隔空拿心之碎片）",
+      "flag_type": "b64",
+      "flag_key": 13389209437182306002,
+      "flag_name": "0xb9d0070b468f26d2",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        1.5,
+        108.9,
+        37.5
+      ]
+    },
+    {
+      "id": "hp_kak_roof",
+      "kind": "heart_piece",
+      "location": "KakarikoVillage",
+      "name": "村北屋顶上的男子（抱鸡从高处滑翔，或爬旁边的瞭望塔侧跳过去；成年可直接用钩索/长钩索勾屋顶）",
+      "flag_type": "bool",
+      "flag_key": 2791750312,
+      "flag_name": "Npc_Hylia_001_IsGetHeartPiece",
+      "era": "both",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        -36.1,
+        107.5,
+        29.0
+      ]
+    },
+    {
+      "id": "hp_kak_50skulls",
+      "kind": "heart_piece",
+      "location": "KakarikoVillage",
+      "name": "蜘蛛屋收集满 50 只黄金骷髅蜘蛛的证明奖励",
+      "flag_type": "any_bool",
+      "flag_key": [
+        3821462691,
+        2245529914
+      ],
+      "flag_name": "KakarikoVillage_GatheringTokenGold_GetReward50",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "tokens_50"
+      ],
+      "pos": [
+        -27.8,
+        103.2,
+        80.6
+      ]
+    },
+    {
+      "id": "hp_gy_dig",
+      "kind": "heart_piece",
+      "location": "Graveyard",
+      "name": "幼年夜晚·丹培掘墓游览随机挖出",
+      "flag_type": "bool",
+      "flag_key": 3037888117,
+      "flag_name": "GraveYard_DiggingHoleTour_Drop_HeartPiece",
+      "era": "child",
+      "night_only": true,
+      "reqs": [],
+      "pos": [
+        -4.6,
+        103.1,
+        -1.8
+      ]
+    },
+    {
+      "id": "hp_gy_race",
+      "kind": "heart_piece",
+      "location": "Graveyard",
+      "name": "成年·丹培墓室赛跑 1 分钟内到达终点",
+      "flag_type": "any_bool",
+      "flag_key": [
+        1516654908,
+        2201084167
+      ],
+      "flag_name": "UnderTheGrave_DampeRace_HeartGeted",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        -5.4,
+        103.9,
+        -13.3
+      ]
+    },
+    {
+      "id": "hp_gy_redead",
+      "kind": "heart_piece",
+      "location": "Graveyard",
+      "name": "东排最南端靠近崖壁大树的墓碑拉开跳下直接开宝箱（非僵尸海利亚盾那个）",
+      "flag_type": "bool",
+      "flag_key": 2626274661,
+      "flag_name": "0x9c89c565",
+      "era": "both",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        21.4,
+        105.1,
+        23.2
+      ]
+    },
+    {
+      "id": "hp_gy_bean",
+      "kind": "heart_piece",
+      "location": "Graveyard",
+      "name": "幼年墓地软土种魔法豆，成年坐飞叶到高台木箱",
+      "flag_type": "b64",
+      "flag_key": 2157466067026784951,
+      "flag_name": "0x1df0dbf50c1732b7",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bean_gy"
+      ],
+      "pos": [
+        -16.6,
+        108.0,
+        -8.9
+      ]
+    },
+    {
+      "id": "hp_dmt_cavern",
+      "kind": "heart_piece",
+      "location": "DeathMountainTrail",
+      "name": "多东哥洞窟入口正上方崖壁（幼年在洞口前软土种魔法豆，成年乘飞叶上去）",
+      "flag_type": "b64",
+      "flag_key": 715147239509454487,
+      "flag_name": "0x9ecb6a0150fee97",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bean_dmt"
+      ],
+      "pos": [
+        -39.7,
+        122.2,
+        -26.0
+      ]
+    },
+    {
+      "id": "hp_gc_pot",
+      "kind": "heart_piece",
+      "location": "GoronCity",
+      "name": "幼年点亮底部火把并向旋转大罐中投入炸弹",
+      "flag_type": "bool",
+      "flag_key": 488084457,
+      "flag_name": "GoronLargePot_IsGetHeartPiece",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bomb",
+        "deku_stick|dins_fire"
+      ],
+      "pos": [
+        0.0,
+        105.5,
+        0.0
+      ]
+    },
+    {
+      "id": "hp_dmc_wall",
+      "kind": "heart_piece",
+      "location": "DeathMountainCrater",
+      "name": "火山口通往火之神殿入口前崖壁爬下凹室",
+      "flag_type": "b64",
+      "flag_key": 744856631664786545,
+      "flag_name": "0xa564328faf93c71",
+      "era": "both",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        -17.5,
+        127.2,
+        3.9
+      ]
+    },
+    {
+      "id": "hp_dmc_volcano",
+      "kind": "heart_piece",
+      "location": "DeathMountainCrater",
+      "name": "幼年传送点种魔法豆，成年乘飞叶上火山口顶",
+      "flag_type": "b64",
+      "flag_key": 10331043360028932045,
+      "flag_name": "0x8f5f3d3321aeb7cd",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bean_dmc",
+        "bolero"
+      ],
+      "pos": [
+        -0.5,
+        116.8,
+        32.3
+      ]
+    },
+    {
+      "id": "hp_dmc_scrub",
+      "kind": "heart_piece",
+      "location": "DeathMountainCrater",
+      "name": "幼年·火山口内洞穴巨石后营业德库商人购买（10卢比，需炸弹/百万吨锤破石）",
+      "flag_type": "bool",
+      "flag_key": 1804584785,
+      "flag_name": "DeathMountain_Enemy_Scrub_Business_HeartPiece_01",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bomb|hammer"
+      ],
+      "pos": [
+        -23.0,
+        121.1,
+        33.0
+      ]
+    },
+    {
+      "id": "hp_zr_pillar",
+      "kind": "heart_piece",
+      "location": "ZoraRiver",
+      "name": "入口大石柱顶（幼年抱鸡飞跃，成年无鸡需浮空靴）",
+      "flag_type": "b64",
+      "flag_key": 11455676800795329345,
+      "flag_name": "0x9efabd5b0516c341",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "child|hover_boots"
+      ],
+      "pos": [
+        -4.0,
+        111.4,
+        -34.3
+      ]
+    },
+    {
+      "id": "hp_zr_ledge",
+      "kind": "heart_piece",
+      "location": "ZoraRiver",
+      "name": "通往卓拉领地瀑布前左侧高台（幼年抱鸡飞跃，成年无鸡需浮空靴）",
+      "flag_type": "b64",
+      "flag_key": 4189391771527808272,
+      "flag_name": "0x3a23b59eaedc0510",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "child|hover_boots"
+      ],
+      "pos": [
+        99.5,
+        120.1,
+        -61.7
+      ]
+    },
+    {
+      "id": "hp_zr_frog1",
+      "kind": "heart_piece",
+      "location": "ZoraRiver",
+      "name": "幼年·对河边青蛙吹奏岚之歌",
+      "flag_type": "bool",
+      "flag_key": 3581468565,
+      "flag_name": "MiniGame_FrogTenors_StormSong",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "storm_song"
+      ],
+      "pos": [
+        9.0,
+        101.9,
+        -50.9
+      ]
+    },
+    {
+      "id": "hp_zr_frog2",
+      "kind": "heart_piece",
+      "location": "ZoraRiver",
+      "name": "幼年·对青蛙吹完 5 首常驻曲后的虫子合唱小游戏",
+      "flag_type": "any_bool",
+      "flag_key": [
+        987485528,
+        2415839079
+      ],
+      "flag_name": "MiniGame_FrogTenors_InsectRepellent_ClearAfter",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "zelda_lullaby",
+        "epona",
+        "saria",
+        "sun_song",
+        "song_of_time"
+      ],
+      "pos": [
+        9.0,
+        101.9,
+        -50.9
+      ]
+    },
+    {
+      "id": "hp_zd_torch",
+      "kind": "heart_piece",
+      "location": "ZoraDomain",
+      "name": "幼年·从王座取火依次点亮瀑布下及水底火把",
+      "flag_type": "any_bool",
+      "flag_key": [
+        3701553066,
+        2707918553
+      ],
+      "flag_name": "HavePlayedEvent.TreasureBoxAppear_Magic_Big_Distance",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "deku_stick"
+      ],
+      "pos": [
+        28.8,
+        100.5,
+        -4.9
+      ]
+    },
+    {
+      "id": "hp_zf_iceberg",
+      "kind": "heart_piece",
+      "location": "ZoraFountain",
+      "name": "成年·浮冰上直接拾取",
+      "flag_type": "b64",
+      "flag_key": 12406896586250888098,
+      "flag_name": "0xac2e26b5ec7da3a2",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        85.0,
+        103.1,
+        -34.8
+      ]
+    },
+    {
+      "id": "hp_zf_underwater",
+      "kind": "heart_piece",
+      "location": "ZoraFountain",
+      "name": "成年·冰之洞窟外水底（需铁靴+卓拉服）",
+      "flag_type": "b64",
+      "flag_key": 8030885465575590602,
+      "flag_name": "0x6f736fc80f7b0aca",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "iron_boots",
+        "zora_tunic"
+      ],
+      "pos": [
+        56.9,
+        70.9,
+        -27.4
+      ]
+    },
+    {
+      "id": "hp_lh_roof",
+      "kind": "heart_piece",
+      "location": "LakeHylia",
+      "name": "湖畔实验室屋顶（幼年种魔法豆，成年乘飞叶或钩索稻草人）",
+      "flag_type": "b64",
+      "flag_key": 13469300937852836203,
+      "flag_name": "0xbaec91d6ed8dd96b",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bean_lh|scarecrow"
+      ],
+      "pos": [
+        -180.6,
+        163.1,
+        425.0
+      ]
+    },
+    {
+      "id": "hp_lh_dive",
+      "kind": "heart_piece",
+      "location": "LakeHylia",
+      "name": "在湖畔实验室水池潜到底（需金鳞片或铁靴）",
+      "flag_type": "any_bool",
+      "flag_key": [
+        2910462414,
+        274911397
+      ],
+      "flag_name": "Npc_Hylia_045_HasDived",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "gold_scale|iron_boots"
+      ],
+      "pos": [
+        -174.4,
+        138.0,
+        418.0
+      ]
+    },
+    {
+      "id": "hp_lh_fish",
+      "kind": "heart_piece",
+      "location": "LakeHylia",
+      "name": "幼年·钓鱼池钓到超过 50cm 的大鱼（≥51cm，勿用沉水假饵）",
+      "flag_type": "bool",
+      "flag_key": 4052295534,
+      "flag_name": "MiniGame_Fishing_GetHeartPiece",
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        -98.8,
+        134.8,
+        493.3
+      ]
+    },
+    {
+      "id": "hp_gv_crate",
+      "kind": "heart_piece",
+      "location": "GerudoValley",
+      "name": "峡谷南侧峭壁木箱下方平台（幼年抱鸡飞过去，或成年用长钩索）",
+      "flag_type": "bool",
+      "flag_key": 1879175548,
+      "flag_name": "0x7001f17c",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "child|longshot"
+      ],
+      "pos": [
+        -9.8,
+        90.4,
+        35.0
+      ]
+    },
+    {
+      "id": "hp_gv_waterfall",
+      "kind": "heart_piece",
+      "location": "GerudoValley",
+      "name": "瀑布后方高台梯子顶（幼年抱鸡跳过瀑布，或成年跳河游过去爬梯）",
+      "flag_type": "b64",
+      "flag_key": 16129198288828948135,
+      "flag_name": "0xdfd66c63357cdea7",
+      "era": "both",
+      "night_only": false,
+      "reqs": [],
+      "pos": [
+        4.9,
+        59.2,
+        -78.2
+      ]
+    },
+    {
+      "id": "hp_gf_roof",
+      "kind": "heart_piece",
+      "location": "GerudoFortress",
+      "name": "成年·要塞最顶部宝箱（从牢房窗台或要塞顶层吹稻草人之歌用钩索，或穿浮空靴助跑跳上）",
+      "flag_type": "bool",
+      "flag_key": 1755114472,
+      "flag_name": "0x689cebe8",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "gerudo_bridge",
+        "scarecrow",
+        "hookshot"
+      ],
+      "pos": [
+        29.0,
+        131.5,
+        -93.7
+      ]
+    },
+    {
+      "id": "hp_gf_archery",
+      "kind": "heart_piece",
+      "location": "GerudoFortress",
+      "name": "成年·骑马射箭达到 1000 分（需先救出4名木匠取得格鲁德会员证开启东侧射箭场，并骑伊波娜射箭）",
+      "flag_type": "bool",
+      "flag_key": 1061364827,
+      "flag_name": "MiniGame_HorsebackArchery_GotaHeart",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "gerudo_card",
+        "epona_adult",
+        "bow"
+      ],
+      "pos": [
+        70.5,
+        115.0,
+        37.4
+      ]
+    },
+    {
+      "id": "hp_dc_arch",
+      "kind": "heart_piece",
+      "location": "DesertColossus",
+      "name": "幼年魂之神殿门口种魔法豆，成年乘飞叶至巨大石拱门顶",
+      "flag_type": "b64",
+      "flag_key": 10592092054086534681,
+      "flag_name": "0x92feab9a9810c619",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bean_dc",
+        "requiem"
+      ],
+      "pos": [
+        -137.1,
+        103.5,
+        10.5
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "q_kokiri_sword",
+      "kind": "quest",
+      "location": "KokiriForest",
+      "name": "取得【科克里之剑】",
+      "flag_type": "bool",
+      "flag_key": 1079872015,
+      "flag_name": "IsGet.Weapon_Sword_Kokiri",
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "guide": "从科奇里森林西南角“懂事屋”旁的小矮洞钻入，避开滚石在迷宫尽头宝箱取得。"
+    },
+    {
+      "id": "q_deku_shield",
+      "kind": "quest",
+      "location": "KokiriForest",
+      "name": "购买【德库盾】（40卢比）",
+      "flag_type": "bool",
+      "flag_key": 1377294878,
+      "flag_name": "IsGet.Weapon_Shield_Deku",
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "guide": "凑够40卢比后进入森林东侧上方木屋商店购买；迷途森林德库商人也可更便宜买到。"
+    },
+    {
+      "id": "q_lw_saria",
+      "kind": "quest",
+      "location": "SacredForestMeadow",
+      "name": "与莎莉亚学习【莎莉亚之歌】",
+      "flag_type": "bool",
+      "flag_key": 3556294604,
+      "flag_name": "IsGet.Item_Melody_SariaSong",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "zelda_letter"
+      ],
+      "guide": "从【科奇里森林】进迷途森林按【右→左→右→左→直走→左→右】；若从【鼓隆城】捷径进则按【左→左→直走→左→右】（秘诀：听音乐声最大的树洞走）。"
+    },
+    {
+      "id": "q_lw_skullmask_stage",
+      "kind": "quest",
+      "location": "LostWood",
+      "name": "戴【骷髅面具】给森之舞台（升级德库木棒上限）",
+      "flag_type": "bool",
+      "flag_key": 1571875053,
+      "flag_name": "LostWood_ScrubForestStage_SkullMaskEventLaunched",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "mask_skull"
+      ],
+      "guide": "到蝶群+魔法豆草坪（科奇里进走【右→左→右→左→左】 / 鼓隆城捷径进走【左→左→左】），贴角落草丛落洞即是森之舞台，戴骷髅面具站光圈前。"
+    },
+    {
+      "id": "q_lw_truthmask_stage",
+      "kind": "quest",
+      "location": "LostWood",
+      "name": "戴【真实面具】给森之舞台（升级德库坚果上限）",
+      "flag_type": "bool",
+      "flag_key": 3455609923,
+      "flag_name": "LostWood_ScrubForestStage_TrueMaskEventLaunched",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "mask_truth"
+      ],
+      "guide": "到蝶群草坪（科奇里进走【右→左→右→左→左】 / 鼓隆城捷径进走【左→左→左】）落洞进森之舞台，戴真实面具站光圈前升级德库坚果上限。"
+    },
+    {
+      "id": "q_lw_stick_scrub",
+      "kind": "quest",
+      "location": "LostWood",
+      "name": "迷途森林·桥下营业德库商人购买【德库木棒上限升级】",
+      "flag_type": "bool",
+      "flag_key": 2358824794,
+      "flag_name": "LostWood_Enemy_Scrub_Business_DekuStickPouch_01",
+      "era": "both",
+      "night_only": false,
+      "reqs": [],
+      "guide": "科奇里入口第1间直接向【左】走过独奏木桩后向南（若从鼓隆城捷径进：出洞直走→右转→直走穿过入口间向南），桥下用盾弹回坚果后花40卢比购买。"
+    },
+    {
+      "id": "q_lw_nut_scrub",
+      "kind": "quest",
+      "location": "LostWood",
+      "name": "迷途森林·隐藏洞穴营业德库商人购买【德库坚果上限升级】",
+      "flag_type": "bool",
+      "flag_key": 1592936345,
+      "flag_name": "Lostwood_Enemy_Scrub_Business_DekuNutsPouch_01",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "bomb|hammer"
+      ],
+      "guide": "到圣域门前一间（科奇里进走【右→左→右→左→直走→左】 / 鼓隆城捷径进走【左→左→直走→左】），炸开/敲开地面岩石落洞用盾反弹坚果购买升级。"
+    },
+    {
+      "id": "q_hc_zelda_lullaby",
+      "kind": "quest",
+      "location": "HyruleCastle",
+      "name": "潜入城堡见塞尔达学习【塞尔达摇篮曲】并拿【塞尔达的信】",
+      "flag_type": "bool",
+      "flag_key": 29491202,
+      "flag_name": "IsGet.Item_Melody_ZeldaLullaby",
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "guide": "白天走城堡外墙藤蔓+护城河跳过守卫潜入内院花园，与塞尔达公主对话即可学曲并拿信。"
+    },
+    {
+      "id": "q_hc_magic_spin",
+      "kind": "quest",
+      "location": "HyruleCastle",
+      "name": "炸开城堡门旁岩石拜访大妖精【魔力槽+大回旋斩】",
+      "flag_type": "any_bool",
+      "flag_key": [
+        2972749939,
+        2409783438
+      ],
+      "flag_name": "['IsGet.Item_FairyBless_MP', 'HavePlayedEvent.Dm_FairyFountain_Power']",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "bomb",
+        "zelda_lullaby"
+      ],
+      "guide": "在海拉鲁城堡外围（过木门后沿右侧墙边走到底）看到尽头巨石，用炸弹炸开爬入洞口，站在三角神力徽记上吹【塞尔达摇篮曲】。"
+    },
+    {
+      "id": "q_ganon_defense",
+      "kind": "quest",
+      "location": "GanonCastle",
+      "name": "搬开城堡外废墟巨石拜访大妖精【防御力加倍（伤害减半）】",
+      "flag_type": "bool",
+      "flag_key": 2487974078,
+      "flag_name": "IsGet.Item_FairyBless_DefenseDouble",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "golden_gauntlets",
+        "zelda_lullaby"
+      ],
+      "guide": "成年在加侬多夫城堡内部拿【金护手】后，回到城堡外桥前左侧死胡同用金护手抬起巨石，进洞吹【塞尔达摇篮曲】获得防御力加倍。"
+    },
+    {
+      "id": "q_mkt_slingshot_game",
+      "kind": "quest",
+      "location": "Market",
+      "name": "城邑射击小游戏（升级弹弓种子袋）",
+      "flag_type": "bool",
+      "flag_key": 2302650315,
+      "flag_name": "MiniGame_HitTarget_HrlCity_Get_BulletBag",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "slingshot"
+      ],
+      "guide": "幼年白天进入海拉鲁城邑广场右侧蓝色棚顶射击屋（20卢比/次），用妖精弹弓打中全部10个靶子得大容量种子袋。"
+    },
+    {
+      "id": "q_mkt_mask_shop",
+      "kind": "quest",
+      "location": "Market",
+      "name": "开启幸福面具店借面具支线",
+      "flag_type": "bool",
+      "flag_key": 3190358114,
+      "flag_name": "HappyMaskShop_FirstTimeTalk",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "zelda_letter"
+      ],
+      "guide": "拿到【塞尔达的信】后进入城邑小巷通往时钟塔方向的幸福面具店，对话借出第一张【奇坦面具】。"
+    },
+    {
+      "id": "q_llr_epona_song",
+      "kind": "quest",
+      "location": "LonLonRanch",
+      "name": "幼年找玛蓉学习【伊波娜之歌】",
+      "flag_type": "bool",
+      "flag_key": 3029511219,
+      "flag_name": "IsGet.Item_Melody_EponaSong",
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "guide": "幼年白天进入海拉鲁平原中央荣蓉牧场围栏内，拿出时之笛对唱着歌的小玛蓉使用即可学会。"
+    },
+    {
+      "id": "q_llr_talon_bottle",
+      "kind": "quest",
+      "location": "LonLonRanch",
+      "name": "找塔隆玩找鸡小游戏（得装有牛奶的空瓶）",
+      "flag_type": "bool",
+      "flag_key": 139307071,
+      "flag_name": "IsClear_Minigame_FindOutCucco",
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "guide": "从城堡醒来的塔隆回牧场后，进入牧场入口左侧小屋找塔隆花10卢比玩找3只特殊超级鸡小游戏。"
+    },
+    {
+      "id": "q_llr_epona_adult",
+      "kind": "quest",
+      "location": "LonLonRanch",
+      "name": "成年赛马赢下【伊波娜】",
+      "flag_type": "any_bool",
+      "flag_key": [
+        284254241,
+        2055784566,
+        1964556171,
+        2038192973,
+        4239984056
+      ],
+      "flag_name": "['Get_Epona_AfterWonGambleRaceAndBeforeTalonBacked', 'HaveTalked_Special.Get_Epona_AfterEscapeFromLonLonRanch_Npc_Hylia_Ingo_002_Adult_Talk_Event298', 'HaveTalked_Special.Get_Epona_AfterWonGambleRace_Npc_Hylia_Malon_Adult_Talk_Event327', 'NaviChat_Cancel_HorseRaceClear', 'MiniGame_Unlock_HorseRace']",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "epona"
+      ],
+      "guide": "成年进入荣蓉牧场吹【伊波娜之歌】骑上伊波娜，找印格花50卢比连续赛跑赢两场后骑马飞跃牧场高墙逃出。"
+    },
+    {
+      "id": "q_kak_cucco_bottle",
+      "kind": "quest",
+      "location": "KakarikoVillage",
+      "name": "帮抓7只鸡回笼（得空瓶）",
+      "flag_type": "bool",
+      "flag_key": 2054775235,
+      "flag_name": "MiniGame_CatchCucco_IsCompleted",
+      "era": "child",
+      "night_only": false,
+      "reqs": [],
+      "guide": "幼年白天在卡卡利科村鸡笼旁找红发女子对话，把散落全村屋顶/角落/箱子后的7只鸡全扔回围栏。"
+    },
+    {
+      "id": "q_kak_keaton_sell",
+      "kind": "quest",
+      "location": "KakarikoVillage",
+      "name": "卖【奇坦面具】给死亡之山门前卫兵",
+      "flag_type": "any_bool",
+      "flag_key": [
+        830167070,
+        3738719184,
+        3499575338,
+        3234818215,
+        1705950743,
+        4157980060
+      ],
+      "flag_name": "['HaveTalked_Special.SubEvent_MaskSalesman_Step01_Npc_Hylia_Soldier_003_Talk_Event413', 'HappyMaskSaleMan_Npc_Hylia_Soldier_003_FullWallet', 'IsGet.Armor_Child_Mask_Skull', 'IsGet.Armor_Child_Mask_Spooky', 'IsGet.Armor_Child_Mask_Bunny', 'IsGet.Armor_Child_Mask_Truth']",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "mask_keaton"
+      ],
+      "guide": "在幸福面具店借出【奇坦面具】并装备戴在脸上，去卡卡利科村北侧通往死亡之山的门卫处出示塞尔达的信并对话卖出。"
+    },
+    {
+      "id": "q_kak_storm_song",
+      "kind": "quest",
+      "location": "KakarikoVillage",
+      "name": "成年去风车小屋对风车大叔学习【岚之歌】",
+      "flag_type": "bool",
+      "flag_key": 725212495,
+      "flag_name": "IsGet.Item_Melody_StormSong",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [],
+      "guide": "成年进入卡卡利科村东侧风车小屋，直接拿出时之笛站在唱机大叔面前触发回忆教学。"
+    },
+    {
+      "id": "q_kak_quiver_game",
+      "kind": "quest",
+      "location": "KakarikoVillage",
+      "name": "成年射箭场小游戏（升级箭袋）",
+      "flag_type": "bool",
+      "flag_key": 3718818551,
+      "flag_name": "MiniGame_HitTarget_Kakariko_Get_Quiver",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bow"
+      ],
+      "guide": "成年拿到【妖精之弓】后进入卡卡利科村右下角新建成的射箭屋（20卢比/次），射中全部10个靶子升级大箭袋。"
+    },
+    {
+      "id": "q_kak_skull_10",
+      "kind": "quest",
+      "location": "KakarikoVillage",
+      "name": "蜘蛛屋领取 10 只奖励【大人的钱包】",
+      "flag_type": "bool",
+      "flag_key": 2424742446,
+      "flag_name": "KakarikoVillage_GatheringTokenGold_GetReward10",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "tokens_10"
+      ],
+      "guide": "卡卡利科村中央带蜘蛛标记的木屋内，找右侧刚解除诅咒恢复人形的儿子对话领取【大人的钱包】（200卢比上限）。"
+    },
+    {
+      "id": "q_kak_skull_20",
+      "kind": "quest",
+      "location": "KakarikoVillage",
+      "name": "蜘蛛屋领取 20 只奖励【响音石】",
+      "flag_type": "bool",
+      "flag_key": 970643309,
+      "flag_name": "KakarikoVillage_GatheringTokenGold_GetReward20",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "tokens_20"
+      ],
+      "guide": "同卡卡利科村蜘蛛屋，集满20个【黄金骷髅蜘蛛的证明】后找解除诅咒的NPC对话领取【响音石】（靠近隐藏蜘蛛洞穴会发声/显示图标）。"
+    },
+    {
+      "id": "q_kak_skull_30",
+      "kind": "quest",
+      "location": "KakarikoVillage",
+      "name": "蜘蛛屋领取 30 只奖励【巨人的钱包】",
+      "flag_type": "bool",
+      "flag_key": 3452738269,
+      "flag_name": "KakarikoVillage_GatheringTokenGold_GetReward30",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "tokens_30"
+      ],
+      "guide": "同卡卡利科村蜘蛛屋，集满30个【黄金骷髅蜘蛛的证明】后找解除诅咒的NPC对话领取【巨人的钱包】（500卢比上限）。"
+    },
+    {
+      "id": "q_kak_skull_40",
+      "kind": "quest",
+      "location": "KakarikoVillage",
+      "name": "蜘蛛屋领取 40 只奖励【炸弹鼠】",
+      "flag_type": "bool",
+      "flag_key": 2378398406,
+      "flag_name": "KakarikoVillage_GatheringTokenGold_GetReward40",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "tokens_40"
+      ],
+      "guide": "同卡卡利科村蜘蛛屋，集满40个【黄金骷髅蜘蛛的证明】后找解除诅咒的NPC对话领取【炸弹鼠】。"
+    },
+    {
+      "id": "q_gy_sun_song",
+      "kind": "quest",
+      "location": "Graveyard",
+      "name": "进入王家墓穴学习【太阳之歌】",
+      "flag_type": "bool",
+      "flag_key": 375247277,
+      "flag_name": "IsGet.Item_Melody_SunSong",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "zelda_lullaby"
+      ],
+      "guide": "走到墓地最深处中间的大王族墓碑前三角神力徽记上，吹【塞尔达摇篮曲】劈开墓碑跳下，穿过蝙蝠与僵尸房间到尽头石碑学习。"
+    },
+    {
+      "id": "q_botw_lens",
+      "kind": "quest",
+      "location": "BottomOfTheWell",
+      "name": "井底取得【真实眼镜】",
+      "flag_type": "bool",
+      "flag_key": 2145559986,
+      "flag_name": "IsGet.Armor_GlassTruth",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "storm_song"
+      ],
+      "guide": "先在成年学会【岚之歌】，回幼年进卡卡利科村风车小屋吹岚之歌把井水抽干，跳入水井到底层中央吹塞尔达摇篮曲放水，进洞击败死手开宝箱拿【真实眼镜】。"
+    },
+    {
+      "id": "q_dmt_dins_fire",
+      "kind": "quest",
+      "location": "DeathMountainTrail",
+      "name": "炸开山顶洞壁拜访大妖精学习【迪荧之火】",
+      "flag_type": "bool",
+      "flag_key": 4194625041,
+      "flag_name": "IsGet.Item_DinFire",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "bomb",
+        "zelda_lullaby"
+      ],
+      "guide": "沿死亡之山登山道一路爬到最顶层（经过落石坡爬墙），先躲在左旁或拿海利亚盾挡落石，到山顶猫头鹰旁向右沿着山壁看到裂纹墙用炸弹炸开，进泉吹【塞尔达摇篮曲】。"
+    },
+    {
+      "id": "q_gc_bracelet",
+      "kind": "quest",
+      "location": "GoronCity",
+      "name": "首领房间吹莎莉亚之歌获得【鼓隆手环】",
+      "flag_type": "bool",
+      "flag_key": 2558554238,
+      "flag_name": "IsGet.Armor_Child_Gauntlet_Goron",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "saria",
+        "zelda_lullaby"
+      ],
+      "guide": "进鼓隆城走到底层大门前毯子上吹【塞尔达摇篮曲】开门，再对愁眉苦脸的达鲁尼亚吹【莎莉亚之歌】让他跳舞即可获赠【鼓隆手环】。"
+    },
+    {
+      "id": "q_gc_red_tunic",
+      "kind": "quest",
+      "location": "GoronCity",
+      "name": "成年用炸弹停住滚石小鼓隆获【鼓隆服】",
+      "flag_type": "bool",
+      "flag_key": 2924876207,
+      "flag_name": "IsGet.Armor_Adult_Goron",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bomb"
+      ],
+      "guide": "成年进鼓隆城到二楼或三楼守住通道，等滚石小鼓隆（林克）滚过来时用炸弹精准炸停他，对话问清状况即可获赠耐高温的【鼓隆服】。"
+    },
+    {
+      "id": "q_dmc_mp_double",
+      "kind": "quest",
+      "location": "DeathMountainCrater",
+      "name": "成年用百万吨锤敲石块拜访火山口大妖精【魔力槽翻倍】",
+      "flag_type": "bool",
+      "flag_key": 2278180902,
+      "flag_name": "IsGet.Item_FairyBless_MPDouble",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "hammer",
+        "zelda_lullaby"
+      ],
+      "guide": "成年在火之神殿拿到【百万吨锤】后，进死亡之山火山口往最右侧岩壁通道走，用百万吨锤敲碎堵路的两块巨石，进洞吹【塞尔达摇篮曲】。"
+    },
+    {
+      "id": "q_zd_silver_scale",
+      "kind": "quest",
+      "location": "ZoraDomain",
+      "name": "瀑布潜水小游戏获【银鳞片】",
+      "flag_type": "bool",
+      "flag_key": 302578494,
+      "flag_name": "IsGet.Item_Scale_Silver",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "zelda_lullaby"
+      ],
+      "guide": "沿着卓拉河上游到瀑布前三角徽记吹【塞尔达摇篮曲】进入卓拉领地，从王座左上方走出瀑布悬崖找跳水卓拉花20卢比玩捡5个卢比小游戏。"
+    },
+    {
+      "id": "q_zf_farore",
+      "kind": "quest",
+      "location": "ZoraFountain",
+      "name": "炸开东南角墙壁拜访大妖精学习【法露尔之风】",
+      "flag_type": "bool",
+      "flag_key": 4289458264,
+      "flag_name": "IsGet.Item_FaroreWind",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "bomb",
+        "zelda_lullaby"
+      ],
+      "guide": "穿过卓拉领地王座后通道进入卓拉之泉（幼年需先给卓拉王出示海利亚湖底捡到的【瓶中信】），下水游到右下/东南角小岛（大树对岸），用炸弹炸开两块裂石间的墙壁进洞吹【塞尔达摇篮曲】。"
+    },
+    {
+      "id": "q_lh_ruto_letter",
+      "kind": "quest",
+      "location": "LakeHylia",
+      "name": "潜入湖底取得【瓶中信】（露托公主求救信）",
+      "flag_type": "bool",
+      "flag_key": 386620914,
+      "flag_name": "IsGet.Item_Bottle_Letter",
+      "era": "child",
+      "night_only": false,
+      "reqs": [
+        "silver_scale"
+      ],
+      "guide": "拿到【银鳞片】后从卓拉领地水底捷径或直接从海拉鲁平原南下进海利亚湖畔，潜入湖畔北岸（卓拉捷径出口旁）水底捡起发光的瓶中信。"
+    },
+    {
+      "id": "q_lh_gold_scale",
+      "kind": "quest",
+      "location": "LakeHylia",
+      "name": "成年钓鱼池钓到超过 60cm 的大鱼赢【金鳞片】（≥61cm，勿用沉水假饵）",
+      "flag_type": "bool",
+      "flag_key": 3435237530,
+      "flag_name": "IsGet.Item_Scale_Gold",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [],
+      "guide": "成年进海利亚湖畔东北角钓鱼池，找池边原木附近或深水区大鱼（避开沉水假饵），钓上超过60cm的鱼交给老板鉴定即可获【金鳞片】。"
+    },
+    {
+      "id": "q_lh_fire_arrow",
+      "kind": "quest",
+      "location": "LakeHylia",
+      "name": "水之神殿通关后朝太阳射箭获【火箭】",
+      "flag_type": "bool",
+      "flag_key": 1303898848,
+      "flag_name": "IsGet.Item_Arrow_Fire",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bow",
+        "water_medal"
+      ],
+      "guide": "水之神殿通关后站到海利亚湖畔中央小岛（传送点旁）石碑上，吹【太阳之歌】调到黎明太阳刚升起时立刻用妖精之弓朝太阳射箭，落入湖面再游去捡【火箭】。"
+    },
+    {
+      "id": "q_gf_membership",
+      "kind": "quest",
+      "location": "GerudoFortress",
+      "name": "救出 4 名木匠获得【格鲁德会员证】",
+      "flag_type": "bool",
+      "flag_key": 241329351,
+      "flag_name": "IsGet.Item_Token_Gerudo",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "gerudo_bridge",
+        "hookshot",
+        "bow"
+      ],
+      "guide": "成年先骑伊波娜加速跳过（或用长钩索钩过）格鲁德之谷断桥进入要塞（注：断桥西侧帐篷外的木匠头领可直接换大鼓隆之剑支线的【折断的鼓隆之剑】，无需进要塞后方）；在要塞内潜入盗贼基地牢房区，用【妖精之弓】射晕巡逻守卫、配【钩索】翻越窗梁，依次击败4名格鲁德盗贼首领救出4名木匠即可获赠【格鲁德会员证】（拿到会员证后才可进入要塞东侧骑马射箭场、格鲁德训练场与幻影沙漠大门）。"
+    },
+    {
+      "id": "q_gtg_ice_arrow",
+      "kind": "quest",
+      "location": "GerudoTrainingGround",
+      "name": "格鲁德训练场取小钥匙开宝箱获【冰箭】",
+      "flag_type": "bool",
+      "flag_key": 1552887961,
+      "flag_name": "IsGet.Item_Arrow_Ice",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "bow",
+        "gerudo_card"
+      ],
+      "guide": "拿到【格鲁德会员证】后找格鲁德要塞训练场入口守卫花10卢比开门，多条路线集齐小钥匙打开中央房间隐藏墙后的铁门与大宝箱（用真实眼镜找天花板暗洞）获【冰箭】。"
+    },
+    {
+      "id": "q_dc_nayru",
+      "kind": "quest",
+      "location": "DesertColossus",
+      "name": "炸开北侧棕榈树间裂墙拜访大妖精学习【娜如之爱】",
+      "flag_type": "bool",
+      "flag_key": 11813441,
+      "flag_name": "IsGet.Item_NayruLove",
+      "era": "both",
+      "night_only": false,
+      "reqs": [
+        "bomb",
+        "zelda_lullaby",
+        "desert_access"
+      ],
+      "guide": "穿过幻影沙漠（或吹魂之慰灵曲传送）到达巨大邪神像区域，顺着右侧/北侧绿洲旁两棵棕榈树后面的岩壁找裂纹墙，用炸弹炸开进洞吹【塞尔达摇篮曲】。"
+    },
+    {
+      "id": "q_biggoron_sword",
+      "kind": "quest",
+      "location": "DeathMountainTrail",
+      "name": "大鼓隆之剑物物交换支线完成（取得【大鼓隆之剑】）",
+      "flag_type": "bool",
+      "flag_key": 860252178,
+      "flag_name": "IsGet.Weapon_Sword_Biggoron",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "gerudo_bridge"
+      ],
+      "guide": "①卡卡利科村鸡圈旁找鸡姐姐拿【口袋蛋】→②孵出【闹铃鸡】叫醒村里小屋塔隆→③交回鸡姐姐换【克吉罗】→④迷途森林左侧给瞌睡哥换【奇异蘑菇】→⑤限时送去卡卡利科村老奶奶药店换【奇异药】→⑥回迷途森林送药换【偷猎者的锯子】→⑦骑伊波娜跳格鲁德之谷断桥找桥西帐篷前的木匠头领换【折断的鼓隆之剑】→⑧登山顶大鼓隆拿【处方笺】→⑨卓拉王换【眼球蛙】→⑩限时送海利亚湖畔博士做【特制眼药水】→⑪限时送回山顶大鼓隆拿【兑换券】，连吹3天太阳之歌即得【大鼓隆之剑】。"
+    },
+    {
+      "id": "q_poe_bottle",
+      "kind": "quest",
+      "location": "Market",
+      "name": "猎捕 10 只大魄换取【第 4 个空瓶】",
+      "flag_type": "int_ge",
+      "flag_key": [
+        3812654318,
+        10
+      ],
+      "flag_name": "('GhostShop_CouponNum', 10)",
+      "era": "adult",
+      "night_only": false,
+      "reqs": [
+        "epona_adult",
+        "bow"
+      ],
+      "guide": "成年在荣蓉牧场赢下伊波娜后骑马在海拉鲁平原（固定10个点位刷出大魄，必须在马上边追边射箭击倒），用空瓶装满10只卖给城邑门前废墟守卫室的幽灵收集者换第4个空瓶。"
+    }
+  ],
+  "grottos": [
+    {
+      "loc": "DeathMountainCrater",
+      "era": "both",
+      "pos": [
+        -14.7,
+        125.9,
+        52.8
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "DeathMountainCrater",
+      "era": "both",
+      "pos": [
+        -48.9,
+        118.1,
+        1.7
+      ],
+      "item_ids": [],
+      "summary": "宝箱卢比",
+      "is_agony": false
+    },
+    {
+      "loc": "DeathMountainTrail",
+      "era": "both",
+      "pos": [
+        0.3,
+        121.0,
+        -28.1
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "DeathMountainTrail",
+      "era": "both",
+      "pos": [
+        -11.0,
+        141.0,
+        -8.2
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "DesertColossus",
+      "era": "both",
+      "pos": [
+        -115.7,
+        94.8,
+        -24.0
+      ],
+      "item_ids": [],
+      "summary": "宝箱卢比",
+      "is_agony": false
+    },
+    {
+      "loc": "GerudoFortress",
+      "era": "adult",
+      "pos": [
+        34.5,
+        113.5,
+        -65.4
+      ],
+      "item_ids": [],
+      "summary": "宝箱卢比",
+      "is_agony": false
+    },
+    {
+      "loc": "GerudoValley",
+      "era": "both",
+      "pos": [
+        13.8,
+        6.4,
+        35.1
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "GerudoValley",
+      "era": "both",
+      "pos": [
+        -47.9,
+        101.2,
+        -29.7
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "GoronCity",
+      "era": "both",
+      "pos": [
+        -39.8,
+        113.5,
+        27.9
+      ],
+      "item_ids": [],
+      "summary": "宝箱卢比",
+      "is_agony": false
+    },
+    {
+      "loc": "Graveyard",
+      "era": "both",
+      "pos": [
+        6.4,
+        102.3,
+        4.4
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "Graveyard",
+      "era": "both",
+      "pos": [
+        20.1,
+        103.8,
+        8.8
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "Graveyard",
+      "era": "both",
+      "pos": [
+        20.0,
+        103.9,
+        20.8
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "Graveyard",
+      "era": "adult",
+      "pos": [
+        -5.4,
+        103.9,
+        -13.3
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "HyruleCastle",
+      "era": "both",
+      "pos": [
+        38.2,
+        118.2,
+        -104.9
+      ],
+      "item_ids": [
+        "gs_7f28485fa5d3688f"
+      ],
+      "summary": "内含可收集目标",
+      "is_agony": true
+    },
+    {
+      "loc": "HyruleField",
+      "era": "both",
+      "pos": [
+        43.3,
+        148.2,
+        27.6
+      ],
+      "item_ids": [
+        "hp_hf_scrub"
+      ],
+      "summary": "内含可收集目标",
+      "is_agony": false
+    },
+    {
+      "loc": "HyruleField",
+      "era": "both",
+      "pos": [
+        -94.3,
+        146.4,
+        17.5
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "HyruleField",
+      "era": "both",
+      "pos": [
+        -13.6,
+        149.5,
+        165.8
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "HyruleField",
+      "era": "both",
+      "pos": [
+        165.4,
+        155.4,
+        36.3
+      ],
+      "item_ids": [],
+      "summary": "僵尸 / 宝箱卢比",
+      "is_agony": false
+    },
+    {
+      "loc": "HyruleField",
+      "era": "both",
+      "pos": [
+        -254.9,
+        141.0,
+        139.7
+      ],
+      "item_ids": [
+        "hp_hf_fence"
+      ],
+      "summary": "内含可收集目标",
+      "is_agony": false
+    },
+    {
+      "loc": "HyruleField",
+      "era": "both",
+      "pos": [
+        -157.7,
+        144.2,
+        335.2
+      ],
+      "item_ids": [
+        "gs_a6a4e87da18fa678"
+      ],
+      "summary": "内含可收集目标",
+      "is_agony": true
+    },
+    {
+      "loc": "HyruleField",
+      "era": "both",
+      "pos": [
+        35.7,
+        144.6,
+        343.4
+      ],
+      "item_ids": [
+        "gs_7d8ec14bdd1f6341"
+      ],
+      "summary": "内含可收集目标",
+      "is_agony": true
+    },
+    {
+      "loc": "HyruleField",
+      "era": "both",
+      "pos": [
+        177.3,
+        156.2,
+        193.6
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "HyruleField",
+      "era": "both",
+      "pos": [
+        -203.5,
+        137.7,
+        458.4
+      ],
+      "item_ids": [],
+      "summary": "宝箱卢比",
+      "is_agony": false
+    },
+    {
+      "loc": "HyruleField",
+      "era": "child",
+      "pos": [
+        -39.1,
+        151.5,
+        290.1
+      ],
+      "item_ids": [],
+      "summary": "德库商人",
+      "is_agony": false
+    },
+    {
+      "loc": "KakarikoVillage",
+      "era": "both",
+      "pos": [
+        -21.1,
+        102.9,
+        63.5
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "KakarikoVillage",
+      "era": "both",
+      "pos": [
+        -25.4,
+        100.8,
+        14.7
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "KokiriForest",
+      "era": "both",
+      "pos": [
+        -50.6,
+        122.4,
+        -60.5
+      ],
+      "item_ids": [],
+      "summary": "宝箱卢比",
+      "is_agony": false
+    },
+    {
+      "loc": "LostWood",
+      "era": "both",
+      "pos": [
+        25.1,
+        100.9,
+        -28.3
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "LostWood",
+      "era": "both",
+      "pos": [
+        5.2,
+        100.2,
+        -45.1
+      ],
+      "item_ids": [
+        "q_lw_skullmask_stage",
+        "q_lw_truthmask_stage"
+      ],
+      "summary": "森之舞台(戴骷髅/真实面具)",
+      "is_agony": false
+    },
+    {
+      "loc": "LostWood",
+      "era": "both",
+      "pos": [
+        19.8,
+        100.9,
+        -73.0
+      ],
+      "item_ids": [
+        "q_lw_nut_scrub"
+      ],
+      "summary": "德库商人",
+      "is_agony": false
+    },
+    {
+      "loc": "SacredForestMeadow",
+      "era": "both",
+      "pos": [
+        1.6,
+        100.8,
+        54.9
+      ],
+      "item_ids": [],
+      "summary": "宝箱卢比",
+      "is_agony": false
+    },
+    {
+      "loc": "SacredForestMeadow",
+      "era": "both",
+      "pos": [
+        -1.8,
+        100.9,
+        0.6
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "SacredForestMeadow",
+      "era": "both",
+      "pos": [
+        0.6,
+        115.2,
+        -82.8
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "ZoraDomain",
+      "era": "both",
+      "pos": [
+        14.5,
+        101.1,
+        -19.4
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "ZoraRiver",
+      "era": "both",
+      "pos": [
+        -18.1,
+        116.1,
+        16.2
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "ZoraRiver",
+      "era": "both",
+      "pos": [
+        -80.8,
+        100.0,
+        -16.4
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    },
+    {
+      "loc": "ZoraRiver",
+      "era": "both",
+      "pos": [
+        2.8,
+        115.1,
+        -14.9
+      ],
+      "item_ids": [],
+      "summary": "草丛/虫子/妖精补给（无蜘蛛与心片）",
+      "is_agony": false
+    }
+  ],
+  "cap_hashes": {
+    "Sequence_IsChildhood": 3466731731,
+    "PlayerStatus.Life": 833312128,
+    "PlayerStatus.MaxLife": 4225768865,
+    "PlayerStatus.MPMax": 316029591,
+    "PlayerStatus.CurrentRupee": 2809733591,
+    "PlayerStatus.AssignableItem.BottleInfo.BottleA.BottleItem": 2101927798,
+    "PlayerStatus.AssignableItem.BottleInfo.BottleB.BottleItem": 517805642,
+    "PlayerStatus.AssignableItem.BottleInfo.BottleC.BottleItem": 3087823016,
+    "PlayerStatus.AssignableItem.BottleInfo.BottleD.BottleItem": 3837899260,
+    "PouchData.Item_Token_Gold.StockNum": 74668408,
+    "PouchData.Obj_Heart_Piece.StockNum": 1374459827,
+    "DoorOfTime_GetStoneCount": 2607004784,
+    "GhostShop_CouponNum": 3812654318,
+    "IsClear_Minigame_FindOutCucco": 139307071,
+    "MiniGame_CatchCucco_IsCompleted": 2054775235,
+    "HaveReadHrlField_Note07": 2391751397,
+    "HaveReadHrlField_Note12_Enemy": 608589666,
+    "HaveReadHrlField_Note12_3": 1639044545,
+    "Gimmick_MagicBeanSoil_LostWood01": 4272802878,
+    "Gimmick_MagicBeanSoil_LakeHylia": 311737113,
+    "Gimmick_MagicBeanSoil_Graveyard": 2857970065,
+    "Gimmick_MagicBeanSoil_DeathMountainTrail": 1961928465,
+    "Gimmick_MagicBeanSoil_DeathMountainCrater": 2189915551,
+    "Gimmick_MagicBeanSoil_DesertColossus": 352515689,
+    "HavePlayedEvent.Dm_ZoraFountain_0000": 3011713451,
+    "HavePlayedEvent.Dm_TimeTemple_0010": 3089062156,
+    "HavePlayedEvent.Dm_Kokiri_0030": 2957094535,
+    "Get_Epona_AfterWonGambleRaceAndBeforeTalonBacked": 284254241,
+    "HaveTalked_Special.Get_Epona_AfterEscapeFromLonLonRanch_Npc_Hylia_Ingo_002_Adult_Talk_Event298": 2055784566,
+    "HaveTalked_Special.Get_Epona_AfterWonGambleRace_Npc_Hylia_Malon_Adult_Talk_Event327": 1964556171,
+    "IsGet.Weapon_Sword_Kokiri": 1079872015,
+    "IsGet.Weapon_Sword_Master": 2061733467,
+    "IsGet.Weapon_Sword_Biggoron": 860252178,
+    "IsGet.Weapon_Shield_Deku": 1377294878,
+    "IsGet.Weapon_Shield_Hylian": 797015380,
+    "IsGet.Weapon_Shield_Mirror": 1978224194,
+    "IsGet.Weapon_Range_SlingShot": 247607009,
+    "IsGet.Weapon_Range_Bow": 1777084606,
+    "IsGet.Item_Boomerang": 2135745421,
+    "IsGet.Item_Hookshot": 4288212312,
+    "IsGet.Item_Longshot": 950969275,
+    "IsGet.Item_Bomb": 732956520,
+    "IsGet.Item_BombBag_Small": 2789154349,
+    "IsGet.Item_Bombchu": 1521785998,
+    "IsGet.Item_Hammer": 1915219928,
+    "IsGet.Item_DekuStick": 3303152322,
+    "IsGet.Item_MagicBean": 1832502784,
+    "IsGet.Item_Bottle": 285651074,
+    "IsGet.Item_Bottle_Milk": 4045613440,
+    "IsGet.Item_Bottle_Letter": 386620914,
+    "IsGet.Item_Ocarina_Fairy": 1119693167,
+    "IsGet.Item_Ocarina_Time": 497206545,
+    "IsGet.Item_DinFire": 4194625041,
+    "IsGet.Item_FaroreWind": 4289458264,
+    "IsGet.Item_NayruLove": 11813441,
+    "IsGet.Item_Arrow_Fire": 1303898848,
+    "IsGet.Item_Arrow_Ice": 1552887961,
+    "IsGet.Item_Arrow_Light": 2251799220,
+    "IsGet.Armor_Adult_Goron": 2924876207,
+    "IsGet.Armor_Adult_Zora": 1331335836,
+    "IsGet.Armor_Adult_HeavyBoot": 1604423910,
+    "IsGet.Armor_Adult_HoverBoot": 285853984,
+    "IsGet.Armor_Child_Gauntlet_Goron": 2558554238,
+    "IsGet.Armor_Adult_Gauntlet_Silver": 2279968227,
+    "IsGet.Armor_Adult_Gauntlet_Gold": 1056005828,
+    "IsGet.Item_Scale_Silver": 302578494,
+    "IsGet.Item_Scale_Gold": 3435237530,
+    "IsGet.Armor_GlassTruth": 2145559986,
+    "IsGet.Item_ZeldaLetter": 4052980661,
+    "IsGet.Item_Token_Gerudo": 241329351,
+    "IsGet.Item_Stone_Forest": 285967340,
+    "IsGet.Item_Stone_Fire": 2299057837,
+    "IsGet.Item_Stone_Water": 4005790709,
+    "IsGet.Item_Medal_Forest": 4242069075,
+    "IsGet.Item_Medal_Fire": 272240071,
+    "IsGet.Item_Medal_Water": 3479496576,
+    "IsGet.Item_Medal_Shadow": 316029638,
+    "IsGet.Item_Medal_Spirit": 3798589240,
+    "IsGet.Item_Medal_Light": 2418459015,
+    "IsGet.Item_Melody_ZeldaLullaby": 29491202,
+    "IsGet.Item_Melody_EponaSong": 3029511219,
+    "IsGet.Item_Melody_SariaSong": 3556294604,
+    "IsGet.Item_Melody_SunSong": 375247277,
+    "IsGet.Item_Melody_TimeSong": 62080270,
+    "IsGet.Item_Melody_StormSong": 725212495,
+    "IsGet.Item_Melody_ForestMinuet": 3691645780,
+    "IsGet.Item_Melody_FireBolero": 1225005753,
+    "IsGet.Item_Melody_WaterSerenade": 1067858310,
+    "IsGet.Item_Melody_SpiritRequiem": 2150250152,
+    "IsGet.Item_Melody_ShadowNocturne": 3271267828,
+    "IsGet.Item_Melody_LightPrelude": 3593604004,
+    "IsGet.Item_Melody_ScarecrowSong": 1585904461,
+    "IsGet.Armor_Child_Mask_Keaton": 902172189,
+    "IsGet.Armor_Child_Mask_Skull": 3499575338,
+    "IsGet.Armor_Child_Mask_Spooky": 3234818215,
+    "IsGet.Armor_Child_Mask_Bunny": 1705950743,
+    "IsGet.Armor_Child_Mask_Truth": 4157980060,
+    "CaptionData.LocationName": 4149087886,
+    "Player_Pos_For_Map": 2517292394,
+    "DungeonRoom": 2605883235,
+    "IsBossBattle": 1935731986,
+    "InsideTheDekuTree_BossArea_ShutIn": 3829674972,
+    "Gohma_IsLightingForBattle": 1029442477,
+    "Gohma_DefeatBoss": 1795767121,
+    "HaveDefeatedEnemy_Enemy_DungeonBoss_Gohma": 3362176426,
+    "DodongoCavern_AppearLizalfos_1F": 2876235986,
+    "DodongoCavern_AppearLizalfos_2F": 2938384507,
+    "DodongoCavern_Lizalfos_C_Dead": 2372371405,
+    "DodongoCavern_Lizalfos_D_Dead": 830297768,
+    "DodongoCavern_BlastedLeftEye": 2461077734,
+    "DodongoCavern_BlastedRightEye": 1082656410,
+    "DodongoCavern_OpenedDodongoMouth": 382420419,
+    "Enemy_DungeonBoss_Dodongo_BossAppear": 3885117421,
+    "HaveDefeatedEnemy_Enemy_DungeonBoss_Dodongo": 3840146872,
+    "Get_StoneOfWater_BigOctoAppear": 3495872015,
+    "Get_StoneOfWater_BigOctoDefeat": 650527885,
+    "HaveDefeatedEnemy_Enemy_MiddleBoss_BigOcto": 2492046747,
+    "HaveDefeatedEnemy_Enemy_DungeonBoss_Barinade": 1388682947,
+    "ForestTemple_MegBattleStart": 1515375460,
+    "ForestTemple_SageOfForest_Appearance_Enemy_MiddleBoss_Poe_Meg": 1710490840,
+    "ForestTemple_DefeatMeg": 1403440007,
+    "HaveDefeatedEnemy_Enemy_MiddleBoss_Poe_Meg": 1499999432,
+    "ForestTemple_BossRoom_LockOpne": 3035612033,
+    "ForestTemple_SageOfForest_BossAppearance": 3651039626,
+    "HaveDefeatedEnemy_Enemy_DungeonBoss_PhantomGanon": 2462811835,
+    "FireTemple_Room03_FlareDancerisDead": 477720873,
+    "FireTemple_Room24_FlareDancerisDead": 1749083408,
+    "HaveDefeatedEnemy_Enemy_MiddleBoss_FlareDancer": 665284187,
+    "FireTemple_BossGroundChange": 227816063,
+    "Enemy_DungeonBoss_Volvagia_BossAppear": 2966832386,
+    "HaveDefeatedEnemy_Enemy_DungeonBoss_Volvagia": 3832192663,
+    "WaterTemple_DarkLink_InBattle": 310138872,
+    "WaterTemple_DarkLinkRoom_Locked": 1589007549,
+    "WaterTemple_IsPlayerInDarkLinkRoom": 999528679,
+    "WaterTemple_DarkLink_Death": 2202092170,
+    "HaveDefeatedEnemy_Enemy_MiddleBoss_DarkLink": 666287592,
+    "HaveDefeatedEnemy_Enemy_DungeonBoss_Morpha": 1284959056,
+    "BottomOfTheWell_Level_Room_06_Boss_Appear": 1910584693,
+    "BottomOfTheWell_Level_Room_06_Boss_Defeat": 4071121860,
+    "ShadowTemple_Level_Room_B1F_D_Defeat_DeadHand": 3702690294,
+    "ShadowTemple_Level_StartBossBattle": 4037917742,
+    "HaveDefeatedEnemy_Enemy_DungeonBoss_BongoBongo": 2743532307,
+    "SageOfSpirit_Nabooru_On": 2853823472,
+    "Enemy_MiddleBoss_IronKnuckle_Nabooru_BossAppear": 3108366842,
+    "Enemy_MiddleBoss_IronKnuckle_Nabooru_BossDefeat": 3914627604,
+    "HaveDefeatedEnemy_Enemy_MiddleBoss_IronKnuckle_Nabooru": 1915315052,
+    "SageOfSpirit_BossIn": 4208750408,
+    "Enemy_DungeonBoss_TwinrovaChange": 1471530953,
+    "SpiritTemple_Boss_IsSplit": 2265900212,
+    "SpiritTemple_Boss_IsCombine": 395837762,
+    "HaveDefeatedEnemy_Enemy_DungeonBoss_Twinrova": 1340675299,
+    "InsideGanonCastle_IsBossAppearDemo": 3438536612,
+    "InsideGanonCastle_IsEnterBossRoom": 941807738,
+    "HaveDefeatedEnemy_Enemy_DungeonBoss_Ganondorf": 204948400,
+    "FinalBattleField_ChangeENVForBoss": 1910995020,
+    "FinalBattleField_DefeatGanonStart": 2335442636,
+    "FinalBattleField_Create_Ganon_SecondHalfBattle": 1430662853,
+    "Enemy_DungeonBossGanon_IsOpenedThirdEye": 1361949048,
+    "HaveDefeatedEnemy_Enemy_DungeonBoss_Ganon": 3897267726,
+    "Get_Epona_State_Enum": 2453871701,
+    "Biggoron_State_Enum": 648208412,
+    "MaskSalesman_State_Enum": 3925934864,
+    "Scarecrow_State_Enum": 2490511403
+  },
+  "table_counts": {
+    "Binary": 11,
+    "BinaryArray": 2,
+    "Bool": 11292,
+    "Bool64bitKey": 11657,
+    "BoolArray": 13,
+    "BoolExp": 884,
+    "Enum": 130,
+    "EnumArray": 14,
+    "Float": 89,
+    "FloatArray": 4,
+    "Int": 1259,
+    "Int64": 33,
+    "Int64Array": 4,
+    "IntArray": 156,
+    "String16": 1,
+    "String32": 2,
+    "String64": 54,
+    "String64Array": 5,
+    "Struct": 874,
+    "UInt": 97,
+    "UInt64": 6,
+    "UInt64Array": 4,
+    "UIntArray": 33,
+    "Vector3": 26,
+    "WString16": 2,
+    "WString16Array": 2
+  },
+  "save_offset_pos": [
+    95704,
+    672,
+    672,
+    320
+  ]
+}
