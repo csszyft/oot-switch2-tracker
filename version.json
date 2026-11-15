@@ -1,7 +1,7 @@
 {
   "version": "1.2.0",
-  "build": 202611152059,
-  "notes": "瘦前端启动器 + GitHub/Gitee 双源纯代码热更新 + 黄金三角神力图标 + 全屏防闪烁 & 卡卡利科村蜘蛛校准",
+  "build": 202611152107,
+  "notes": "瘦前端启动器 + GitHub/Gitee 双源纯代码热更新 + 高清多DPI三角神力图标 + 全屏防闪烁 & 卡卡利科村蜘蛛校准",
   "files": {
     "launcher.py": {
       "sha256": "c36a770dd5b5c896fa1d778c1184ba347019ee7463c8a37cdd5b7dfbbe051598",
@@ -12,8 +12,8 @@
       "size": 19080
     },
     "overlay_hud.py": {
-      "sha256": "9a640298537f3720a00414a9e88aee2a5ed2f3ca2cfb16d756bac12d48661dbb",
-      "size": 173202
+      "sha256": "9bb4968e2e064dcfddf4fdfc150e6285d6d4e189410b73067f64e5d488a0ba94",
+      "size": 175526
     },
     "tracker_engine.py": {
       "sha256": "1ba3d7e0db511fda64aa34c255d4f3de396086091657b6c862f2cbb91bf71383",
@@ -44,8 +44,8 @@
       "size": 117292
     },
     "triforce.ico": {
-      "sha256": "e14ed7f0e4950d1127d14f1d815977c12cda05b90cbbdc8a7abbb49cf779c98a",
-      "size": 55164
+      "sha256": "5fd9cc143283dea09a07886e45593b6179a30ed0a2d77e7ef433647fd8528fe3",
+      "size": 56134
     },
     "启动时之笛助手.bat": {
       "sha256": "a5884b00653006d2bb8b82030477d82ffedd310a3776f6fda426d21348ab72d7",

@@ -152,9 +152,49 @@ _user32.GetWindow.argtypes = [wintypes.HWND, wintypes.UINT]
 _user32.GetWindow.restype = wintypes.HWND
 _user32.RedrawWindow.argtypes = [wintypes.HWND, ctypes.c_void_p, ctypes.c_void_p, wintypes.UINT]
 _user32.RedrawWindow.restype = wintypes.BOOL
+_user32.LoadImageW.argtypes = [wintypes.HINSTANCE, wintypes.LPCWSTR, wintypes.UINT, ctypes.c_int, ctypes.c_int, wintypes.UINT]
+_user32.LoadImageW.restype = wintypes.HANDLE
+_user32.SendMessageW.argtypes = [wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM]
+_user32.SendMessageW.restype = ctypes.c_ssize_t
+_user32.DestroyIcon.argtypes = [wintypes.HICON]
+_user32.DestroyIcon.restype = wintypes.BOOL
+_user32.SetClassLongPtrW.argtypes = [wintypes.HWND, ctypes.c_int, ctypes.c_void_p]
+_user32.SetClassLongPtrW.restype = ctypes.c_void_p
 _WNDENUMPROC = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
 _user32.EnumWindows.argtypes = [_WNDENUMPROC, wintypes.LPARAM]
 _user32.EnumWindows.restype = wintypes.BOOL
+
+
+def _apply_win32_window_icon(hwnd: int, ico_path: Path | None) -> list[int]:
+    """Bind DPI-exact ICON_BIG & ICON_SMALL handles from triforce.ico onto Win32 taskbar HWND."""
+    if not hwnd or not ico_path or not ico_path.is_file():
+        return []
+    handles: list[int] = []
+    try:
+        try:
+            dpi = int(_user32.GetDpiForWindow(hwnd) or 96)
+        except Exception:
+            dpi = 96
+        try:
+            cx_big = int(_user32.GetSystemMetricsForDpi(11, dpi) or 32)
+            cx_sm = int(_user32.GetSystemMetricsForDpi(49, dpi) or 16)
+        except Exception:
+            cx_big = int(_user32.GetSystemMetrics(11) or 32)
+            cx_sm = int(_user32.GetSystemMetrics(49) or 16)
+        ico_s = str(ico_path)
+        h_big = int(_user32.LoadImageW(None, ico_s, 1, cx_big, cx_big, 0x0010) or 0)
+        h_sm = int(_user32.LoadImageW(None, ico_s, 1, cx_sm, cx_sm, 0x0010) or 0)
+        if h_big:
+            handles.append(h_big)
+            _user32.SendMessageW(hwnd, 0x0080, 1, h_big)
+            _user32.SetClassLongPtrW(hwnd, -14, h_big)
+        if h_sm:
+            handles.append(h_sm)
+            _user32.SendMessageW(hwnd, 0x0080, 0, h_sm)
+            _user32.SetClassLongPtrW(hwnd, -34, h_sm)
+    except Exception:
+        pass
+    return handles
 
 
 def _get_top_hwnd(widget: tk.Misc | None) -> int:
@@ -574,17 +614,24 @@ class OoTOverlayHUD:
         self.root.title(f"塞尔达传说 时之笛 · 全程查漏与攻略助手 v{self._app_version}")
         self.root.configure(bg=BG)
         self.root.withdraw()
+        self._ico_path: Path | None = None
+        ico_loaded = False
         try:
             ico_path = (APP_DIR / "triforce.ico") if (APP_DIR / "triforce.ico").is_file() else (BUNDLE_DIR / "triforce.ico")
             if ico_path.is_file():
+                self._ico_path = ico_path
                 self.root.iconbitmap(default=str(ico_path))
+                ico_loaded = True
         except Exception:
             pass
-        try:
-            self._icon_img = _make_triforce_icon(self.root)
-            self.root.iconphoto(True, self._icon_img)
-        except Exception:
-            self._icon_img = None
+        self._icon_img = None
+        self._hicons: list[int] = []
+        if not ico_loaded:
+            try:
+                self._icon_img = _make_triforce_icon(self.root)
+                self.root.iconphoto(True, self._icon_img)
+            except Exception:
+                self._icon_img = None
         self._wndproc_hwnd = 0
         self._wndproc_old = None
         self._wndproc_cb = None
@@ -682,6 +729,7 @@ class OoTOverlayHUD:
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.root.update_idletasks()
         self._wndproc_hwnd, self._wndproc_old, self._wndproc_cb = _install_borderless_taskbar(self.root)
+        self._hicons = _apply_win32_window_icon(self._wndproc_hwnd, self._ico_path)
         self.root.deiconify()
         self.root.update()
         _set_win_rect(self.root, 30, 40, 468, 640, topmost=self.topmost, show=True)
@@ -746,6 +794,10 @@ class OoTOverlayHUD:
             if self._wndproc_hwnd and self._wndproc_old:
                 _user32.SetWindowLongPtrW(self._wndproc_hwnd, _GWLP_WNDPROC, self._wndproc_old)
                 self._wndproc_old = None
+            for hi in getattr(self, "_hicons", ()):
+                if hi:
+                    _user32.DestroyIcon(hi)
+            self._hicons = []
         except Exception:
             pass
         self.root.destroy()
