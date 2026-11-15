@@ -1,5 +1,6 @@
 """OoT progress evaluator, reachability engine, and region-transition alert generator."""
 from dataclasses import dataclass, field
+import time
 from typing import Any
 
 CAP_LABELS_ZH = {
@@ -743,7 +744,7 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "arena_dy": 16.0,
         "boss_rooms": [10],
         "appear_flags": ["InsideTheDekuTree_BossArea_ShutIn", "Gohma_IsLightingForBattle"],
-        "defeat_flags": ["Gohma_DefeatBoss", "HaveDefeatedEnemy_Enemy_DungeonBoss_Gohma"],
+        "defeat_flags": ["Gohma_DefeatBoss", "HavePlayedEvent.Dm_Deku_BossOut", "HaveDefeatedEnemy_Enemy_DungeonBoss_Gohma"],
         "journal_clear_flags": ["IsGet.Item_Stone_Forest"],
     },
     {
@@ -783,7 +784,7 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "arena_dy": 12.0,
         "boss_rooms": [22],
         "appear_flags": ["Enemy_DungeonBoss_Dodongo_BossAppear"],
-        "defeat_flags": ["HaveDefeatedEnemy_Enemy_DungeonBoss_Dodongo"],
+        "defeat_flags": ["HavePlayedEvent.Dm_DodongoCave_BossOut", "HavePlayedEvent.Get_StoneOfFire_DefeatBoss", "HaveDefeatedEnemy_Enemy_DungeonBoss_Dodongo"],
         "journal_clear_flags": ["IsGet.Item_Stone_Fire"],
     },
     {
@@ -822,7 +823,7 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "arena_dy": 12.0,
         "boss_rooms": [15],
         "appear_flags": [],
-        "defeat_flags": ["HaveDefeatedEnemy_Enemy_DungeonBoss_Barinade"],
+        "defeat_flags": ["HavePlayedEvent.Dm_InsideJabu_Jabu_BossOut", "HaveDefeatedEnemy_Enemy_DungeonBoss_Barinade"],
         "journal_clear_flags": ["IsGet.Item_Stone_Water"],
     },
     {
@@ -861,7 +862,7 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "arena_dy": 12.0,
         "boss_rooms": [29],
         "appear_flags": ["ForestTemple_SageOfForest_BossAppearance"],
-        "defeat_flags": ["HaveDefeatedEnemy_Enemy_DungeonBoss_PhantomGanon"],
+        "defeat_flags": ["HavePlayedEvent.Dm_ForestTemple_BossOut", "HavePlayedEvent.ForestTemple_SageOfForest_PhantomGanonDefeat", "HaveDefeatedEnemy_Enemy_DungeonBoss_PhantomGanon"],
         "journal_clear_flags": ["IsGet.Item_Medal_Forest"],
     },
     {
@@ -902,7 +903,7 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "arena_dy": 14.0,
         "boss_rooms": [33],
         "appear_flags": ["Enemy_DungeonBoss_Volvagia_BossAppear", "FireTemple_BossGroundChange"],
-        "defeat_flags": ["HaveDefeatedEnemy_Enemy_DungeonBoss_Volvagia"],
+        "defeat_flags": ["HavePlayedEvent.Dm_FireTemple_BossOut", "HavePlayedEvent.SageOfFire_DefeatBoss", "HaveDefeatedEnemy_Enemy_DungeonBoss_Volvagia"],
         "journal_clear_flags": ["IsGet.Item_Medal_Fire"],
     },
     {
@@ -941,7 +942,7 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "arena_dy": 14.0,
         "boss_rooms": [23],
         "appear_flags": [],
-        "defeat_flags": ["HaveDefeatedEnemy_Enemy_DungeonBoss_Morpha"],
+        "defeat_flags": ["HavePlayedEvent.Dm_WaterTemple_BossOut", "HaveDefeatedEnemy_Enemy_DungeonBoss_Morpha"],
         "journal_clear_flags": ["IsGet.Item_Medal_Water"],
     },
     {
@@ -1001,7 +1002,7 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "arena_dy": 14.0,
         "boss_rooms": [24],
         "appear_flags": ["ShadowTemple_Level_StartBossBattle"],
-        "defeat_flags": ["HaveDefeatedEnemy_Enemy_DungeonBoss_BongoBongo"],
+        "defeat_flags": ["HavePlayedEvent.Dm_ShadowTemple_BossOut", "HaveDefeatedEnemy_Enemy_DungeonBoss_BongoBongo"],
         "journal_clear_flags": ["IsGet.Item_Medal_Shadow"],
     },
     {
@@ -1041,7 +1042,12 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "arena_dy": 16.0,
         "boss_rooms": [33],
         "appear_flags": ["SageOfSpirit_BossIn", "Enemy_DungeonBoss_TwinrovaChange", "SpiritTemple_Boss_IsSplit", "SpiritTemple_Boss_IsCombine"],
-        "defeat_flags": ["HaveDefeatedEnemy_Enemy_DungeonBoss_Twinrova"],
+        "defeat_flags": [
+            "SageOfSpirit_DungeonBoss_KotakeKoume_Off",
+            "HavePlayedEvent.Dm_SpiritTemple_BossOut",
+            "HavePlayedEvent.SageOfSpirit_BossEnd",
+            "HaveDefeatedEnemy_Enemy_DungeonBoss_Twinrova",
+        ],
         "journal_clear_flags": ["IsGet.Item_Medal_Spirit"],
     },
     {
@@ -1049,8 +1055,9 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "location": "InsideGanonCastle",
         "name_zh": "大魔王 加侬多夫",
         "is_miniboss": False,
+        "is_final": True,
         "valid_items": "光箭 · 大师之剑 · 空瓶（可反弹光球）",
-        "navi_hint": "用剑把光球打回去对弹，命中后再用光箭射晕并跳到中央平台砍击！",
+        "navi_hint": "暗之波动让我没法靠近……但一直走过这么多神殿的林克一定没问题！用剑或空瓶弹回光球，再用光箭射晕！",
         "tactics": [
             "1. 站在周围四根高台上，用【大师之剑】或【空瓶】把加侬多夫发射的黄色光球打回去对弹。",
             "2. 蓄力五连紫弹时用回旋斩一次性全弹回！",
@@ -1061,7 +1068,14 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "arena_dy": 16.0,
         "boss_rooms": [26, 63],
         "appear_flags": ["InsideGanonCastle_IsBossAppearDemo", "InsideGanonCastle_IsEnterBossRoom"],
-        "defeat_flags": ["HaveDefeatedEnemy_Enemy_DungeonBoss_Ganondorf"],
+        "defeat_flags": [
+            "InsideGanonCastele_Dungeon_Ganondorf_Die",
+            "IsAppear_GanondorfDeadBody",
+            "HavePlayedEvent.Dm_InsideGanonCastle_BossOut",
+            "HavePlayedEvent.InsideGanonCastle_Dungeon_BossDie_1",
+            "HavePlayedEvent.InsideGanonCaslte_Dungeon_Escape",
+            "HaveDefeatedEnemy_Enemy_DungeonBoss_Ganondorf",
+        ],
         "journal_clear_flags": ["FinalBattleField_ChangeENVForBoss", "HaveDefeatedEnemy_Enemy_DungeonBoss_Ganon"],
     },
     {
@@ -1069,8 +1083,9 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "location": "GanonCastle",
         "name_zh": "最终魔王 加侬",
         "is_miniboss": False,
+        "is_final": True,
         "valid_items": "光箭 · 百万吨锤 / 大鼓隆之剑 · 德库坚果 · 大师之剑",
-        "navi_hint": "前期没有大师之剑时可用百万吨锤/大鼓隆之剑穿裆打尾巴！取回大师之剑后用光箭射晕斩杀！",
+        "navi_hint": "这次一定要一起战斗！！因为我是林克的搭档！！先攻向结晶尾巴，拿回大师之剑后用光箭与圣剑画上句号！",
         "tactics": [
             "1. 开局大师之剑被拍飞：用【光箭】射脸或【德库坚果】定身，贴近穿裆绕背用【百万吨锤】或【大鼓隆之剑】砸尾巴！",
             "2. 火焰壁消失后冲向火焰边取回【大师之剑】，从此装备大师之剑输出尾巴。",
@@ -1079,8 +1094,20 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "arena_pos": (-1.4, 100.0, -1.0),
         "arena_r": 32.0,
         "arena_dy": 16.0,
-        "appear_flags": ["FinalBattleField_ChangeENVForBoss", "FinalBattleField_DefeatGanonStart", "FinalBattleField_Create_Ganon_SecondHalfBattle"],
-        "defeat_flags": ["HaveDefeatedEnemy_Enemy_DungeonBoss_Ganon"],
+        "appear_flags": [
+            "FinalBattleField_ChangeENVForBoss",
+            "HavePlayedEvent.Dm_FinalBattle_BossIn",
+            "FinalBattleField_Create_Ganon_SecondHalfBattle",
+        ],
+        "defeat_flags": [
+            "FinalBattleField_DefeatGanonStart",
+            "HavePlayedEvent.Dm_FinalBattle_BossOut",
+            "HavePlayedEvent.InsideGanonCastle_Dungeon_BossDie_2",
+            "HavePlayedEvent.Dm_FinalBattle_0000",
+            "HavePlayedEvent.Dm_Ending_0000",
+            "Sequence_ToTitleFromGameClear",
+            "HaveDefeatedEnemy_Enemy_DungeonBoss_Ganon",
+        ],
         "journal_clear_flags": [],
     },
 ]
@@ -1092,11 +1119,24 @@ def detect_active_boss(
     cap_hashes: dict[str, int],
     player_pos: tuple[float, float, float] | None,
     dungeon_room: int | None = None,
+    raw_banc: str = "",
+    boot_event: str = "",
 ) -> dict[str, Any] | None:
     """Detect whether the player is currently engaged in a Boss or Mini-Boss battle.
     Uses triple-redundant signals (Boss Bool flags + real-time DungeonRoom + IsBossBattle),
-    because Player_Pos_For_Map freezes outside Boss Doors when the Minimap hides."""
+    and immediately clears during victory BossOut cutscenes, SageRoom, or tower escape."""
     from save_reader import BOSS_DEFEAT_INT_HASHES
+
+    rb = (raw_banc or "").split("/", 1)[0].strip()
+    be = (boot_event or "").strip()
+    if rb in ("SageRoom", "Demo_ShootingLocation_Tapestry_ED"):
+        return None
+    if be and (
+        be == "Common_Dungeon_WarpFromBossArea"
+        or be.startswith("Dm_Ending_")
+        or (be.startswith("Dm_") and "BossOut" in be)
+    ):
+        return None
 
     def _hb(k: str) -> bool:
         h = cap_hashes.get(k)
@@ -1121,12 +1161,38 @@ def detect_active_boss(
                     return True
         return False
 
+    def _ret_boss(b: dict[str, Any]) -> dict[str, Any]:
+        if b["id"] == "boss_ganondorf":
+            res_b = dict(b)
+            res_b["final_phase"] = "ganondorf"
+            return res_b
+        if b["id"] == "boss_ganon":
+            res_b = dict(b)
+            p2 = (
+                _hb("FinalBattleField_Create_Ganon_SecondHalfBattle")
+                or _hb("HavePlayedEvent.Dm_FinalBattle_0010")
+                or _hb("HavePlayedEvent.InsideGanonCastle_Dungeon_Boss_GetMasterSword")
+                or _hb("Enemy_DungeonBossGanon_IsZeldaMagicChargeFinish")
+            )
+            res_b["final_phase"] = "ganon_p2" if p2 else "ganon_p1"
+            return res_b
+        return b
+
     is_boss_battle_global = _hb("IsBossBattle")
 
     for b in BOSS_BATTLES:
         # Match scene (Ganon final stage can report DreamWorld or GanonCastle)
         if b["location"] != curr_loc and not (b["id"] == "boss_ganon" and curr_loc in ("GanonCastle", "DreamWorld", "InsideGanonCastle")):
             continue
+
+        if b["id"] == "boss_ganondorf" and rb in ("CrumblingGanonCastle", "FinalBattleField"):
+            continue
+        if b["id"] == "boss_ganon":
+            if rb == "CrumblingGanonCastle":
+                continue
+            if rb == "FinalBattleField" and _hb("FinalBattleField_BeforeGanonAppear"):
+                if not any(_hb(f) for f in b.get("appear_flags", [])) and not is_boss_battle_global:
+                    continue
 
         if b["id"] == "miniboss_flare_dancer":
             r03_dead = _hb("FireTemple_Room03_FlareDancerisDead")
@@ -1167,24 +1233,80 @@ def detect_active_boss(
 
         # 1. Exact DungeonRoom match for dedicated Boss/Mini-Boss rooms (unaffected by hidden Minimap!)
         if in_boss_room:
-            return b
+            return _ret_boss(b)
 
         # 2. Global IsBossBattle flag for main Dungeon Bosses in their matching scene
         if not b["is_miniboss"] and is_boss_battle_global:
             if b["id"] == "boss_ganon" and curr_loc == "InsideGanonCastle":
                 pass  # InsideGanonCastle belongs to Ganondorf; Ganon is outside on GanonCastle / FinalBattleField
             else:
-                return b
+                return _ret_boss(b)
 
         # 3. Dedicated Boss/Mini-Boss appear Bool flags
         if appear_on:
             if b.get("require_pos_if_appear") and not in_arena:
                 continue
-            return b
+            return _ret_boss(b)
 
         # 4. Fallback arena coordinate check when no appear_flags exist
         if not app_flags and in_arena:
-            return b
+            return _ret_boss(b)
+    return None
+
+
+def compute_final_battle_stage(
+    kv: dict[int, int],
+    cap_hashes: dict[str, int],
+    active_boss: dict[str, Any] | None,
+    raw_banc: str = "",
+) -> str | None:
+    """Return high-level Final Battle stage:
+    None | 'ganondorf' | 'escape' | 'ganon_p1' | 'ganon_p2' | 'victory'."""
+    from save_reader import BOSS_DEFEAT_INT_HASHES
+
+    def _hb(k: str) -> bool:
+        h = cap_hashes.get(k)
+        if not h:
+            return False
+        if kv.get(h, 0):
+            return True
+        sub_h = BOSS_DEFEAT_INT_HASHES.get(h)
+        return bool(kv.get(sub_h, 0)) if sub_h else False
+
+    rb = (raw_banc or "").split("/", 1)[0].strip()
+
+    if active_boss:
+        if active_boss["id"] == "boss_ganondorf":
+            return "ganondorf"
+        if active_boss["id"] == "boss_ganon":
+            return active_boss.get("final_phase", "ganon_p1")
+
+    ganon_defeated = (
+        _hb("FinalBattleField_DefeatGanonStart")
+        or _hb("HavePlayedEvent.Dm_FinalBattle_BossOut")
+        or _hb("HavePlayedEvent.InsideGanonCastle_Dungeon_BossDie_2")
+        or _hb("HavePlayedEvent.Dm_FinalBattle_0000")
+        or _hb("HavePlayedEvent.Dm_Ending_0000")
+        or _hb("Sequence_ToTitleFromGameClear")
+        or _hb("HaveDefeatedEnemy_Enemy_DungeonBoss_Ganon")
+        or rb == "Demo_ShootingLocation_Tapestry_ED"
+    )
+    if ganon_defeated:
+        return "victory"
+
+    ganondorf_defeated = (
+        _hb("InsideGanonCastele_Dungeon_Ganondorf_Die")
+        or _hb("IsAppear_GanondorfDeadBody")
+        or _hb("HavePlayedEvent.Dm_InsideGanonCastle_BossOut")
+        or _hb("HavePlayedEvent.InsideGanonCastle_Dungeon_BossDie_1")
+        or _hb("HavePlayedEvent.InsideGanonCaslte_Dungeon_Escape")
+        or _hb("HaveDefeatedEnemy_Enemy_DungeonBoss_Ganondorf")
+    )
+    if rb == "CrumblingGanonCastle" or (
+        ganondorf_defeated and rb in ("InsideGanonCastle", "CrumblingGanonCastle", "FinalBattleField", "")
+    ):
+        return "escape"
+
     return None
 
 
@@ -1628,6 +1750,13 @@ class TrackerEngine:
         self.active_nearby_keys: set[str] = set()
         self.unlocked_boss_ids: set[str] = set()
         self.unlocked_tip_locs: set[str] = set()
+        self._boss_track_id: str | None = None
+        self._boss_track_loc: str | None = None
+        self._boss_track_room: int | None = None
+        self._boss_saw_is_battle: bool = False
+        self._boss_off_since: float | None = None
+        self._boss_combine_since: float | None = None
+        self._boss_ended_in_room: set[tuple[str, str, int | None]] = set()
 
     def _b(self, kv: dict[int, int], key: str) -> bool:
         h = self.cap_hashes.get(key)
@@ -2030,13 +2159,72 @@ class TrackerEngine:
                             )
                 self.active_nearby_keys = cur_near_keys
         region_boss_tips = BOSS_AND_MECHANIC_TIPS.get(curr_loc, [])
+        raw_banc = state.get("raw_banc") or ""
+        boot_event = state.get("boot_event") or ""
+        if any("已同步读档进度" in a.title for a in alerts):
+            self._boss_track_id = None
+            self._boss_saw_is_battle = False
+            self._boss_off_since = None
+            self._boss_combine_since = None
+            self._boss_ended_in_room.clear()
         active_boss = detect_active_boss(
             curr_loc,
             state["kv32"],
             self.cap_hashes,
             state.get("player_pos"),
             dungeon_room=droom,
+            raw_banc=raw_banc,
+            boot_event=boot_event,
         )
+        now_ts = time.monotonic()
+        self._boss_ended_in_room = {k for k in self._boss_ended_in_room if k[1] == curr_loc and k[2] == droom}
+        if active_boss is not None:
+            bid = active_boss["id"]
+            is_bb = self._b(state["kv32"], "IsBossBattle")
+            room_key = (bid, curr_loc, droom)
+            if room_key in self._boss_ended_in_room:
+                if is_bb:
+                    self._boss_ended_in_room.discard(room_key)
+                else:
+                    active_boss = None
+            if active_boss is not None:
+                if self._boss_track_id != bid or self._boss_track_loc != curr_loc or self._boss_track_room != droom:
+                    self._boss_track_id = bid
+                    self._boss_track_loc = curr_loc
+                    self._boss_track_room = droom
+                    self._boss_saw_is_battle = is_bb
+                    self._boss_off_since = None
+                    self._boss_combine_since = None
+                if bid == "boss_twinrova" and self._b(state["kv32"], "SpiritTemple_Boss_IsCombine"):
+                    if self._boss_combine_since is None:
+                        self._boss_combine_since = now_ts
+                if is_bb:
+                    self._boss_saw_is_battle = True
+                    self._boss_off_since = None
+                elif self._boss_saw_is_battle and bid != "boss_ganon":
+                    if self._boss_off_since is None:
+                        self._boss_off_since = now_ts
+                    grace = 10.0 if (
+                        bid == "boss_twinrova"
+                        and self._b(state["kv32"], "SpiritTemple_Boss_IsSplit")
+                        and not (self._boss_combine_since is not None and (now_ts - self._boss_combine_since) >= 2.0)
+                    ) else 1.5
+                    if (now_ts - self._boss_off_since) >= grace:
+                        self._boss_ended_in_room.add(room_key)
+                        active_boss = None
+        if active_boss is None:
+            self._boss_track_id = None
+            self._boss_saw_is_battle = False
+            self._boss_off_since = None
+            self._boss_combine_since = None
+
+        final_battle_stage = compute_final_battle_stage(
+            state["kv32"],
+            self.cap_hashes,
+            active_boss,
+            raw_banc=raw_banc,
+        )
+        is_final_battle = bool(active_boss and active_boss.get("is_final"))
         boss_journal = evaluate_boss_journal(
             curr_loc,
             story,
@@ -2053,6 +2241,8 @@ class TrackerEngine:
             "slot_name": state.get("slot_name", "slot_00"),
             "location": curr_loc,
             "location_zh": self.db["locations"].get(curr_loc, curr_loc),
+            "raw_banc": raw_banc,
+            "boot_event": boot_event,
             "caps": caps,
             "regions": regions,
             "all_items": all_items,
@@ -2070,6 +2260,8 @@ class TrackerEngine:
             "region_boss_tips": region_boss_tips,
             "all_boss_tips": BOSS_AND_MECHANIC_TIPS,
             "active_boss": active_boss,
+            "is_final_battle": is_final_battle,
+            "final_battle_stage": final_battle_stage,
             "boss_journal": boss_journal,
             "adjacent_miss": adjacent_miss,
             "get_adjacent": lambda l: get_adjacent_reachable_items(l, all_items),

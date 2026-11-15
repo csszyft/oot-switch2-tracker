@@ -1,9 +1,15 @@
 """Portable configuration loader for tracker_config.json."""
 import json
 from pathlib import Path
+import sys
 from typing import Any
 
-APP_DIR = Path(__file__).resolve().parent
+if getattr(sys, "frozen", False):
+    APP_DIR = Path(sys.executable).resolve().parent
+    BUNDLE_DIR = Path(getattr(sys, "_MEIPASS", APP_DIR))
+else:
+    APP_DIR = Path(__file__).resolve().parent
+    BUNDLE_DIR = APP_DIR
 CONFIG_PATH = APP_DIR / "tracker_config.json"
 
 DEFAULT_CONFIG: dict[str, Any] = {

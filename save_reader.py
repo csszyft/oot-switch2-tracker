@@ -44,6 +44,77 @@ SCENE_ALIASES: dict[str, str] = {
     "SageRoom": "TimeTemple",
 }
 
+
+def _normalize_banc_name(raw_banc: str | None) -> str:
+    if not raw_banc:
+        return ""
+    b = raw_banc.split("/", 1)[0].strip()
+    for suf in ("_Adult_Alternative", "_Adult", "_Child", "_Alternative"):
+        if b.endswith(suf):
+            b = b[: -len(suf)]
+            break
+    return b
+
+
+def resolve_scene_location(
+    caption_loc: str | None,
+    raw_banc: str | None,
+    boot_event: str | None,
+    player_pos: tuple[float, float, float] | None,
+    valid_locs: dict[str, str] | set[str],
+) -> str | None:
+    """Reconcile CaptionData.LocationName with real-time Sequence_CurrentBanc & boot_event.
+    Prevents stale pre-warp locations (e.g. DesertColossus during TimeTemple cutscene)
+    or Boss-room sticking after stepping into SageRoom."""
+    rb = (raw_banc or "").split("/", 1)[0].strip()
+    be = (boot_event or "").strip()
+    cap = (caption_loc or "").split("/", 1)[0].strip()
+    cap_mapped = SCENE_ALIASES.get(cap, cap) if cap else ""
+
+    if rb == "Title" or cap == "Title":
+        return "Title"
+    if rb == "SageRoom":
+        return "TimeTemple"
+    if rb in ("CrumblingGanonCastle", "FinalBattleField"):
+        return "GanonCastle"
+    if rb == "Demo_ShootingLocation_Tapestry_ED":
+        return "KokiriForest"
+    if rb == "DreamWorld" or rb.endswith("Stage") or rb in ("BossRushIntervalRoom", "EnemyMuseum"):
+        return "DreamWorld"
+
+    banc_base = _normalize_banc_name(rb)
+    if banc_base == "IngoRanch":
+        banc_base = "LonLonRanch"
+
+    if banc_base == "Market":
+        if be.startswith("Dm_TimeTemple_"):
+            return "TimeTemple"
+        if player_pos is not None:
+            return "TimeTemple" if player_pos[0] >= 55.0 else "Market"
+        if cap_mapped in ("Market", "TimeTemple"):
+            return cap_mapped
+        return "Market"
+
+    if banc_base == "HyruleField":
+        base = cap_mapped if cap_mapped in ("HyruleField", "LonLonRanch", "LakeHylia") else "HyruleField"
+        if base == "HyruleField" and player_pos is not None:
+            x, _y, z = player_pos
+            if -185 <= x <= -15 and 165 <= z <= 355:
+                return "LonLonRanch"
+            if ((x + 205.4) ** 2 + (z - 559.2) ** 2) <= 205.0 ** 2:
+                return "LakeHylia"
+        return base
+
+    if banc_base and (banc_base in valid_locs or banc_base in SCENE_ALIASES):
+        mapped = SCENE_ALIASES.get(banc_base, banc_base)
+        if cap_mapped == mapped:
+            return cap_mapped
+        return mapped
+
+    if cap_mapped == "Title" or cap_mapped in valid_locs:
+        return cap_mapped
+    return None
+
 PROCESS_VM_READ = 0x0010
 PROCESS_QUERY_INFORMATION = 0x0400
 
@@ -234,6 +305,7 @@ class LiveMemoryReader:
         self._wanted_u32: set[int] = set()
         self._skull_hashes: frozenset[int] = frozenset()
         self._b64_flat_verified: bool = False
+        self._str64_layout: tuple[int, int] | None = None
         self._scratch_cap: int = 320 * 1024
         self._scratch_ba = bytearray(self._scratch_cap)
         self._scratch_read = ctypes.c_size_t(0)
@@ -270,6 +342,7 @@ class LiveMemoryReader:
         self.gamedata_ptr_host = 0
         self.mgr_ptr = 0
         self._b64_flat_verified = False
+        self._str64_layout = None
         self.tables.clear()
         self.bool_hash_to_idx.clear()
         self.int_hash_to_idx.clear()
@@ -446,6 +519,7 @@ class LiveMemoryReader:
         if mgr != self.mgr_ptr:
             self.mgr_ptr = mgr
             self._b64_flat_verified = False
+            self._str64_layout = None
             self.tables.clear()
             self.bool_hash_to_idx.clear()
             self.int_hash_to_idx.clear()
@@ -530,15 +604,29 @@ class LiveMemoryReader:
                     if enums:
                         res["enums"] = enums
 
+            caption_loc = None
+            raw_banc = ""
+            boot_event = ""
             if "String64" in self.tables:
                 cnt, entries_ptr, hash_ptr, hcap = self.tables["String64"]
                 if not self.str64_hash_to_idx:
                     self.str64_hash_to_idx = self._read_u32_hash_map(hash_ptr, hcap, cnt)
                 loc_h = db["cap_hashes"].get("CaptionData.LocationName")
-                if loc_h and loc_h in self.str64_hash_to_idx:
-                    loc = self._read_string64(entries_ptr, cnt, self.str64_hash_to_idx[loc_h], db["locations"])
-                    if loc:
-                        res["location"] = loc
+                banc_h = db["cap_hashes"].get("Sequence_CurrentBanc", 0x1D6189DA)
+                boot_h = db["cap_hashes"].get("Sequence_ReservedBootEventName", 0xA242CCC2)
+                s64_vals = self._read_string64_fields(
+                    entries_ptr,
+                    cnt,
+                    {
+                        "loc": self.str64_hash_to_idx.get(loc_h) if loc_h else None,
+                        "banc": self.str64_hash_to_idx.get(banc_h),
+                        "boot": self.str64_hash_to_idx.get(boot_h),
+                    },
+                    db["locations"],
+                )
+                caption_loc = s64_vals.get("loc")
+                raw_banc = s64_vals.get("banc") or ""
+                boot_event = s64_vals.get("boot") or ""
 
             if "Bool64bitKey" in self.tables:
                 cnt, entries_ptr, hash_ptr, hcap = self.tables["Bool64bitKey"]
@@ -556,13 +644,12 @@ class LiveMemoryReader:
                     pos = self._read_vector3(entries_ptr, cnt, self.vec3_hash_to_idx[pos_h])
                     if pos is not None:
                         res["player_pos"] = pos
-                        if res["location"] == "HyruleField":
-                            x, _y, z = pos
-                            if -185 <= x <= -15 and 165 <= z <= 355:
-                                res["location"] = "LonLonRanch"
-                            elif ((x + 205.4) ** 2 + (z - 559.2) ** 2) <= 205.0 ** 2:
-                                res["location"] = "LakeHylia"
 
+            res["raw_banc"] = raw_banc
+            res["boot_event"] = boot_event
+            res["location"] = resolve_scene_location(
+                caption_loc, raw_banc, boot_event, res.get("player_pos"), db["locations"]
+            )
             return res
         except Exception:
             return None
@@ -605,31 +692,66 @@ class LiveMemoryReader:
             }
         return None
 
-    def _read_string64(self, entries_ptr: int, cnt: int, idx: int, valid_locs: dict[str, str]) -> str | None:
+    def _read_string64_fields(
+        self, entries_ptr: int, cnt: int, field_indices: dict[str, int | None], valid_locs: dict[str, str]
+    ) -> dict[str, str]:
+        out: dict[str, str] = {}
         raw_mv = self._rguest(entries_ptr, cnt * 0x70)
         if not raw_mv:
-            return None
+            return out
         raw = bytes(raw_mv)
-        for stride in (0x70, 0x58, 0x60, 0x50, 0x68):
-            if cnt * stride > len(raw):
+        if self._str64_layout is None:
+            for probe_key in ("loc", "banc"):
+                idx = field_indices.get(probe_key)
+                if idx is None or idx >= cnt:
+                    continue
+                for stride in (0x70, 0x58, 0x60, 0x50, 0x68):
+                    if cnt * stride > len(raw):
+                        continue
+                    chunk = raw[idx * stride : (idx + 1) * stride]
+                    soffs = [4] + [o for o in range(0, stride - 4, 4) if o != 4]
+                    for soff in soffs:
+                        sub = chunk[soff : soff + 64]
+                        nul = sub.find(b"\x00")
+                        if 3 <= nul <= 63:
+                            txt = sub[:nul].decode("utf-8", errors="ignore")
+                            base = _normalize_banc_name(txt)
+                            if (
+                                txt == "Title"
+                                or base in valid_locs
+                                or base in SCENE_ALIASES
+                                or base.endswith("Stage")
+                                or base in ("CrumblingGanonCastle", "FinalBattleField", "SageRoom", "Demo_ShootingLocation_Tapestry_ED")
+                            ):
+                                self._str64_layout = (stride, soff)
+                                break
+                    if self._str64_layout is not None:
+                        break
+                if self._str64_layout is not None:
+                    break
+        if self._str64_layout is None:
+            return out
+        stride, soff = self._str64_layout
+        if cnt * stride > len(raw):
+            self._str64_layout = None
+            return out
+        for key, idx in field_indices.items():
+            if idx is None or idx >= cnt:
                 continue
-            chunk = raw[idx * stride : (idx + 1) * stride]
-            soffs = [4] + [o for o in range(0, stride - 4, 4) if o != 4]
-            for soff in soffs:
-                sub = chunk[soff : soff + 64]
-                nul = sub.find(b"\x00")
-                if 3 <= nul <= 63:
-                    txt = sub[:nul].decode("utf-8", errors="ignore")
-                    base_loc = txt.split("/", 1)[0]
-                    if base_loc in SCENE_ALIASES:
-                        return SCENE_ALIASES[base_loc]
-                    if txt in valid_locs:
-                        return txt
-                    if base_loc in valid_locs:
-                        return base_loc
-                    if txt == "Title" or base_loc == "Title":
-                        return "Title"
-        return None
+            sub = raw[idx * stride + soff : idx * stride + soff + 64]
+            nul = sub.find(b"\x00")
+            if nul < 0:
+                nul = len(sub)
+            if nul > 0:
+                out[key] = sub[:nul].decode("utf-8", errors="ignore")
+        return out
+
+    def _read_string64(self, entries_ptr: int, cnt: int, loc_idx: int, valid_locs: dict[str, str]) -> str | None:
+        vals = self._read_string64_fields(entries_ptr, cnt, {"loc": loc_idx}, valid_locs)
+        raw_loc = vals.get("loc")
+        if not raw_loc:
+            return None
+        return resolve_scene_location(raw_loc, None, None, None, valid_locs)
 
     def _read_vector3(self, entries_ptr: int, cnt: int, idx: int) -> tuple[float, float, float] | None:
         raw = self._rguest(entries_ptr, cnt * 0x40)
@@ -769,7 +891,7 @@ class SaveFileReader:
             if val:
                 active_b64.add(val)
 
-        location = None
+        raw_loc = None
         if cap_path.exists():
             try:
                 cap = cap_path.read_bytes()
@@ -781,11 +903,18 @@ class SaveFileReader:
                         end = cap.find(b"\x00", v)
                         if end > v:
                             raw_loc = cap[v:end].decode("utf-8", errors="ignore")
-                            base_loc = raw_loc.split("/", 1)[0] if "/" in raw_loc else raw_loc
-                            location = SCENE_ALIASES.get(base_loc, base_loc)
                         break
             except OSError:
                 pass
+
+        raw_banc = ""
+        banc_hash = db["cap_hashes"].get("Sequence_CurrentBanc", 0x1D6189DA)
+        if banc_hash in kv32:
+            boff = kv32[banc_hash]
+            if offset_pos <= boff < len(sav):
+                bend = sav.find(b"\x00", boff)
+                if bend > boff:
+                    raw_banc = sav[boff:bend].decode("utf-8", errors="ignore")
 
         pos_hash = db["cap_hashes"].get("Player_Pos_For_Map")
         player_pos = None
@@ -793,12 +922,8 @@ class SaveFileReader:
             poff = kv32[pos_hash]
             if offset_pos <= poff <= len(sav) - 12:
                 player_pos = struct.unpack_from("<3f", sav, poff)
-                if location == "HyruleField":
-                    x, _y, z = player_pos
-                    if -185 <= x <= -15 and 165 <= z <= 355:
-                        location = "LonLonRanch"
-                    elif ((x + 205.4) ** 2 + (z - 559.2) ** 2) <= 205.0 ** 2:
-                        location = "LakeHylia"
+
+        location = resolve_scene_location(raw_loc, raw_banc, "", player_pos, db["locations"])
 
         state = {
             "source": "save_file",
@@ -806,6 +931,8 @@ class SaveFileReader:
             "kv32": kv32,
             "b64": active_b64,
             "location": location or "HyruleField",
+            "raw_banc": raw_banc.split("/", 1)[0].strip() if raw_banc else "",
+            "boot_event": "",
             "player_pos": player_pos,
             "mtime": mtime,
         }
@@ -853,7 +980,9 @@ class UnifiedStateReader:
             h_ml = self.db.get("cap_hashes", {}).get("PlayerStatus.MaxLife")
             mem_ml = mem.get("ints", {}).get(h_ml, 0) if h_ml else 12
             mem_loc = mem.get("location")
-            if mem_ml < 12 or mem_loc == "Title":
+            raw_banc = mem.get("raw_banc") or ""
+            boot_event = mem.get("boot_event") or ""
+            if mem_ml < 12 or mem_loc == "Title" or raw_banc == "Title":
                 out = dict(disk)
                 out["is_loading"] = True
                 return out
@@ -879,6 +1008,8 @@ class UnifiedStateReader:
                 "kv32": merged_kv,
                 "b64": b64,
                 "location": loc,
+                "raw_banc": raw_banc,
+                "boot_event": boot_event,
                 "player_pos": ppos,
                 "mtime": disk["mtime"],
             }
@@ -887,7 +1018,9 @@ class UnifiedStateReader:
             h_ml = self.db.get("cap_hashes", {}).get("PlayerStatus.MaxLife")
             mem_ml = mem.get("ints", {}).get(h_ml, 0) if h_ml else 12
             mem_loc = mem.get("location")
-            if mem_ml < 12 or mem_loc == "Title" or not mem.get("b64_ok"):
+            raw_banc = mem.get("raw_banc") or ""
+            boot_event = mem.get("boot_event") or ""
+            if mem_ml < 12 or mem_loc == "Title" or raw_banc == "Title" or not mem.get("b64_ok"):
                 return None
             live_kv: dict[int, int] = {}
             for h, v in mem.get("bools", {}).items():
@@ -910,6 +1043,8 @@ class UnifiedStateReader:
                 "kv32": live_kv,
                 "b64": mem["b64"],
                 "location": loc,
+                "raw_banc": raw_banc,
+                "boot_event": boot_event,
                 "player_pos": ppos,
                 "mtime": time.time(),
             }

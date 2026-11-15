@@ -3,17 +3,18 @@
 > **纯 Python 零第三方依赖** · 实时内存 + 存档双源读取 · 175 项全收集防遗漏 · PS5 触控板 / 通用手柄免切屏操控 · 全屏原生 UI 安全区避让 · Amiibo 直连刷卡
 
 <p align="center">
-  <img src="docs/showcase.png" alt="界面功能实拍展示：本区查漏、Boss攻略、Amiibo刷卡" width="100%" />
+  <img src="docs/showcase.webp" alt="界面功能实拍展示：本区查漏、Boss攻略、Amiibo刷卡" width="100%" />
 </p>
 
 ---
 
 ## ✨ 核心特性
 
-- **零依赖免打包启动**：仅基于 Windows 自带 Python 3.10–3.13 标准库（`tkinter` + `ctypes` Win32 API），无需 `pip install`，双击 `.bat` 即可运行，不注入游戏进程、不抢夺游戏窗口焦点。
-- **双源自动同步（实时内存 + 存档回退）**：毫秒级轮询 **NX2navi (`ocarina.exe`)**、**Fritchii / Lichii (`lichii.exe`)** 与 **Hookshot (`hookshot.exe`)** 实时内存，无需手动指定目录；未开兼容端或仅排查存档时，自动读取 **Eden / Yuzu / Citron / Suyu / Ryujinx** 存档槽位。
+- **开箱即用 `.exe` + 纯源码双支持**：[GitHub Releases](https://github.com/csszyft/oot-switch2-tracker/releases) 直接提供免安装 Python 的独立可执行文件；源码版亦仅依赖 Windows 自带 Python 3.10–3.13 标准库（`tkinter` + `ctypes` Win32 API），无需 `pip install`，不注入游戏进程、不抢夺游戏窗口焦点。
+- **双源自动同步（实时内存 + 存档回退）**：毫秒级轮询 **NX2navi (`ocarina.exe`)**、**Fritchii / Lichii (`lichii.exe`)** 与 **Hookshot (`hookshot.exe`)** 实时内存，无需手动指定目录；未开兼容端或仅排查存档时，自动读取 **Eden / Yuzu / Citron / Suyu / Ryujinx** 存档槽位。实时结合 `Sequence_CurrentBanc` 与 `Sequence_ReservedBootEventName` 裁决位置，跨区传送过场不再滞留旧地名。
 - **175 项全收集精准判定**：完整覆盖 **100 只黄金骷髅蜘蛛、36 块心之碎片、12 首时之笛乐曲、4 个空瓶**，附带 **37 个隐藏洞** 图鉴。结合当前时代（幼年/成年）与已获道具自动拆分为「**当前可补**」与「**缺前置/成年暂不可拿**」，离开区域仍有可补项时自动防漏提醒。
-- **主线导航 + 大戈隆剑限时链 + 防剧透 Boss 图鉴**：主线进度条精确到当前精灵石/贤者奖章并附完整走法；大戈隆剑 11 步交易链在限时阶段自动红色高优先提醒；Boss/中Boss 攻略随推进渐进解锁，进入 Boss 房自动接管左侧栏、击败后自动恢复查漏。
+- **主线导航 + 大戈隆剑限时链 + 防剧透 Boss 图鉴**：主线进度条精确到当前精灵石/贤者奖章并附完整走法；大戈隆剑 11 步交易链在限时阶段自动红色高优先提醒；Boss/中Boss 攻略随推进渐进解锁，进入 Boss 房自动接管左侧栏、击败后基于 `IsBossBattle` 与演出旗标瞬时结束战斗并恢复查漏。
+- **最终决战仪式感界面 & 娜薇（Navi）全分段彩蛋**：进入大魔王加侬多夫 / 高塔崩塌逃离 / 魔兽加侬（夺回大师之剑） / 终局胜利告别四阶段时，自动切换紫金/暗红/凯旋专属配色与全屏微浮窗样式，并以 Switch 2 官中官方译名「娜薇」的口吻弹出开局助威与终局告别彩蛋。
 - **3D 方位与高低差雷达**：实时读取玩家 3D 坐标并计算水平距离与高度差，明确提示「正上方/头顶高墙（开第一人称抬头看）」「正下方/水底」及距离米数。
 - **全屏分布式安全区微浮窗**：检测到游戏全屏时自动切换为顶部胶囊 + 左右安全区微浮窗 + 收集/附近 Toast，严格避开 Switch 2 版游戏四角原生 UI，且窗体鼠标完全穿透。
 - **Amiibo 免菜单直连刷卡**：游戏进入「呼唤 Amiibo」界面时自动弹出选卡列表，内置 **2 张独占面具快切** 与 **24 张每日补给追踪**，直接向游戏传入 `.bin` 卡片数据。
@@ -68,7 +69,7 @@
 当你在全屏游玩的显示器上打开游戏时，助手会自动收缩大窗体，拆分为四个**鼠标完全穿透**（`WS_EX_TRANSPARENT` + `WS_EX_NOACTIVATE`）的轻量微浮窗，严格避让 Switch 2 原生 UI 四角：
 
 <p align="center">
-  <img src="docs/fullscreen_safezone.png" alt="全屏分布式微浮窗安全区分布图" width="100%" />
+  <img src="docs/fullscreen_safezone.webp" alt="全屏分布式微浮窗安全区分布图" width="100%" />
 </p>
 
 | 浮窗位置 | 避让区域 | 显示内容 |
@@ -124,18 +125,17 @@
 
 ## 🚀 快速开始
 
-### 1. 环境准备
-- 操作系统：**Windows 10 / 11（64 位）**
-- 安装官方标准版 **Python 3.10 ~ 3.13**（[python.org](https://www.python.org/downloads/)），安装时请确保勾选：
-  - `Add Python to PATH`
-  - `tcl/tk and IDLE`（内置 `tkinter` GUI 支持，无需安装任何 `pip` 第三方库）
+### 方式一：直接下载 Release 可运行文件（推荐，无需安装 Python）
+1. 前往本仓库右侧 [**Releases 页面**](https://github.com/csszyft/oot-switch2-tracker/releases)，下载 `OoT-Switch2-Tracker-*.exe`（单文件直接双击运行）或 `OoT-Switch2-Tracker-*-Win64.zip`（解压后双击 `时之笛进度助手.exe`）。
+2. 先开助手或先开游戏均可自动探测连接，支持传入 `--minimized` 静默最小化到任务栏启动。
 
-### 2. 下载并启动
+### 方式二：从源码运行（Python 3.10 ~ 3.13 标准库）
+1. 安装官方标准版 **Python 3.10 ~ 3.13**（[python.org](https://www.python.org/downloads/)），勾选 `Add Python to PATH` 与 `tcl/tk and IDLE`（无需任何 `pip` 第三方库）。
+2. 克隆或下载源码后双击启动：
 ```bash
 git clone https://github.com/csszyft/oot-switch2-tracker.git
 cd oot-switch2-tracker
 ```
-或在 GitHub Releases / Code 页面下载 ZIP 解压后：
 - **正常启动**：直接双击 **`启动时之笛助手.bat`**（无黑框后台运行）。
 - **调试排错**：双击 **`启动时之笛助手_调试终端.bat`**（保留控制台窗口查看实时日志）。
 - **静默最小化启动**：命令行传入 `--minimized` 启动，初始最小化在任务栏，进游戏后由手柄呼出：
