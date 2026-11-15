@@ -889,7 +889,26 @@ class OoTOverlayHUD:
             else:
                 entry = APP_DIR / "launcher.py"
                 cmd = [sys.executable, str(entry if entry.is_file() else Path(__file__).resolve()), *extra]
-            subprocess.Popen(cmd, cwd=str(APP_DIR))
+            clean_env = os.environ.copy()
+            for k in list(clean_env.keys()):
+                if k.startswith(("_MEI", "_PYI", "PYI_")):
+                    clean_env.pop(k, None)
+            bundle_s = str(BUNDLE_DIR).lower()
+            for tk_var in ("TCL_LIBRARY", "TK_LIBRARY", "TCLLIBPATH"):
+                val = clean_env.get(tk_var, "")
+                if val and (bundle_s in val.lower() or "_mei" in val.lower()):
+                    clean_env.pop(tk_var, None)
+            flags = getattr(subprocess, "DETACHED_PROCESS", 0x00000008) | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0x00000200)
+            subprocess.Popen(
+                cmd,
+                cwd=str(APP_DIR),
+                env=clean_env,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                creationflags=flags,
+                close_fds=True,
+            )
         except Exception:
             return
         self._on_close()
@@ -3498,9 +3517,24 @@ class OoTOverlayHUD:
         self.root.mainloop()
 
 
-def main(argv: list[str] | None = None):
+def main(argv: list[str] | None = None, **_kwargs):
     args = list(sys.argv[1:] if argv is None else argv)
-    hud = OoTOverlayHUD(auto_update=("--no-update" not in args))
+    update_notice = _kwargs.get("update_notice")
+    skip_upd = ("--no-update" in args) or (update_notice is not None and getattr(update_notice, "status", "") == "updated")
+    hud = OoTOverlayHUD(auto_update=not skip_upd)
+    if update_notice is not None and getattr(update_notice, "status", "") == "updated":
+        src_zh = "Gitee" if getattr(update_notice, "source", "") == "gitee" else "GitHub"
+        files = getattr(update_notice, "updated_files", [])
+        kb = max(1, int(getattr(update_notice, "total_bytes", 0)) // 1024)
+        ver = getattr(update_notice, "remote_version", hud._app_version)
+        notes = getattr(update_notice, "notes", "")
+        al = TrackerAlert(
+            "good",
+            f"✔ 已从 {src_zh} 热更新至 v{ver}（{len(files)} 文件 / {kb} KB）",
+            notes or "已同步最新代码",
+        )
+        hud.alert_history.insert(0, (datetime.now().strftime("%H:%M:%S"), al))
+        hud._show_banner(al, hold_sec=6.0)
     if "--minimized" in args:
         hud.root.after(60, hud._minimize_window)
     hud.run()

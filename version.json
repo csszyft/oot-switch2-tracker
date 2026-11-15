@@ -1,7 +1,7 @@
 {
   "version": "1.2.1",
-  "build": 202611152130,
-  "notes": "修复纯代码版批处理启动、启动直接进界面并后台更新、代码生成高清多DPI图标",
+  "build": 202611152142,
+  "notes": "修复纯代码版批处理启动、后台自动热更新并干净重启、代码绘制多DPI图标",
   "files": {
     "launcher.py": {
       "sha256": "94ebe20a66c4f6a052026681d8d3fc87315240d3192a7458283b9a71ad58891e",
@@ -16,8 +16,8 @@
       "size": 12319
     },
     "overlay_hud.py": {
-      "sha256": "47386da8fa351cb14fdc75e6b3f683da0e51fbc3a0ea7696503578bcac7d5d0e",
-      "size": 173575
+      "sha256": "f4c48c7b1c016a6e5543bb9f31ca9c15059bc1542b87deaeb0490e60ec8fb358",
+      "size": 175389
     },
     "tracker_engine.py": {
       "sha256": "1ba3d7e0db511fda64aa34c255d4f3de396086091657b6c862f2cbb91bf71383",
