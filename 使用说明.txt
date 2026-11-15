@@ -11,8 +11,8 @@
 1. 直接双击 `启动时之笛助手.bat` 即可打开桌面置顶悬浮窗。
    （如果想看运行日志或排查报错，可双击 `启动时之笛助手_调试终端.bat`。）
 2. 先开工具还是先开游戏都可以：
-   - 支持直连 NX2navi (`ocarina.exe`)、Fritchii / Lichii (`lichii.exe`) 实时内存与存档，以及 Eden / Yuzu / Citron / Suyu / Ryujinx 存档。
-   - 存档与 Amiibo 路径默认全部自动识别；若需要手动固定目录，可编辑 `tracker_config.json` 填写 `save_dir` 或 `amiibo_dir`，或直接把文件放进本文件夹下的 `saves\` 与 `amiibo\`。
+   - 支持直连 NX2navi (`ocarina.exe`)、Fritchii / Lichii (`lichii.exe`)、Hookshot (`hookshot.exe`) 实时内存与存档，以及 Eden / Yuzu / Citron / Suyu / Ryujinx 存档。
+   - 存档与 Amiibo 路径在运行游戏时全部自动识别，无需手动指定文件夹（Hookshot 会自动溯源到 `Hookshot-OoT\user\save`）；仅在不开游戏离线查看存档时，可编辑 `tracker_config.json` 填写 `save_dir` 或把存档放入本目录下的 `saves\`。
 
 三、主要文件说明
 ----------------

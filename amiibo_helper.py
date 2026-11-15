@@ -63,7 +63,7 @@ SUPPLY_NAME_MAP = {
     "zelda (wind waker)": "风之杖塞尔达",
 }
 
-_AMIIBO_PROC_HINTS = {"ocarina.exe", "lichii", "eden", "yuzu", "citron", "suyu"}
+_AMIIBO_PROC_HINTS = {"ocarina.exe", "lichii", "hookshot.exe", "eden", "yuzu", "citron", "suyu"}
 
 
 def _read_nx2navi_amiibo_dir(exe_dir: Path) -> Path | None:
@@ -108,7 +108,7 @@ def find_active_amiibo_dir() -> Path | None:
             if cand:
                 found_dirs.append((is_fg, cand))
         else:
-            for sub in (exe_dir / "user" / "amiibo", exe_dir / "amiibo"):
+            for sub in (exe_dir.parent / "user" / "amiibo", exe_dir / "user" / "amiibo", exe_dir / "amiibo"):
                 if sub.is_dir() and any(sub.glob("*.bin")):
                     found_dirs.append((is_fg, sub))
                     break

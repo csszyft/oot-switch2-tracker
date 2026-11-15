@@ -38,6 +38,7 @@ CAP_LABELS_ZH = {
     "requiem": "魂之慰灵曲",
     "nocturne": "暗之梦幻曲",
     "scarecrow": "稻草人之歌",
+    "scarecrow_longshot": "长钩索 + 稻草人之歌",
     "zora_tunic": "卓拉服",
     "goron_tunic": "鼓隆服",
     "silver_scale": "银鳞片",
@@ -104,6 +105,7 @@ CAP_HOW_TO_GET_ZH = {
     "requiem": "成年穿过幻影沙漠到达巨大邪神像门前，进魂之神殿再出来触发希克教授魂之慰灵曲",
     "nocturne": "成年通关森/火/水三大神殿后回到卡卡利科村触发村庄着火剧情由希克教授暗之梦幻曲",
     "scarecrow": "幼年在海利亚湖畔对稻草人吹自定义8音符，成年后再来吹一遍激活稻草人之歌",
+    "scarecrow_longshot": "先在水之神殿拿【长钩索】（短钩索够不到屋顶！），并在幼年与成年分别对湖畔稻草人吹自定义8音符激活《稻草人之歌》",
     "zora_tunic": "成年用蓝色火焰解冻卓拉王获赠卓拉服，或在卓拉领地商店300卢比购买",
     "goron_tunic": "成年用炸弹炸停鼓隆城滚动的小鼓隆获赠鼓隆服，或在鼓隆城商店200卢比购买",
     "silver_scale": "幼年在卓拉领地瀑布旁跳水小游戏取得银鳞片",
@@ -1403,6 +1405,176 @@ def get_adjacent_reachable_items(
     return out
 
 
+MAGIC_BEAN_SOIL_SPECS: list[dict[str, Any]] = [
+    {
+        "loc": "KokiriForest",
+        "name": "商店旁软土",
+        "flags": ("Gimmick_MagicBeanSoil_KokiriForest",),
+        "skull_id": "gs_858f5000ad57b2cc",
+        "tier": "skip",
+        "rewards": (),
+        "pos": (8.2, 112.4, -23.3),
+        "why": "成年飞叶仅用来拿高台卢比，无心之碎片或黄金蜘蛛",
+    },
+    {
+        "loc": "LostWood",
+        "name": "森之舞台草坪软土",
+        "flags": ("Gimmick_MagicBeanSoil_LostWood01",),
+        "skull_id": "gs_f6fa6ef0ca152948",
+        "tier": "opt",
+        "rewards": ("gs_3c2b585ac5c0443e",),
+        "pos": (10.9, 99.5, -52.1),
+        "why": "成年乘飞叶直达树干拿蜘蛛（不种也可等水之神殿拿长钩索来取）",
+    },
+    {
+        "loc": "LostWood",
+        "name": "科奇里入口左转木桥旁软土",
+        "flags": ("Gimmick_MagicBeanSoil_LostWood02",),
+        "skull_id": "gs_8186bcb07d6c2cf9",
+        "tier": "skip",
+        "rewards": (),
+        "pos": (-33.2, 99.9, 31.4),
+        "why": "成年飞叶仅用来拿高处卢比，无独占收集品",
+    },
+    {
+        "loc": "Graveyard",
+        "name": "墓地左侧软土",
+        "flags": ("Gimmick_MagicBeanSoil_Graveyard",),
+        "skull_id": "gs_e91f6be796358ffc",
+        "tier": "must",
+        "rewards": ("hp_gy_bean",),
+        "pos": (-12.1, 103.1, -12.2),
+        "why": "成年乘飞叶上东侧高台破木箱拿【1块心之碎片】",
+    },
+    {
+        "loc": "DeathMountainTrail",
+        "name": "多东哥洞窟入口前软土",
+        "flags": ("Gimmick_MagicBeanSoil_DeathMountainTrail",),
+        "skull_id": "gs_f1d32c06612da232",
+        "tier": "must",
+        "rewards": ("hp_dmt_cavern",),
+        "pos": (-45.5, 108.9, -20.2),
+        "why": "成年乘飞叶上洞窟口正上方崖壁拿【1块心之碎片】",
+    },
+    {
+        "loc": "DeathMountainCrater",
+        "name": "火山口传送点旁软土",
+        "flags": ("Gimmick_MagicBeanSoil_DeathMountainCrater",),
+        "skull_id": "gs_58c75badf059ca54",
+        "tier": "must",
+        "rewards": ("hp_dmc_volcano",),
+        "pos": (3.8, 110.9, -0.8),
+        "why": "成年乘飞叶上火山口中央高塔顶拿【1块心之碎片】",
+    },
+    {
+        "loc": "ZoraRiver",
+        "name": "入口魔法豆商人旁软土",
+        "flags": ("Gimmick_MagicBeanSoil_ZoraRiver", "Gimmick_MagicBeanSoil_ZoraRiver02"),
+        "skull_id": "gs_abad0e9f0d471156",
+        "tier": "skip",
+        "rewards": (),
+        "pos": (-54.6, 100.3, -11.9),
+        "why": "成年飞叶仅作过河捷径；河畔两块心片靠幼年抱鸡滑翔即可全拿",
+    },
+    {
+        "loc": "LakeHylia",
+        "name": "湖畔实验室旁软土",
+        "flags": ("Gimmick_MagicBeanSoil_LakeHylia",),
+        "skull_id": "gs_61576befd16c499a",
+        "tier": "opt",
+        "rewards": ("hp_lh_roof",),
+        "pos": (-167.7, 137.6, 413.5),
+        "why": "成年乘飞叶直上实验室屋顶拿【1块心之碎片】（不种需长钩索+稻草人，短钩索够不到）",
+    },
+    {
+        "loc": "GerudoValley",
+        "name": "桥下水边软土",
+        "flags": ("Gimmick_MagicBeanSoil_GerudoValley",),
+        "skull_id": "gs_738f5746cc517702",
+        "tier": "skip",
+        "rewards": (),
+        "pos": (-11.0, 47.8, 2.4),
+        "why": "成年飞叶仅拿谷底卢比；峡谷两块心片靠抱鸡滑翔或长钩索即可",
+    },
+    {
+        "loc": "DesertColossus",
+        "name": "魂之神殿入口右侧软土",
+        "flags": ("Gimmick_MagicBeanSoil_DesertColossus",),
+        "skull_id": "gs_341f2c03598c861",
+        "tier": "must",
+        "rewards": ("hp_dc_arch", "gs_d0f7e5ffa76ba288"),
+        "pos": (-157.5, 95.4, 17.2),
+        "why": "成年乘飞叶一次拿【石拱门心之碎片 + 东北石台夜间蜘蛛】",
+    },
+]
+
+
+def compute_bean_soil_tips(
+    loc: str,
+    caps: dict[str, Any],
+    kv: dict[int, int],
+    cap_hashes: dict[str, int],
+    collected_ids: set[str],
+    player_pos: tuple[float, float, float] | None = None,
+) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for sp in MAGIC_BEAN_SOIL_SPECS:
+        if sp["loc"] != loc:
+            continue
+        planted = any(bool(kv.get(cap_hashes.get(fk, 0), 0)) for fk in sp["flags"] if fk in cap_hashes)
+        rewards_done = bool(sp["rewards"]) and all(rid in collected_ids for rid in sp["rewards"])
+        alt_ready = (
+            (sp["loc"] == "LostWood" and sp["tier"] == "opt" and bool(caps.get("longshot")))
+            or (sp["loc"] == "LakeHylia" and sp["tier"] == "opt" and bool(caps.get("scarecrow_longshot")))
+        )
+        if planted:
+            tier_eff = "done"
+            badge_txt = "✅ 此土坑已种魔法豆"
+            need_plant = False
+        elif rewards_done:
+            tier_eff = "done"
+            badge_txt = "✅ 不用再种魔法豆（成年奖励已全拿）"
+            need_plant = False
+        elif sp["tier"] == "must":
+            tier_eff = "must"
+            badge_txt = "🔴 必种魔法豆！"
+            need_plant = True
+        elif sp["tier"] == "opt":
+            if alt_ready:
+                tier_eff = "skip"
+                badge_txt = "✅ 可不种（你已具备长钩索替代方案）"
+                need_plant = False
+            else:
+                tier_eff = "opt"
+                badge_txt = "🟡 推荐顺手种魔法豆"
+                need_plant = True
+        else:
+            tier_eff = "skip"
+            badge_txt = "✅ 不用种魔法豆"
+            need_plant = False
+        dist = None
+        if player_pos:
+            px, py, pz = player_pos
+            sx, sy, sz = sp["pos"]
+            if abs(sy - py) <= 10.0:
+                d_xz = ((sx - px) ** 2 + (sz - pz) ** 2) ** 0.5
+                if d_xz <= 20.0:
+                    dist = round(d_xz, 1)
+        out.append({
+            "loc": sp["loc"],
+            "name": sp["name"],
+            "skull_id": sp["skull_id"],
+            "tier": tier_eff,
+            "badge": badge_txt,
+            "why": sp["why"],
+            "need_plant": need_plant,
+            "planted": planted,
+            "dist": dist,
+            "pos": sp["pos"],
+        })
+    return out
+
+
 @dataclass
 class RegionReport:
     location: str
@@ -1553,6 +1725,7 @@ class TrackerEngine:
             "requiem": has_requiem,
             "nocturne": has_ocarina and self._b(kv, "IsGet.Item_Melody_ShadowNocturne"),
             "scarecrow": has_ocarina and self._b(kv, "IsGet.Item_Melody_ScarecrowSong"),
+            "scarecrow_longshot": has_ocarina and self._b(kv, "IsGet.Item_Melody_ScarecrowSong") and has_long,
             "zora_tunic": self._b(kv, "IsGet.Armor_Adult_Zora"),
             "goron_tunic": self._b(kv, "IsGet.Armor_Adult_Goron"),
             "silver_scale": self._b(kv, "IsGet.Item_Scale_Silver") or self._b(kv, "IsGet.Item_Scale_Gold"),
@@ -1749,6 +1922,28 @@ class TrackerEngine:
             droom = None
         active_chains = compute_active_chains(caps, state["kv32"], self.cap_hashes, curr_loc, self.db["locations"], player_pos=state.get("player_pos"))
         nearby_hints = compute_nearby_hints(curr_loc, state.get("player_pos"), all_items, self.db, dungeon_room=droom)
+        bean_soil_tips = compute_bean_soil_tips(curr_loc, caps, state["kv32"], self.cap_hashes, collected_ids, player_pos=state.get("player_pos"))
+        if caps["is_child"]:
+            for bt in bean_soil_tips:
+                if bt["dist"] is not None and not bt["planted"] and bt["skull_id"] in collected_ids:
+                    nearby_hints.append({
+                        "key": f"bean_soil:{bt['loc']}:{bt['name']}",
+                        "kind": "bean_soil",
+                        "dist": bt["dist"],
+                        "dy": 0.0,
+                        "compass": "",
+                        "elev": "",
+                        "radar": bt["badge"],
+                        "name": f"{bt['name']}：{bt['badge']}",
+                        "reachable": True,
+                        "missing_reqs": [],
+                        "guide": bt["why"],
+                        "night_only": False,
+                        "floor": "",
+                        "is_grotto": False,
+                        "need_plant": bt["need_plant"],
+                        "tier": bt["tier"],
+                    })
         if not is_loading:
             cur_chain_map = {c["id"]: c["step_key"] for c in active_chains}
             is_reload_msg = any("已同步读档进度" in a.title for a in alerts)
@@ -1790,7 +1985,16 @@ class TrackerEngine:
                 cur_near_keys = {nh["key"] for nh in nearby_hints}
                 for nh in nearby_hints:
                     if nh["key"] not in self.active_nearby_keys:
-                        if nh["kind"] == "grotto":
+                        if nh["kind"] == "bean_soil":
+                            lvl = "warn" if nh.get("tier") == "must" else "info"
+                            alerts.append(
+                                TrackerAlert(
+                                    lvl,
+                                    f"🌱 附近软土坑（{nh['dist']}m）：{nh['name']}",
+                                    nh["guide"],
+                                )
+                            )
+                        elif nh["kind"] == "grotto":
                             alerts.append(
                                 TrackerAlert(
                                     "info",
@@ -1861,6 +2065,8 @@ class TrackerEngine:
             "story": story,
             "active_chains": active_chains,
             "nearby_hints": nearby_hints,
+            "bean_soil_tips": bean_soil_tips,
+            "get_bean_tips": lambda l: compute_bean_soil_tips(l, caps, state["kv32"], self.cap_hashes, collected_ids, player_pos=state.get("player_pos") if l == curr_loc else None),
             "region_boss_tips": region_boss_tips,
             "all_boss_tips": BOSS_AND_MECHANIC_TIPS,
             "active_boss": active_boss,

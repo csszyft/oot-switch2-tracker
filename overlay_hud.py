@@ -80,6 +80,7 @@ _GAME_FS_CLASSES = {
 _GAME_PROC_NAMES = {
     "ocarina.exe",
     "lichii.exe",
+    "hookshot.exe",
     "yuzu.exe",
     "eden.exe",
     "citron.exe",
@@ -1880,12 +1881,16 @@ class OoTOverlayHUD:
                     ).pack(fill=tk.X)
 
             for nh in nearby_hints[:2]:
-                nbg = "#2C1818" if not nh["reachable"] else "#18242C"
-                nfg = ACCENT_RED if not nh["reachable"] else (ACCENT_GREEN if nh["kind"] != "grotto" else ACCENT_BLUE)
+                is_soil = (nh["kind"] == "bean_soil")
+                nbg = "#2C1818" if not nh["reachable"] else ("#1C2B1D" if is_soil else "#18242C")
+                nfg = ACCENT_RED if not nh["reachable"] else (ACCENT_AMBER if (is_soil and nh.get("need_plant")) else (ACCENT_GREEN if nh["kind"] != "grotto" else ACCENT_BLUE))
                 nbox = tk.Frame(self._dist_rail_body, bg=nbg)
                 nbox.pack(fill=tk.X, padx=4, pady=(2, 1))
                 fl_n = f"[{nh['floor']}] " if nh.get("floor") else ""
-                status_s = f"🔒 {fl_n}暂不可拿(缺:{'、'.join(nh['missing_reqs'][:2])})" if not nh["reachable"] else (f"🔔 {fl_n}可拿!" if nh["kind"] != "grotto" else "🔔 隐藏洞")
+                status_s = (
+                    "🌱 软土坑提示" if is_soil
+                    else (f"🔒 {fl_n}暂不可拿(缺:{'、'.join(nh['missing_reqs'][:2])})" if not nh["reachable"] else (f"🔔 {fl_n}可拿!" if nh["kind"] != "grotto" else "🔔 隐藏洞"))
+                )
                 tk.Label(
                     nbox, text=f"{status_s} · 水平{nh['dist']}m",
                     bg=nbg, fg=nfg, font=("Microsoft YaHei UI", 7, "bold"),
@@ -1920,9 +1925,9 @@ class OoTOverlayHUD:
             ).pack(fill=tk.X)
 
         self._dist_rail_win.update_idletasks()
-        h_rail = min(int(mh * 0.40), max(48, self._dist_rail_body.winfo_reqheight() + 2))
+        h_rail = min(int(mh * 0.395), max(48, self._dist_rail_body.winfo_reqheight() + 2))
         x_rail = ml + 14
-        y_rail = mt + max(305, int(mh * 0.29))
+        y_rail = mt + int(mh * 0.455)
         _show_noactivate(self._dist_rail_win, x_rail, y_rail, w_rail, h_rail)
 
     def _render_right_rail_contents(self, ev: dict, adj_miss: list, mt: int, mr: int, mw: int, mh: int):
@@ -1968,9 +1973,9 @@ class OoTOverlayHUD:
             ).pack(fill=tk.X)
 
         self._dist_right_win.update_idletasks()
-        h_right = min(int(mh * 0.40), max(48, self._dist_right_body.winfo_reqheight() + 2))
+        h_right = min(int(mh * 0.33), max(48, self._dist_right_body.winfo_reqheight() + 2))
         x_right = mr - w_right - 14
-        y_right = mt + max(305, int(mh * 0.29))
+        y_right = mt + int(mh * 0.32)
         _show_noactivate(self._dist_right_win, x_right, y_right, w_right, h_right)
 
     def _hide_fs_toast(self):
@@ -1995,7 +2000,7 @@ class OoTOverlayHUD:
         first = alerts[0]
         is_warn = (first.level == "warn")
         is_chain = ("【完整多轮路线】" in first.detail) or first.title.startswith("⏳") or first.title.startswith("🗡") or first.title.startswith("🎭")
-        is_prox = first.title.startswith(("🔔", "🔒"))
+        is_prox = first.title.startswith(("🔔", "🔒", "🌱"))
         accent = ACCENT_RED if is_warn else (ACCENT_BLUE if first.title.startswith("🔔") else ACCENT_GREEN)
 
         if is_warn or is_chain or is_prox:
@@ -2229,7 +2234,7 @@ class OoTOverlayHUD:
         self._add_row(
             "1",
             "直接启动游戏即可自动连接",
-            sub="支持 NX2navi (ocarina.exe)、Fritchii / Lichii (lichii.exe)、Eden / Yuzu / Citron / Suyu / Ryujinx。",
+            sub="支持 NX2navi (ocarina.exe)、Fritchii / Lichii (lichii.exe)、Hookshot (hookshot.exe)、Eden / Yuzu / Citron / Suyu / Ryujinx。",
             badge_tag="badge_blue",
             sub_tag="sub_guide",
         )
@@ -2243,7 +2248,7 @@ class OoTOverlayHUD:
         self._add_row(
             "3",
             "全屏与手柄快捷键说明",
-            sub="游戏全屏时自动切换为屏幕安全区小窗提示；PS5 触控板支持左右切页与上下滚屏，呼唤 amiibo 时按 L3+○ 直接载入。",
+            sub="游戏全屏时自动切换为屏幕安全区微浮窗；PS5 触控板或通用手柄 L3+R3 可随时呼出大面板，R3+←→切页，呼唤 amiibo 时按 L3+○/B/A 直接载入。",
             badge_tag="badge_purple",
             sub_tag="sub_guide",
         )
@@ -2462,6 +2467,15 @@ class OoTOverlayHUD:
                         sub_tag="sub_red",
                         sub2=g_sub2,
                     )
+                elif nh["kind"] == "bean_soil":
+                    b_tag = "badge_red" if nh.get("tier") == "must" else ("badge_amber" if nh.get("need_plant") else "badge_green")
+                    self._add_row(
+                        "🌱",
+                        f"{nh['name']}（水平距离 {nh['dist']}m）",
+                        sub=nh["guide"],
+                        badge_tag=b_tag,
+                        sub_tag="sub_amber" if nh.get("need_plant") else "sub_dim",
+                    )
                 else:
                     b = "🕳" if nh["kind"] == "grotto" else ("🕷" if nh["kind"] == "skulltula" else "❤")
                     base_sub = "可立刻获取" if nh["kind"] != "grotto" else "隐藏洞穴"
@@ -2473,6 +2487,20 @@ class OoTOverlayHUD:
                         sub_tag="sub_amber",
                         sub2=g_sub2,
                     )
+
+        # 0.6 Regional soft-soil Magic Bean guidance (helps decide whether to plant beans in Child form)
+        bean_tips = ev["get_bean_tips"](loc) if "get_bean_tips" in ev else []
+        if bean_tips:
+            self._add_section_header("🌱 本区软土坑 · 是否需要种魔法豆", "hdr_green")
+            for bt in bean_tips:
+                b_tag = "badge_red" if bt["tier"] == "must" else ("badge_amber" if bt["tier"] == "opt" else "badge_green")
+                self._add_row(
+                    "🌱",
+                    f"{bt['name']}：{bt['badge']}",
+                    sub=bt["why"],
+                    badge_tag=b_tag,
+                    sub_tag="sub_amber" if bt["need_plant"] else "sub_dim",
+                )
 
         # 1. Reachable missing (will trigger warning if left behind!)
         reach_miss = reg.skull_reachable_missing + reg.hp_reachable_missing + reg.quest_reachable_missing

@@ -1,4 +1,4 @@
-"""Dual-source OoT state reader (Portable): Live RAM (ocarina.exe / lichii.exe) + auto-discovered save slots."""
+"""Dual-source OoT state reader (Portable): Live RAM (ocarina.exe / lichii.exe / hookshot.exe) + auto-discovered save slots."""
 import atexit
 import ctypes
 from ctypes import wintypes
@@ -47,7 +47,7 @@ SCENE_ALIASES: dict[str, str] = {
 PROCESS_VM_READ = 0x0010
 PROCESS_QUERY_INFORMATION = 0x0400
 
-_EMU_PROC_HINTS = {"ocarina.exe", "lichii", "eden", "yuzu", "citron", "suyu", "ryujinx"}
+_EMU_PROC_HINTS = {"ocarina.exe", "lichii", "hookshot.exe", "eden", "yuzu", "citron", "suyu", "ryujinx"}
 
 
 _user32 = ctypes.WinDLL("user32", use_last_error=True)
@@ -130,6 +130,16 @@ def find_active_save_dir(custom_save_dir: str | Path | None = None) -> Path | No
                 hit = _newest_slot_parent_under(sub, max_depth=4)
                 if hit:
                     emu_candidates.append((is_fg, -hit[0], hit[1]))
+        elif nm == "hookshot.exe":
+            for sub in (
+                exe_dir.parent / "user" / "save",
+                exe_dir / "user" / "save",
+                exe_dir / "saves",
+                exe_dir / "profile" / "save",
+            ):
+                hit = _newest_slot_parent_under(sub, max_depth=5)
+                if hit:
+                    emu_candidates.append((is_fg, -hit[0], hit[1]))
         else:
             for sub in (
                 exe_dir / "user" / "nand" / "user" / "save",
@@ -205,7 +215,7 @@ def _read_mem(handle, addr: int, size: int) -> bytes | None:
 
 
 class LiveMemoryReader:
-    """Reads live GameDataMgr tables from Fritchii (lichii.exe) fastmem arena or ocarina.exe."""
+    """Reads live GameDataMgr tables from Hookshot (hookshot.exe), Fritchii (lichii.exe), or NX2navi (ocarina.exe)."""
 
     def __init__(self, table_counts: dict[str, int]):
         self.table_counts = table_counts
@@ -276,20 +286,32 @@ class LiveMemoryReader:
                     return (fg_pid, "ocarina")
                 if "lichii" in fg_nm:
                     return (fg_pid, "lichii")
-            return (self.pid, self.proc_kind)
+                if fg_nm == "hookshot.exe":
+                    return (fg_pid, "hookshot")
+            # Do not get stuck on Hookshot's stub launcher before bin\hookshot.exe spawns
+            if not (self.proc_kind == "hookshot" and not self.gamedata_ptr_host):
+                return (self.pid, self.proc_kind)
         now = time.monotonic()
         if now - self._last_pid_scan < 3.0:
+            if self.pid and pid_exists(self.pid):
+                return (self.pid, self.proc_kind)
             return None
         self._last_pid_scan = now
-        cands: list[tuple[int, int, str]] = []
-        for pid, nm, _exe in iter_processes():
+        cands: list[tuple[tuple[int, int], int, str]] = []
+        for pid, nm, exe in iter_processes({"ocarina.exe", "lichii", "hookshot.exe"}):
+            is_fg = 0 if pid == fg_pid else 1
             if nm == "ocarina.exe":
-                cands.append((0 if pid == fg_pid else 1, pid, "ocarina"))
+                cands.append(((is_fg, 0), pid, "ocarina"))
             elif "lichii" in nm:
-                cands.append((0 if pid == fg_pid else 1, pid, "lichii"))
+                cands.append(((is_fg, 0), pid, "lichii"))
+            elif nm == "hookshot.exe":
+                is_bin = 0 if (exe and Path(exe).parent.name.lower() == "bin") else 1
+                cands.append(((is_fg, is_bin), pid, "hookshot"))
         if cands:
             cands.sort(key=lambda x: x[0])
             return (cands[0][1], cands[0][2])
+        if self.pid and pid_exists(self.pid):
+            return (self.pid, self.proc_kind)
         return None
 
     def _rguest(self, guest_va: int, size: int) -> memoryview | bytes | None:
@@ -336,6 +358,59 @@ class LiveMemoryReader:
             addr = base + sz
         return False
 
+    def _probe_hookshot_main(self, host_main: int) -> bool:
+        got_raw = _read_mem(self.handle, host_main + MAIN_GOT_GAMEDATA_OFF, 8)
+        bss_raw = _read_mem(self.handle, host_main + MAIN_BSS_GAMEDATA_OFF, 8)
+        if not got_raw or not bss_raw:
+            return False
+        got_val = struct.unpack("<Q", got_raw)[0]
+        mgr_guest = struct.unpack("<Q", bss_raw)[0]
+        main_guest = got_val - MAIN_BSS_GAMEDATA_OFF
+        if not (0x10000000 <= main_guest < 0x1000000000) or (main_guest & 0xFFF) != 0 or mgr_guest <= 0x10000000:
+            return False
+        arena = host_main - main_guest
+        bool_cnt = self.table_counts.get("Bool", 11292)
+        for cand_arena in ((arena,) if arena == 0 else (arena, 0)):
+            probe = _read_mem(self.handle, cand_arena + mgr_guest, 0x40)
+            if probe and any(struct.unpack_from("<I", probe, o)[0] == bool_cnt for o in range(0, 0x38, 4)):
+                self.arena_base = cand_arena
+                self.gamedata_ptr_host = host_main + MAIN_BSS_GAMEDATA_OFF
+                return True
+        return False
+
+    def _resolve_hookshot_arena(self) -> bool:
+        if self._probe_hookshot_main(0x80020000):
+            return True
+        addr = 0x10000
+        mbi = _MBI()
+        tried: set[int] = {0x80020000}
+        while addr < 0x7FFFFFFFFFFF:
+            if not kernel32.VirtualQueryEx(self.handle, ctypes.c_void_p(addr), ctypes.byref(mbi), ctypes.sizeof(mbi)):
+                break
+            base = mbi.BaseAddress or 0
+            alloc_base = mbi.AllocationBase or base
+            sz = mbi.RegionSize
+            readable = (mbi.Protect & 0xEE) != 0 and (mbi.Protect & 0x100) == 0
+            if mbi.State == 0x1000 and readable and sz >= 64 * 1024:
+                roots = [base]
+                if alloc_base and alloc_base != base:
+                    roots.append(alloc_base)
+                    roots.append(alloc_base + 0x80000000)
+                roots.append(0x80000000)
+                for root_base in roots:
+                    if not root_base:
+                        continue
+                    for off in (0x20000, *range(0, 0x100000, 0x1000)):
+                        cand_main = root_base + off
+                        if cand_main in tried:
+                            continue
+                        if base <= cand_main + MAIN_GOT_GAMEDATA_OFF <= base + sz - 8:
+                            tried.add(cand_main)
+                            if self._probe_hookshot_main(cand_main):
+                                return True
+            addr = base + sz
+        return False
+
     def _ensure_attached(self) -> bool:
         found = self._find_pid()
         if not found:
@@ -358,7 +433,8 @@ class LiveMemoryReader:
             if now_a - self._last_arena_scan < 2.5:
                 return False
             self._last_arena_scan = now_a
-            if not self._resolve_lichii_arena():
+            resolved = self._resolve_hookshot_arena() if self.proc_kind == "hookshot" else self._resolve_lichii_arena()
+            if not resolved:
                 return False
         raw_ptr = _read_mem(self.handle, self.gamedata_ptr_host, 8)
         if not raw_ptr:
