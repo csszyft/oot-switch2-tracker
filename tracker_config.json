@@ -5,8 +5,13 @@
   "fs_mode": "distributed",
   "sound_enabled": true,
   "auto_update": true,
+  "font_scale": 1.0,
+  "manual_fullscreen_hud": false,
+  "hud_clickthrough": true,
+  "window_rect": null,
+  "hud_layout": {},
   "github_repo": "csszyft/oot-switch2-tracker",
   "gitee_repo": "csszyf/oot-switch2-tracker",
   "update_branch": "main",
-  "note": "save_dir 和 amiibo_dir 留空时会自动读取当前正在运行的游戏进程或本目录下的 saves/、amiibo/ 文件夹；auto_update 控制启动时是否检测 GitHub 与 Gitee 纯代码更新。"
+  "note": "save_dir 和 amiibo_dir 留空时会自动读取当前正在运行的游戏进程或本目录下的 saves/、amiibo/ 文件夹；font_scale 支持 0.8~1.6 调节字体大小；manual_fullscreen_hud 可主动开关全屏分布式浮窗；hud_clickthrough=false 或按 F9 可解锁拖动与调整全屏各浮窗位置大小（保存在 hud_layout / window_rect）。"
 }

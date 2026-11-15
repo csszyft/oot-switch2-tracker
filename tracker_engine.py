@@ -119,7 +119,7 @@ CAP_HOW_TO_GET_ZH = {
     "bean_dmc": "回幼年形态吹火之波丽露舞曲去死亡之山火山口传送点软土种下魔法豆，成年后乘飞叶上顶",
     "bean_dc": "回幼年形态吹魂之慰灵曲去巨大邪神像门前软土种下魔法豆，成年后乘飞叶上石拱门",
     "zelda_letter": "幼年潜入海拉鲁城堡花园见塞尔达公主获得塞尔达的信",
-    "gerudo_card": "过格鲁德断桥进入格鲁德要塞后（未拿证前东侧骑马射箭场与北侧沙漠门均封锁），从牢房窗台用【钩索】翻出，潜入盗贼基地用【妖精之弓】射晕巡逻卫兵，击败4名盗贼首领救出4名木匠获赠【格鲁德会员证】",
+    "gerudo_card": "过格鲁德断桥进入格鲁德要塞后（未拿证前东侧骑马射箭场与北侧沙漠门均封锁），从牢房窗台用【钩索】翻出，潜入盗贼基地用【钩索】或【妖精之弓】击晕巡逻卫兵，击败4名盗贼首领救出4名木匠获赠【格鲁德会员证】",
     "gerudo_bridge": "成年在荣蓉牧场赛马赢下【伊波娜】后骑马加速飞跃格鲁德之谷断桥（或在水之神殿拿【长钩索】钩过）；过桥即达桥西帐篷木匠头领处（可交【偷猎者的锯子】换【折断的鼓隆之剑】，无需进要塞后方）",
     "desert_access": "先在成年骑伊波娜/用长钩索过格鲁德之谷断桥，在要塞用钩索+妖精之弓救出4名木匠拿【格鲁德会员证】，再穿越幻影沙漠去巨大邪神像学【魂之慰灵曲】",
     "zora_fountain_child": "幼年在海利亚湖底捡【瓶中信】，回卓拉领地装备使用给卓拉王看让他挪开",
@@ -401,7 +401,9 @@ def compute_nearby_hints(
                     "is_grotto": True,
                 })
 
-    # 2. Check uncollected Gold Skulltulas (<= 28m in same room, or <= 15m across adjacent same-floor doorway/grate) and Heart Pieces (<= 18m)
+    # 2. Check uncollected Gold Skulltulas (dungeon: <= 32m same room / <= 28m adjacent doorway; overworld: <= 22m) and Heart Pieces (<= 20m)
+    dungeon_adj = db.get("dungeon_adj", {}).get(curr_loc, {})
+    is_dungeon = bool(dungeon_adj or dungeon_room is not None)
     for it in all_items:
         if it.location != curr_loc or it.collected or it.id in seen_item_ids:
             continue
@@ -414,12 +416,19 @@ def compute_nearby_hints(
         sk_room = raw_room_by_id.get(it.id)
         is_adj_room = False
         if dungeon_room is not None and sk_room is not None and dungeon_room != sk_room:
-            if d_xz <= 15.0 and abs(dy) <= 7.5:
+            if dungeon_adj:
+                adj_rooms = dungeon_adj.get(str(dungeon_room), [])
+                if sk_room in adj_rooms and d_xz <= 28.0 and abs(dy) <= 8.5:
+                    is_adj_room = True
+                else:
+                    continue
+            elif d_xz <= 15.0 and abs(dy) <= 7.5:
                 is_adj_room = True
             else:
                 continue
-        max_r = 28.0 if it.kind == "skulltula" else 18.0
-        max_dy = 26.0 if it.kind == "skulltula" else 18.0
+        same_room_sk_r = 32.0 if is_dungeon else 22.0
+        max_r = (28.0 if is_adj_room else same_room_sk_r) if it.kind == "skulltula" else 20.0
+        max_dy = 8.5 if is_adj_room else (28.0 if it.kind == "skulltula" else 18.0)
         if d_xz <= max_r and abs(dy) <= max_dy:
             compass, elev, radar = _format_3d_radar(dx, dy, dz, is_adj_room)
             hints.append({
@@ -1777,7 +1786,27 @@ class TrackerEngine:
 
         has_hook = self._b(kv, "IsGet.Item_Hookshot") or self._b(kv, "IsGet.Item_Longshot")
         has_long = self._b(kv, "IsGet.Item_Longshot")
-        has_bomb = self._b(kv, "IsGet.Item_Bomb") or self._b(kv, "IsGet.Item_BombBag_Small")
+        has_bomb = (
+            self._b(kv, "IsGet.Item_Bomb")
+            or self._b(kv, "IsGet.Item_BombBag_Small")
+            or self._b(kv, "IsGet.Item_BombBag_Medium")
+            or self._b(kv, "IsGet.Item_BombBag_Large")
+            or self._i(kv, "PouchData.Item_Bomb.StockNum") > 0
+        )
+        has_slingshot = (
+            self._b(kv, "IsGet.Weapon_Range_SlingShot")
+            or self._b(kv, "IsGet.Item_BulletBag_Small")
+            or self._b(kv, "IsGet.Item_BulletBag_Medium")
+            or self._b(kv, "IsGet.Item_BulletBag_Large")
+            or self._i(kv, "PouchData.Weapon_Range_SlingShot.StockNum") > 0
+        )
+        has_bow = (
+            self._b(kv, "IsGet.Weapon_Range_Bow")
+            or self._b(kv, "IsGet.Item_Quiver_Small")
+            or self._b(kv, "IsGet.Item_Quiver_Medium")
+            or self._b(kv, "IsGet.Item_Quiver_Large")
+            or self._i(kv, "PouchData.Weapon_Range_Bow.StockNum") > 0
+        )
         has_ocarina = self._b(kv, "IsGet.Item_Ocarina_Fairy") or self._b(kv, "IsGet.Item_Ocarina_Time")
         empty_bottle_hash = 0xBE69DE49
         bottle_slots = [
@@ -1785,22 +1814,45 @@ class TrackerEngine:
             "PlayerStatus.AssignableItem.BottleInfo.BottleB.BottleItem",
             "PlayerStatus.AssignableItem.BottleInfo.BottleC.BottleItem",
             "PlayerStatus.AssignableItem.BottleInfo.BottleD.BottleItem",
+            "PlayerStatus.AssignableItem.BottleInfo.BottleE.BottleItem",
         ]
         bottles_from_slots = sum(
             1 for k in bottle_slots
             if (h := self.cap_hashes.get(k)) and kv.get(h, empty_bottle_hash) not in (0, empty_bottle_hash)
         )
+        any_bottle_content = any(
+            self._b(kv, k) for k in (
+                "IsGet.Item_Bottle",
+                "IsGet.Item_Bottle_Milk",
+                "IsGet.Item_Bottle_Letter",
+                "IsGet.Item_Bottle_BlueFire",
+                "IsGet.Item_Bottle_Fairy",
+                "IsGet.Item_Bottle_Fish",
+                "IsGet.Item_Bottle_Poe",
+                "IsGet.Item_Bottle_BigPoe",
+                "IsGet.Item_Bottle_RedPotion",
+                "IsGet.Item_Bottle_GreenPotion",
+                "IsGet.Item_Bottle_BluePotion",
+                "IsGet.Item_Bottle_Bug",
+                "Market_Item_Bottle_TutorialEvent_Cleared",
+            )
+        )
         bottles_from_flags = sum(
             1 for cond in [
-                self._b(kv, "IsGet.Item_Bottle") or self._b(kv, "MiniGame_CatchCucco_IsCompleted"),
+                self._b(kv, "IsGet.Item_Bottle") or self._b(kv, "MiniGame_CatchCucco_IsCompleted") or self._b(kv, "Market_Item_Bottle_TutorialEvent_Cleared"),
                 self._b(kv, "IsGet.Item_Bottle_Milk") or self._b(kv, "IsClear_Minigame_FindOutCucco"),
                 self._b(kv, "IsGet.Item_Bottle_Letter"),
                 self._i(kv, "GhostShop_CouponNum") >= 10,
             ] if cond
         )
-        bottles_count = max(bottles_from_slots, bottles_from_flags)
-        has_bottle = bottles_count > 0 or self._b(kv, "IsGet.Item_Bottle") or self._b(kv, "IsGet.Item_Bottle_Milk") or self._b(kv, "IsGet.Item_Bottle_Letter")
-        has_magic = self._i(kv, "PlayerStatus.MPMax") > 0
+        bottles_count = max(bottles_from_slots, bottles_from_flags, 1 if any_bottle_content else 0)
+        has_bottle = bottles_count > 0 or any_bottle_content
+        has_magic = (
+            self._i(kv, "PlayerStatus.MPMax") > 0
+            or self._b(kv, "IsGet.Item_FairyBless_MP")
+            or self._b(kv, "IsGet.Item_FairyBless_MPDouble")
+            or self._b(kv, "HavePlayedEvent.Dm_FairyFountain_Power")
+        )
         has_epona = self._b(kv, "IsGet.Item_Melody_EponaSong")
         epona_enum_h = self.cap_hashes.get("Get_Epona_State_Enum")
         won_epona = (
@@ -1816,18 +1868,18 @@ class TrackerEngine:
         can_cross_gerudo_bridge = (not is_child) and (won_epona or has_long)
         zora_fountain_child = self._b(kv, "HavePlayedEvent.Dm_ZoraFountain_0000") or self._b(kv, "IsGet.Item_Stone_Water")
 
-        has_magic_bean = self._b(kv, "IsGet.Item_MagicBean")
+        has_magic_bean = self._b(kv, "IsGet.Item_MagicBean") or self._i(kv, "PouchData.Item_MagicBean.StockNum") > 0
         caps = {
             "is_child": is_child,
             "child": is_child,
             "adult": not is_child,
             "sword": self._b(kv, "IsGet.Weapon_Sword_Kokiri") or self._b(kv, "IsGet.Weapon_Sword_Master") or self._b(kv, "IsGet.Weapon_Sword_Biggoron"),
             "deku_stick": True,  # Always obtainable from Deku Babas/shops
-            "slingshot": self._b(kv, "IsGet.Weapon_Range_SlingShot"),
+            "slingshot": has_slingshot,
             "boomerang": self._b(kv, "IsGet.Item_Boomerang"),
             "bomb": has_bomb,
             "hammer": self._b(kv, "IsGet.Item_Hammer"),
-            "bow": self._b(kv, "IsGet.Weapon_Range_Bow"),
+            "bow": has_bow,
             "hookshot": has_hook,
             "longshot": has_long,
             "iron_boots": self._b(kv, "IsGet.Armor_Adult_HeavyBoot"),
@@ -1838,7 +1890,7 @@ class TrackerEngine:
             "bottle": has_bottle,
             "magic": has_magic,
             "dins_fire": has_magic and self._b(kv, "IsGet.Item_DinFire"),
-            "fire_arrow": has_magic and self._b(kv, "IsGet.Weapon_Range_Bow") and self._b(kv, "IsGet.Item_Arrow_Fire"),
+            "fire_arrow": has_magic and has_bow and self._b(kv, "IsGet.Item_Arrow_Fire"),
             "ocarina": has_ocarina,
             "zelda_lullaby": has_ocarina and self._b(kv, "IsGet.Item_Melody_ZeldaLullaby"),
             "lullaby": has_ocarina and self._b(kv, "IsGet.Item_Melody_ZeldaLullaby"),
@@ -2043,7 +2095,8 @@ class TrackerEngine:
         DUNGEON_LOCS = {
             "InsideTheDekuTree", "DodongoCavern", "InsideJabuJabuBelly",
             "BottomOfTheWell", "ForestTemple", "FireTemple",
-            "IceCavern", "WaterTemple", "ShadowTemple", "SpiritTemple", "InsideGanonCastle",
+            "IceCavern", "WaterTemple", "ShadowTemple", "SpiritTemple",
+            "GerudoTrainingGround", "InsideGanonCastle",
         }
         droom_h = self.cap_hashes.get("DungeonRoom")
         droom = int(state["kv32"].get(droom_h, -1)) if (droom_h and curr_loc in DUNGEON_LOCS and droom_h in state["kv32"]) else None
@@ -2078,7 +2131,7 @@ class TrackerEngine:
             is_reload_msg = any("已同步读档进度" in a.title for a in alerts)
             if is_reload_msg:
                 self.prev_chain_steps = cur_chain_map
-                self.active_nearby_keys = {nh["key"] for nh in nearby_hints}
+                self.active_nearby_keys = {f"{nh['key']}:{int(bool(nh['reachable']))}" for nh in nearby_hints}
                 for c in active_chains:
                     if c["timed"]:
                         alerts.append(
@@ -2110,10 +2163,11 @@ class TrackerEngine:
                         alerts.append(TrackerAlert(lvl, ttl, det))
                 self.prev_chain_steps = cur_chain_map
 
-                # Proximity / Stone of Agony popup when entering ~22m range of an uncollected item or grotto
-                cur_near_keys = {nh["key"] for nh in nearby_hints}
+                # Proximity / Stone of Agony popup when entering range (or unlocking prereqs) of an uncollected item or grotto
+                cur_near_keys = {f"{nh['key']}:{int(bool(nh['reachable']))}" for nh in nearby_hints}
                 for nh in nearby_hints:
-                    if nh["key"] not in self.active_nearby_keys:
+                    n_state_key = f"{nh['key']}:{int(bool(nh['reachable']))}"
+                    if n_state_key not in self.active_nearby_keys:
                         if nh["kind"] == "bean_soil":
                             lvl = "warn" if nh.get("tier") == "must" else "info"
                             alerts.append(

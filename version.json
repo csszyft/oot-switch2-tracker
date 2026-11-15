@@ -1,7 +1,7 @@
 {
-  "version": "1.2.1",
-  "build": 202611152142,
-  "notes": "修复纯代码版批处理启动、后台自动热更新并干净重启、代码绘制多DPI图标",
+  "version": "1.2.2",
+  "build": 202611152349,
+  "notes": "修复多东哥2F蜘蛛与各迷宫前置判定、升级全12迷宫邻室3D雷达、支持字体缩放/主动全屏/F9解锁拖动调整浮窗（不占用F11）",
   "files": {
     "launcher.py": {
       "sha256": "94ebe20a66c4f6a052026681d8d3fc87315240d3192a7458283b9a71ad58891e",
@@ -16,12 +16,12 @@
       "size": 12319
     },
     "overlay_hud.py": {
-      "sha256": "f4c48c7b1c016a6e5543bb9f31ca9c15059bc1542b87deaeb0490e60ec8fb358",
-      "size": 175389
+      "sha256": "9400a39306a8b8bb0ead5678c99f154761fa60cd757f75ec6c4ac7026edd6df1",
+      "size": 216449
     },
     "tracker_engine.py": {
-      "sha256": "1ba3d7e0db511fda64aa34c255d4f3de396086091657b6c862f2cbb91bf71383",
-      "size": 135629
+      "sha256": "3cec6554b3b63019820ed95229b96739a172c90c65cd03b99bb9084bdc657b22",
+      "size": 138135
     },
     "save_reader.py": {
       "sha256": "f24e7974cf13ff4932c34b151dbc9697d888577ee18e0d005e044cb0a8618644",
@@ -40,12 +40,12 @@
       "size": 4257
     },
     "portable_config.py": {
-      "sha256": "8b9d076af1321cb7ab03fbc09f31db6d9e5f91c71823ba0db683ffadddb67e83",
-      "size": 1127
+      "sha256": "6a263ff65b723efbccb4d8d7044ba8a15877f218591c72aa023861f30eef6bde",
+      "size": 2624
     },
     "oot_world_db.json": {
-      "sha256": "2950c515626ad2c0e8c4d7c3ffad4c0da436286ad4c696ffd2b9de1098635869",
-      "size": 117292
+      "sha256": "355d167276688c506978bea6ac36e6f7b8d32007dc672e4471cf8a523941ef48",
+      "size": 129697
     },
     "启动时之笛助手.bat": {
       "sha256": "766d0cbd1becabffc76d641a944ca3688b9d634aefed083c24fdb70cf72b80cc",
