@@ -983,8 +983,22 @@ class UnifiedStateReader:
             raw_banc = mem.get("raw_banc") or ""
             boot_event = mem.get("boot_event") or ""
             if mem_ml < 12 or mem_loc == "Title" or raw_banc == "Title":
+                cap_h = self.db.get("cap_hashes", {})
+                h_clear = cap_h.get("Sequence_ToTitleFromGameClear")
+                h_sc10 = cap_h.get("HavePlayedEvent.Dm_StaffCredit_0010")
+                mem_bools = mem.get("bools", {})
+                clear_now = bool((h_clear and mem_bools.get(h_clear)) or (h_sc10 and mem_bools.get(h_sc10)))
                 out = dict(disk)
                 out["is_loading"] = True
+                out["in_title"] = bool(mem_loc == "Title" or raw_banc == "Title")
+                if clear_now:
+                    out["game_clear_ending"] = True
+                    out_kv = dict(out.get("kv32", {}))
+                    if h_clear and mem_bools.get(h_clear):
+                        out_kv[h_clear] = 1
+                    if h_sc10 and mem_bools.get(h_sc10):
+                        out_kv[h_sc10] = 1
+                    out["kv32"] = out_kv
                 return out
             merged_kv = dict(disk["kv32"])
             for h, v in mem.get("bools", {}).items():
@@ -1020,7 +1034,30 @@ class UnifiedStateReader:
             mem_loc = mem.get("location")
             raw_banc = mem.get("raw_banc") or ""
             boot_event = mem.get("boot_event") or ""
+            cap_h = self.db.get("cap_hashes", {})
+            h_clear = cap_h.get("Sequence_ToTitleFromGameClear")
+            h_sc10 = cap_h.get("HavePlayedEvent.Dm_StaffCredit_0010")
+            mem_bools = mem.get("bools", {})
+            clear_now = bool((h_clear and mem_bools.get(h_clear)) or (h_sc10 and mem_bools.get(h_sc10)))
             if mem_ml < 12 or mem_loc == "Title" or raw_banc == "Title" or not mem.get("b64_ok"):
+                if clear_now:
+                    live_kv = {h: (1 if v else 0) for h, v in mem_bools.items()}
+                    live_kv.update(mem.get("ints", {}))
+                    live_kv.update(mem.get("enums", {}))
+                    return {
+                        "source": "live_memory",
+                        "slot_name": "live",
+                        "kv32": live_kv,
+                        "b64": mem.get("b64") or set(),
+                        "location": mem_loc or "Title",
+                        "raw_banc": raw_banc,
+                        "boot_event": boot_event,
+                        "player_pos": mem.get("player_pos"),
+                        "is_loading": True,
+                        "in_title": bool(mem_loc == "Title" or raw_banc == "Title"),
+                        "game_clear_ending": True,
+                        "mtime": time.time(),
+                    }
                 return None
             live_kv: dict[int, int] = {}
             for h, v in mem.get("bools", {}).items():

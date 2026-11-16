@@ -694,6 +694,7 @@ class OoTOverlayHUD:
         self._prev_boss_id: str | None = None
         self._prev_boss_name: str | None = None
         self._prev_final_stage: str | None = None
+        self._prev_final_substage: str = ""
         self._saved_geometry: str | None = None
         self._fs_monitor_rect: tuple[int, int, int, int] | None = None
         self._dist_pill_win: tk.Toplevel | None = None
@@ -2540,7 +2541,9 @@ class OoTOverlayHUD:
             rem_hp = max(0, 36 - ev["total_hp_got"])
             boss = ev.get("active_boss")
             final_stage = ev.get("final_battle_stage")
+            final_substage = ev.get("final_substage") or ""
             is_final = bool(ev.get("is_final_battle"))
+            is_final_seq = bool(ev.get("is_final_sequence") or final_stage is not None or is_final)
 
             # 1. Top-Center Safe Strip (avoids Top-Left Hearts/Magic and Top-Right Item slots)
             reach_cnt = reg.reachable_missing_count if reg else 0
@@ -2554,7 +2557,7 @@ class OoTOverlayHUD:
             )
             if final_stage == "victory":
                 main_txt = f"✨ 终局胜利 · 漫长冒险画上句号 | 🕷{ev['total_skulls_got']}/100 ❤{ev['total_hp_got']}/36 | "
-                status_txt = "🧚 娜薇：林克，回去吧…"
+                status_txt = "🧚 娜薇：能当你的搭档，真的太好啦！"
                 status_col = NAVI_CYAN
                 pill_bg = BG_VICTORY
                 pill_border = BORDER_FINAL_GOLD
@@ -2567,14 +2570,46 @@ class OoTOverlayHUD:
                 pill_border = ACCENT_RED
                 red_txt = ""
             elif boss is not None and is_final:
-                phase_short = (
-                    "魔兽加侬·夺回大师之剑！" if final_stage == "ganon_p2"
-                    else ("魔兽加侬（失去大师之剑）" if final_stage == "ganon_p1" else "魔王加侬多夫")
-                )
+                sub = boss.get("final_subphase") or final_substage or "arm"
                 main_txt = f"🔱 最终战·{ev['location_zh']}{mode_tag} | 🕷{ev['total_skulls_got']}/100 ❤{ev['total_hp_got']}/36 | "
-                status_txt = f"⚔ 最终决战：{phase_short}"
-                status_col = NAVI_CYAN if final_stage == "ganon_p2" else BORDER_FINAL_GOLD
-                pill_bg = BG_FINAL_GANON if final_stage in ("ganon_p1", "ganon_p2") else BG_FINAL
+                if final_stage == "ganon_p2":
+                    if sub == "finish":
+                        status_txt = "⚡ 加侬倒地！用【大师之剑】致命一击！"
+                        status_col = BORDER_FINAL_GOLD
+                        pill_bg = BG_BOSS
+                        pill_border = ACCENT_RED
+                    elif sub == "evileye":
+                        status_txt = "👁 第三眼睁开！用【光箭】射穿额头！"
+                        status_col = NAVI_CYAN
+                        pill_bg = BG_FINAL_GANON
+                        pill_border = BORDER_FINAL_GOLD
+                    elif sub == "invincible":
+                        status_txt = "🛡 邪恶之力暴走！林克先躲开！"
+                        status_col = ACCENT_AMBER
+                        pill_bg = BG_BOSS
+                        pill_border = BORDER_FINAL_GOLD
+                    else:
+                        status_txt = "⚔ 魔兽加侬（持剑）：抓破绽砍手臂！"
+                        status_col = NAVI_CYAN
+                        pill_bg = BG_FINAL_GANON
+                        pill_border = BORDER_FINAL_GOLD
+                elif final_stage == "ganon_p1":
+                    status_txt = "⚔ 最终决战：魔兽加侬（失剑）"
+                    status_col = BORDER_FINAL_GOLD
+                    pill_bg = BG_FINAL_GANON
+                    pill_border = BORDER_FINAL_GOLD
+                else:
+                    status_txt = "⚔ 最终决战：魔王加侬多夫"
+                    status_col = BORDER_FINAL_GOLD
+                    pill_bg = BG_FINAL
+                    pill_border = BORDER_FINAL_GOLD
+                red_txt = ""
+            elif final_stage is not None and boss is None:
+                meta = self._get_final_stage_meta(final_stage, final_substage)
+                main_txt = f"{meta['pill_main']} | 🕷{ev['total_skulls_got']}/100 ❤{ev['total_hp_got']}/36 | "
+                status_txt = meta["pill_status"]
+                status_col = NAVI_CYAN if final_stage in ("ending", "credits", "ganon_p2_intro", "ganon_p2_bind") else BORDER_FINAL_GOLD
+                pill_bg = BG_VICTORY if final_stage in ("ending", "credits") else (BG_FINAL_GANON if final_stage in ("ganon_intro", "ganon_p2_intro", "ganon_p2_bind") else BG_FINAL)
                 pill_border = BORDER_FINAL_GOLD
                 red_txt = ""
             else:
@@ -2598,7 +2633,7 @@ class OoTOverlayHUD:
                 pill_bg = BG
                 red_txt = f"● 缺前置/成年 {unreach_cnt}" if (unreach_cnt > 0 and boss is None) else ""
 
-            pill_fg_main = BORDER_FINAL_GOLD if (is_final or final_stage == "victory") else FG
+            pill_fg_main = BORDER_FINAL_GOLD if is_final_seq else FG
             reach_miss = (reg.skull_reachable_missing + reg.hp_reachable_missing + reg.quest_reachable_missing) if reg else []
             unreach_list = (reg.skull_unreachable + reg.hp_unreachable + reg.quest_unreachable) if reg else []
             adj_miss = ev["get_adjacent"](loc) if "get_adjacent" in ev else ev.get("adjacent_miss", [])
@@ -2657,18 +2692,20 @@ class OoTOverlayHUD:
         # 2. Left-Mid Safe Rail (strictly below Top-Left Hearts/Magic/Mask >= 29% H, above Rupees <= 68% H)
         #    & Right-Mid Safe Rail (adjacent cross-region items, strictly between Top-Right buttons & Minimap)
         if ev is None:
+            final_substage = ""
             rail_content_kind = "standby"
             should_show_rail = True
         else:
             rail_content_kind = (
                 "final_victory" if (boss is None and final_stage == "victory")
                 else ("final_escape" if (boss is None and final_stage == "escape")
-                      else ("boss_fight" if boss is not None
-                            else ("amiibo" if self.amiibo_scanning else self.dist_rail_mode)))
+                      else ("final_interlude" if (boss is None and final_stage is not None)
+                            else ("boss_fight" if boss is not None
+                                  else ("amiibo" if self.amiibo_scanning else self.dist_rail_mode))))
             )
             should_show_rail = (
                 boss is not None
-                or final_stage in ("escape", "victory")
+                or final_stage is not None
                 or rail_content_kind in ("story", "boss", "amiibo")
                 or bool(reach_miss)
                 or bool(active_chains)
@@ -2681,7 +2718,9 @@ class OoTOverlayHUD:
             rail_content_kind,
             boss["id"] if boss else None,
             final_stage,
+            final_substage,
             (boss or {}).get("final_phase"),
+            (boss or {}).get("final_subphase"),
             loc,
             monitor_rect,
             self.hud_unlocked,
@@ -2745,13 +2784,13 @@ class OoTOverlayHUD:
             self._dist_last_key = rail_struct_key
             self._dist_last_dist_key = rail_dist_key
             self._render_left_rail_contents(
-                boss, rail_content_kind, reg, loc, reach_miss, unreach_list, active_chains, nearby_hints, unreach_cnt, story, boss_tips, ml, mt, mr, mb, mw, mh, final_stage=final_stage
+                boss, rail_content_kind, reg, loc, reach_miss, unreach_list, active_chains, nearby_hints, unreach_cnt, story, boss_tips, ml, mt, mr, mb, mw, mh, final_stage=final_stage, final_substage=final_substage
             )
 
         # 3. Right-Mid Safe Rail: Other-region reachable items (never overlapped with Left current-region rail)
         should_show_right = (
             (ev is None and self.hud_unlocked)
-            or (ev is not None and boss is None and not is_final and final_stage not in ("escape", "victory") and rail_content_kind == "auto" and bool(adj_miss))
+            or (ev is not None and boss is None and not is_final and final_stage is None and rail_content_kind == "auto" and bool(adj_miss))
         )
         custom_right = self.hud_layout.get("right")
         right_key = (
@@ -2775,18 +2814,146 @@ class OoTOverlayHUD:
         else:
             _ensure_topmost_noactivate(self._dist_right_win, clickthrough=not self.hud_unlocked)
 
+    def _get_final_stage_meta(self, final_stage: str | None, final_substage: str = "") -> dict[str, str]:
+        if final_stage == "ganondorf_intro":
+            return {
+                "pill_main": "🔱 最终战·大魔王登场",
+                "pill_status": "🎬 决战即将打响…",
+                "banner_title": "🔱 最终决战序幕 · 加侬多夫现身",
+                "banner_detail": "🧚 娜薇：「风琴声停下来了……稳住呼吸，林克，准备迎战大魔王！」",
+                "rail_hdr": "🎬 终局序幕 · 大魔王登场",
+                "rail_body": "• 登场演出结束后会立即切换为加侬多夫实时攻略，暂不回跳普通查漏。",
+            }
+        if final_stage == "ganondorf_out":
+            return {
+                "pill_main": "🔱 最终战·加侬多夫倒下",
+                "pill_status": "🎬 魔王退场演出中…",
+                "banner_title": "🔱 加侬多夫倒下 · 剧情演出中",
+                "banner_detail": "🧚 娜薇：「干得漂亮，林克……不过等一下，高塔好像摇晃起来了，先别大意！」",
+                "rail_hdr": "🎬 终局演出 · 魔王退场中",
+                "rail_body": "• 战后剧情结束后切入崩塌场景；直到可操作逃离时才开始逃跑提醒。",
+            }
+        if final_stage == "escape_intro":
+            return {
+                "pill_main": "🔥 最终战·高塔崩塌剧情",
+                "pill_status": "🎬 剧情后开始逃离…",
+                "banner_title": "🔥 高塔崩塌剧情 · 动画结束后开始逃离",
+                "banner_detail": "🧚 娜薇：「不好，整个塔要塌了！先看完这段对话和崩塌画面，能操控后立刻冲！」",
+                "rail_hdr": "🎬 剧情演出 · 高塔开始崩塌",
+                "rail_body": "• 当前仍在剧情动画中，动画结束恢复操作后再提示跟紧塞尔达逃离。",
+            }
+        if final_stage == "escape_out":
+            return {
+                "pill_main": "🔥 最终战·冲出加侬城堡",
+                "pill_status": "🎬 城堡坍塌演出中…",
+                "banner_title": "✔ 已冲出加侬城堡 · 剧情演出中",
+                "banner_detail": "🧚 娜薇：「呼……总算赶在塌下来前逃出来了！先看看眼前的废墟吧。」",
+                "rail_hdr": "🎬 逃离完成 · 城堡坍塌中",
+                "rail_body": "• 逃离计时与跑路阶段已结束，正在播放整座城堡坍塌动画。",
+            }
+        if final_stage == "ruins":
+            return {
+                "pill_main": "🌑 最终战·城堡废墟",
+                "pill_status": "🔍 去废墟中央调查声音",
+                "banner_title": "🔍 城堡废墟 · 娜薇：「好像有奇怪的声音传过来了……」",
+                "banner_detail": "「刚才的声响究竟是什么？靠近废墟中央看看吧，林克，千万保持戒备！」",
+                "rail_hdr": "🔍 废墟调查 · 终局前奏",
+                "rail_body": "• 走向坍塌后的废墟深处调查异响；注意维持体力，随时准备最后一战。",
+            }
+        if final_stage == "ganon_intro":
+            return {
+                "pill_main": "🔥 最终战·魔兽加侬现身",
+                "pill_status": "🎬 登场演出中…",
+                "banner_title": "🔥 最终魔王现身 · 剧情演出中",
+                "banner_detail": "🧚 娜薇：「那就是三角神力失控后的加侬？！小心大师之剑——准备迎战！」",
+                "rail_hdr": "🎬 最终战开场 · 魔兽现身",
+                "rail_body": "• 登场动画结束后将自动切换为前半战（失剑）对策，切勿急着盲攻。",
+            }
+        if final_stage == "ganon_p2_intro":
+            return {
+                "pill_main": "✨ 最终战·取回大师之剑",
+                "pill_status": "🎬 取剑转场剧情中…",
+                "banner_title": "✨ 火墙消散 · 正在取回大师之剑！",
+                "banner_detail": "🧚 娜薇：「趁现在！！把插在火圈边的大师之剑拔回来——后半战马上打响！」",
+                "rail_hdr": "🎬 剧情转场 · 夺回大师之剑",
+                "rail_body": "• 取剑动画结束后将切换后半战实时指引（手臂破绽 / 闪避 / 第三眼 / 致命一击）。",
+            }
+        if final_stage == "ganon_p2_bind":
+            return {
+                "pill_main": "✨ 最终战·圣光束缚加侬",
+                "pill_status": "🎬 封印蓄力中（准备补刀！）",
+                "banner_title": "✨ 塞尔达发动神圣光缚！",
+                "banner_detail": "🧚 娜薇：「塞尔达公主拖住他了！动画结束加侬倒地时，冲向头部给出致命一击！」",
+                "rail_hdr": "🎬 决战转场 · 圣光束缚加侬",
+                "rail_body": "• 动画结束后加侬将倒地待斩，请立刻冲到头部正面用大师之剑终结！",
+            }
+        if final_stage == "ending":
+            if final_substage == "sages":
+                return {
+                    "pill_main": "✨ 终局结局 · 贤者的封印",
+                    "pill_status": "🎬 圣域封印演出中…",
+                    "banner_title": "✨ 贤者的封印 · 剧情演出中",
+                    "banner_detail": "🧚 娜薇：「六位贤者正在合力把加侬多夫封进暗之世界——终于快画下句点了。」",
+                    "rail_hdr": "✨ 终局结局 · 贤者的封印",
+                    "rail_body": "• 最终战斗已结束，正在播放六贤者封印与后续结局动画。",
+                }
+            if final_substage == "farewell":
+                return {
+                    "pill_main": "✨ 终局结局 · 时之神殿",
+                    "pill_status": "🎬 结局告别动画中…",
+                    "banner_title": "✨ 时之神殿 · 结局告别剧情中",
+                    "banner_detail": "🧚 娜薇：「回到时之神殿了……好好听公主把话说完吧，林克。」",
+                    "rail_hdr": "✨ 终局结局 · 时之神殿",
+                    "rail_body": "• 正在播放结局动画，待片尾制作人员名单全部播完后会献上终局总结。",
+                }
+            return {
+                "pill_main": "✨ 终局结局 · 魔兽加侬倒下",
+                "pill_status": "🎬 终结动画演出中…",
+                "banner_title": "⚔ 致命一击命中 · 结局演出中",
+                "banner_detail": "🧚 娜薇：「成功了，林克……！后面的封印与结局动画还很长，一起安静看完吧。」",
+                "rail_hdr": "✨ 终局结局 · 魔兽落幕",
+                "rail_body": "• 致命一击已命中！接下来将依次进入贤者封印、结局告别与片尾名单。",
+            }
+        if final_stage == "credits":
+            if final_substage in ("the_end", "epilogue"):
+                return {
+                    "pill_main": "✨ 终局尾声 · THE END",
+                    "pill_status": "🎬 即将返回标题…",
+                    "banner_title": "✨ 终局尾声 · 冒险画卷落定",
+                    "banner_detail": "🧚 娜薇：「片尾就要播完啦——回到标题界面时，我还有话想对林克说呢。」",
+                    "rail_hdr": "✨ 终局尾声 · THE END",
+                    "rail_body": "• 最后一段片尾画面结束后，即会弹出本次冒险的终局胜利祝福。",
+                }
+            return {
+                "pill_main": "🎵 终局片尾 · 制作人员名单",
+                "pill_status": "✨ 欣赏海拉鲁庆典…",
+                "banner_title": "🎵 终局片尾 · 海拉鲁庆典播映中",
+                "banner_detail": "🧚 娜薇：「海拉鲁各地此刻都在欢庆重归安宁呢！先安心看完片尾名单吧。」",
+                "rail_hdr": "🎵 终局片尾 · 制作人员名单",
+                "rail_body": "• 片尾完整播映中（保持终局氛围，不切回普通区域查漏），播完后将播报终局胜利。",
+            }
+        return {
+            "pill_main": "🔱 最终决战",
+            "pill_status": "🎬 剧情演出中…",
+            "banner_title": "🔱 最终决战 · 剧情演出中",
+            "banner_detail": "🧚 娜薇：「林克，保持专注！」",
+            "rail_hdr": "🎬 最终决战 · 剧情中",
+            "rail_body": "• 剧情结束后将自动恢复操作提示。",
+        }
+
     def _render_left_rail_contents(
-        self, boss, rail_content_kind, reg, loc, reach_miss, unreach_list, active_chains, nearby_hints, unreach_cnt, story, boss_tips, ml, mt, mr, mb, mw, mh, final_stage=None
+        self, boss, rail_content_kind, reg, loc, reach_miss, unreach_list, active_chains, nearby_hints, unreach_cnt, story, boss_tips, ml, mt, mr, mb, mw, mh, final_stage=None, final_substage=""
     ):
         f = self._fsz
         scale_w = 1.0 + max(0.0, self.font_scale - 1.0) * 0.40
         is_final_boss = bool(boss and boss.get("is_final"))
-        is_ganon = (final_stage in ("ganon_p1", "ganon_p2"))
+        is_ganon = (final_stage in ("ganon_p1", "ganon_p2", "ganon_intro", "ganon_p2_intro", "ganon_p2_bind"))
         if is_final_boss:
-            rail_border = BORDER_FINAL_GOLD
+            sub_eff = (boss or {}).get("final_subphase") or final_substage or "arm"
+            rail_border = ACCENT_RED if (final_stage == "ganon_p2" and sub_eff in ("finish", "invincible")) else BORDER_FINAL_GOLD
             rail_alpha = 0.88
-            rail_bg = BG_FINAL_GANON if is_ganon else BG_FINAL
-            hdr_bg = BG_FINAL_GANON_HDR if is_ganon else BG_FINAL_HDR
+            rail_bg = BG_BOSS if (final_stage == "ganon_p2" and sub_eff == "finish") else (BG_FINAL_GANON if is_ganon else BG_FINAL)
+            hdr_bg = "#4A161E" if (final_stage == "ganon_p2" and sub_eff == "finish") else (BG_FINAL_GANON_HDR if is_ganon else BG_FINAL_HDR)
             w_rail = min(295, max(225, int(mw * 0.16)))
         elif final_stage == "victory" and boss is None:
             rail_border = BORDER_FINAL_GOLD
@@ -2800,6 +2967,12 @@ class OoTOverlayHUD:
             rail_bg = BG_BOSS
             hdr_bg = "#3A151B"
             w_rail = min(285, max(215, int(mw * 0.155)))
+        elif final_stage is not None and boss is None:
+            rail_border = BORDER_FINAL_GOLD
+            rail_alpha = 0.86
+            rail_bg = BG_VICTORY if final_stage in ("ending", "credits") else (BG_FINAL_GANON if is_ganon else BG_FINAL)
+            hdr_bg = BG_VICTORY_HDR if final_stage in ("ending", "credits") else (BG_FINAL_GANON_HDR if is_ganon else BG_FINAL_HDR)
+            w_rail = min(290, max(220, int(mw * 0.158)))
         else:
             rail_border = ACCENT_RED if boss else BORDER_GOLD
             rail_alpha = 0.84 if boss else 0.78
@@ -2838,12 +3011,23 @@ class OoTOverlayHUD:
             ).pack(fill=tk.X)
         elif boss is not None and is_final_boss:
             phase = boss.get("final_phase") or final_stage or "ganondorf"
+            sub = boss.get("final_subphase") or final_substage or "arm"
             if phase == "ganon_p2":
-                hdr_t = "✨ 最终决战 · 魔兽加侬（终结！）"
-                navi_q = "🧚 娜薇：「拿回大师之剑了！用它给加侬致命一击，为漫长的战斗画上句号吧！」"
+                if sub == "finish":
+                    hdr_t = "⚡ 最终决战 · 致命一击！"
+                    navi_q = f"🧚 娜薇：「{boss['navi_hint']}」"
+                elif sub == "evileye":
+                    hdr_t = "👁 魔兽加侬 · 射穿第三眼！"
+                    navi_q = f"🧚 娜薇：「{boss['navi_hint']}」"
+                elif sub == "invincible":
+                    hdr_t = "🛡 魔兽加侬 · 邪恶之力暴走！"
+                    navi_q = f"🧚 娜薇：「{boss['navi_hint']}」"
+                else:
+                    hdr_t = "⚔ 魔兽加侬（持剑·攻击手臂）"
+                    navi_q = f"🧚 娜薇：「{boss['navi_hint']}」"
             elif phase == "ganon_p1":
                 hdr_t = "🔥 最终决战 · 魔兽加侬（前半战）"
-                navi_q = "🧚 娜薇：「这次一定要一起战斗！就算没有大师之剑，林克也能凭手上道具对抗他！」"
+                navi_q = "🧚 娜薇：「这次一定要一起战斗！！因为我……是林克的搭档！！就算没有大师之剑，只凭手上的道具也能对抗他！」"
             else:
                 hdr_t = "🔱 最终决战 · 魔王加侬多夫"
                 navi_q = "🧚 娜薇：「林克，终于到这一刻了！无论多危险，我都会陪你一起面对加侬多夫！」"
@@ -2862,8 +3046,8 @@ class OoTOverlayHUD:
                 bg=rail_bg, fg=BORDER_FINAL_GOLD,
                 font=("Microsoft YaHei UI", f(8), "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
             ).pack(fill=tk.X)
-            for step in boss["tactics"]:
-                is_hi = (phase == "ganon_p2" and "第二阶段" in step) or (phase == "ganon_p1" and "第一阶段" in step)
+            for idx, step in enumerate(boss["tactics"]):
+                is_hi = (idx == 0 and phase == "ganon_p2" and sub in ("finish", "evileye", "invincible"))
                 tk.Label(
                     body, text=step,
                     bg=rail_bg, fg=BORDER_FINAL_GOLD if is_hi else FG,
@@ -2878,33 +3062,50 @@ class OoTOverlayHUD:
             ).pack(fill=tk.X)
             tk.Label(
                 body,
-                text="🧚 娜薇：「城堡快塌了，林克！快跟紧塞尔达公主冲出去，决战还没有结束！！」",
+                text="🧚 娜薇：「塔要塌了，林克！快跟紧塞尔达公主往下冲，决战还没有结束！！」",
                 bg=rail_bg, fg=NAVI_CYAN,
                 font=("Microsoft YaHei UI", f(7), "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
             ).pack(fill=tk.X)
             tk.Label(
                 body,
-                text="• 跟着塞尔达下楼躲避落石；途经阻路的铁甲武士需击败后再继续逃脱。",
+                text="• 紧跟塞尔达下楼躲避坠落瓦砾；途中封锁门的铁甲武士需击败后再继续逃脱。",
                 bg=rail_bg, fg=FG,
                 font=("Microsoft YaHei UI", f(8)), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
             ).pack(fill=tk.X)
         elif boss is None and final_stage == "victory":
             tk.Label(
-                body, text="✨ 终局胜利 · 漫长的冒险结束了",
+                body, text="✨ 终局胜利 · 旅途圆满落幕",
                 bg=hdr_bg, fg=BORDER_FINAL_GOLD,
                 font=("Microsoft YaHei UI", f(9), "bold"), anchor="w", padx=7, pady=4
             ).pack(fill=tk.X)
             tk.Label(
                 body,
-                text="🧚 娜薇：「一切……都结束了呢……\n海拉鲁重回和平的这一天……也是我们分别的时刻呢。」",
+                text="🧚 娜薇：「嘿，林克！终于还是陪你一路打到最后了呢。」",
                 bg=rail_bg, fg=NAVI_CYAN,
                 font=("Microsoft YaHei UI", f(8), "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=3
             ).pack(fill=tk.X)
             tk.Label(
                 body,
-                text="「好了，回去吧，林克！去取回原本属于你的时光吧！」",
+                text="「从科奇里森林出发到今天，能一直飞在你身旁当你的搭档，是我最宝贵的回忆。接下来的路，就放心去走吧！」",
                 bg=rail_bg, fg=BORDER_FINAL_GOLD,
                 font=("Microsoft YaHei UI", f(8), "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
+            ).pack(fill=tk.X)
+        elif boss is None and rail_content_kind == "final_interlude":
+            meta = self._get_final_stage_meta(final_stage, final_substage)
+            tk.Label(
+                body, text=meta["rail_hdr"],
+                bg=hdr_bg, fg=BORDER_FINAL_GOLD,
+                font=("Microsoft YaHei UI", f(9), "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=4
+            ).pack(fill=tk.X)
+            tk.Label(
+                body, text=meta["banner_detail"],
+                bg=rail_bg, fg=NAVI_CYAN,
+                font=("Microsoft YaHei UI", f(7), "bold"), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
+            ).pack(fill=tk.X)
+            tk.Label(
+                body, text=meta["rail_body"],
+                bg=rail_bg, fg=FG,
+                font=("Microsoft YaHei UI", f(7)), anchor="w", justify=tk.LEFT, wraplength=w_rail - 14, padx=7, pady=2
             ).pack(fill=tk.X)
         elif boss is not None:
             # BOSS BATTLE OVERRIDE: Replace collectibles with instant Boss Combat Strategy!
@@ -3303,7 +3504,11 @@ class OoTOverlayHUD:
         first = alerts[0]
         is_warn = (first.level == "warn")
         is_final_victory = first.title.startswith("✨ 终局胜利")
-        is_final_phase = first.title.startswith(("🔱 最终决战", "🔥 最终决战", "🔥 加侬多夫倒下", "✨ 夺回大师之剑"))
+        is_final_finish = first.title.startswith("⚡ 加侬倒下了")
+        is_final_phase = is_final_finish or first.title.startswith((
+            "🔱 最终决战", "🔥 最终决战", "🔥 城堡开始崩塌", "✨ 重握大师之剑",
+            "👁 第三眼睁开了", "🛡 邪恶之力暴走", "⚔ 致命一击命中",
+        ))
         is_chain = ("【完整多轮路线】" in first.detail) or first.title.startswith("⏳") or first.title.startswith("🗡") or first.title.startswith("🎭")
         is_prox = first.title.startswith(("🔔", "🔒", "🌱"))
 
@@ -3317,10 +3522,16 @@ class OoTOverlayHUD:
             toast_bg = BG_VICTORY
             accent = BORDER_FINAL_GOLD
             sub_fg = NAVI_CYAN
+        elif is_final_finish:
+            head_txt = first.title
+            sub_txt = first.detail
+            toast_bg = BG_BOSS
+            accent = ACCENT_RED
+            sub_fg = BORDER_FINAL_GOLD
         elif is_final_phase:
             head_txt = first.title
             sub_txt = first.detail
-            toast_bg = BG_FINAL_GANON if any(k in first.title for k in ("魔兽", "倒下", "大师之剑")) else BG_FINAL
+            toast_bg = BG_BOSS if first.title.startswith(("🛡", "🔥 城堡")) else (BG_FINAL_GANON if any(k in first.title for k in ("魔兽", "大师之剑", "第三眼", "第二幕")) else BG_FINAL)
             accent = BORDER_FINAL_GOLD
             sub_fg = NAVI_CYAN
         elif is_warn or is_chain or is_prox:
@@ -3378,7 +3589,9 @@ class OoTOverlayHUD:
 
         hold_ms = (
             14000 if is_final_victory
-            else (10500 if is_final_phase else (9500 if is_chain else (6500 if is_prox else 4200)))
+            else (12000 if is_final_finish
+                  else (6500 if first.title.startswith(("👁", "🛡", "⚔ 致命一击"))
+                        else (10500 if is_final_phase else (9500 if is_chain else (6500 if is_prox else 4200)))))
         )
         self._toast_after_id = self.root.after(hold_ms, self._hide_fs_toast)
 
@@ -3504,27 +3717,35 @@ class OoTOverlayHUD:
             boss = ev.get("active_boss")
             cur_boss_id = boss["id"] if boss else None
             final_stage = ev.get("final_battle_stage")
+            final_substage = (boss or {}).get("final_subphase") or ev.get("final_substage") or ""
             boss_alerts: list[TrackerAlert] = []
             if is_reload_sync:
                 self._prev_boss_id = cur_boss_id
                 self._prev_boss_name = boss["name_zh"] if boss else None
                 self._prev_final_stage = final_stage
+                self._prev_final_substage = final_substage
             else:
-                if final_stage != self._prev_final_stage:
+                stage_changed = (final_stage != self._prev_final_stage)
+                p2_sub_changed = (
+                    final_stage == "ganon_p2"
+                    and self._prev_final_stage == "ganon_p2"
+                    and final_substage != self._prev_final_substage
+                )
+                if stage_changed or p2_sub_changed:
                     if final_stage == "ganondorf":
                         boss_alerts.append(
                             TrackerAlert(
                                 "warn",
-                                "🔱 最终决战开幕 · 娜薇：「林克，终于走到这里了！」",
-                                "「无论前面有多危险，我都会陪你一起面对大魔王加侬多夫！把大妖精和精灵的力量握在手里，上吧！」\n⚔ 有利道具：大师之剑、光之箭、空白瓶子",
+                                "🔱 最终决战开幕 · 娜薇：「林克，终于到这一战了！」",
+                                "「无论前面有多危险，我都会陪你一起面对大魔王加侬多夫！用大师之剑或空瓶弹回光球，再用光箭射晕！」\n⚔ 有利道具：大师之剑 · 光箭 · 空瓶",
                             )
                         )
                     elif final_stage == "escape":
                         boss_alerts.append(
                             TrackerAlert(
                                 "warn",
-                                "🔥 加侬多夫倒下 · 娜薇：「林克！城堡要塌了，快跟上塞尔达！」",
-                                "「快跟紧塞尔达公主冲出去！别让漫长的旅途停在这里——真正的最终决战还在等着我们！！」",
+                                "🔥 城堡开始崩塌 · 娜薇：「塔要塌了，林克！快跟紧塞尔达！」",
+                                "「紧跟塞尔达公主沿着楼梯冲出去！避开坠落瓦砾，遇到封门的铁甲武士打倒后再继续下楼！」",
                             )
                         )
                     elif final_stage == "ganon_p1":
@@ -3532,26 +3753,66 @@ class OoTOverlayHUD:
                             TrackerAlert(
                                 "warn",
                                 "🔥 最终决战第二幕 · 娜薇：「这次一定要一起战斗！！」",
-                                "「这次光环挡不住我了！因为我……是林克的搭档！！就算没有大师之剑，只凭手上的道具，林克一定也能和他对抗的！」",
+                                "「因为我……是林克的搭档！！就算大师之剑不在手边，靠光箭、德库坚果与重武器也一定能对抗他！」",
                             )
                         )
                     elif final_stage == "ganon_p2":
+                        sub_eff = final_substage or "arm"
+                        if sub_eff == "finish":
+                            boss_alerts.append(
+                                TrackerAlert(
+                                    "warn",
+                                    "⚡ 加侬倒下了！· 娜薇：「林克！用大师之剑给他致命一击吧！」",
+                                    "「战斗还没真正结束——需要你亲自补刀！立刻冲到加侬头部正面，挥出【大师之剑】终结一切！」",
+                                )
+                            )
+                        elif sub_eff == "evileye":
+                            boss_alerts.append(
+                                TrackerAlert(
+                                    "info",
+                                    "👁 第三眼睁开了！· 娜薇：「快用【光箭】射穿额头的眼睛！」",
+                                    "「塞尔达公主创造出的机会不能白费！立刻拉弓切换【光箭】瞄准额头正中央射穿它！」",
+                                )
+                            )
+                        elif sub_eff == "invincible":
+                            boss_alerts.append(
+                                TrackerAlert(
+                                    "warn",
+                                    "🛡 邪恶之力暴走！· 娜薇：「现在攻击无效，林克先躲开！」",
+                                    "「强行出剑或射箭都没法奏效！保持侧移与翻滚避开连斩，等待下一波反击时机！」",
+                                )
+                            )
+                        elif stage_changed:
+                            boss_alerts.append(
+                                TrackerAlert(
+                                    "info",
+                                    "✨ 重握大师之剑！· 娜薇：「魔力正从他额头溢出来！」",
+                                    "「后半战打响！抓加侬双刀大招收招破绽，用【大师之剑】砍击手臂；留意后续第三眼与最终补刀时机！」",
+                                )
+                            )
+                    elif final_stage == "ending" and self._prev_final_stage in ("ganon_p1", "ganon_p2_intro", "ganon_p2", "ganon_p2_bind"):
                         boss_alerts.append(
                             TrackerAlert(
                                 "info",
-                                "✨ 夺回大师之剑！· 娜薇：「林克！用大师之剑给他致命一击吧！」",
-                                "「为漫长的战斗画上句号吧！用光之箭定身或钻过胯下，举起大师之剑终结魔兽加侬！！」",
+                                "⚔ 致命一击命中！· 魔兽加侬倒下",
+                                "🧚 娜薇：「干得好，林克……！接下来将播放贤者封印、结局告别与片尾名单，全部看完后会为你送出终局总结。」",
                             )
                         )
                     elif final_stage == "victory":
                         boss_alerts.append(
                             TrackerAlert(
                                 "good",
-                                "✨ 终局胜利 · 娜薇：「一切……都结束了呢……」",
-                                "「这次的冒险真的非常漫长。海拉鲁重回和平的这一天……也是我们分别的时刻呢。\n好了，回去吧，林克！去取回原本属于你的时光吧！」\n🧚 —— 时之妖精 娜薇 · 感谢你一路走到最后",
+                                "✨ 终局胜利 · 娜薇：「嘿，林克——这一次，真的陪你走到终点啦！」",
+                                "「从德库树长老把你托付给我的那天起，我一直在你身边喊着『听我说呀』——结果真正守护了整个海拉鲁的人，是你呢！\n能一直飞在你身旁当林克的搭档，我真的很骄傲。再见了，勇敢的时之勇者！」\n🧚 —— 时之妖精 娜薇 · 感谢一路同行到最后",
                             )
                         )
-                    elif self._prev_boss_id and self._prev_boss_name and cur_boss_id is None and self._prev_final_stage not in ("escape", "victory"):
+                    elif (
+                        self._prev_boss_id
+                        and self._prev_boss_name
+                        and cur_boss_id is None
+                        and final_stage is None
+                        and self._prev_final_stage is None
+                    ):
                         boss_alerts.append(
                             TrackerAlert(
                                 "good",
@@ -3569,7 +3830,12 @@ class OoTOverlayHUD:
                                 f"有利的道具：{boss['valid_items']}｜娜薇：{boss['navi_hint']}{tactic_1}",
                             )
                         )
-                    elif self._prev_boss_id and self._prev_boss_name:
+                    elif (
+                        self._prev_boss_id
+                        and self._prev_boss_name
+                        and final_stage is None
+                        and self._prev_final_stage is None
+                    ):
                         boss_alerts.append(
                             TrackerAlert(
                                 "good",
@@ -3577,9 +3843,12 @@ class OoTOverlayHUD:
                                 "🧚 娜薇：「干得漂亮，林克！这场战斗总算赢下来了～」\n左侧悬浮窗已自动还原为本区查漏补缺指引",
                             )
                         )
+                if (stage_changed or final_substage != self._prev_final_substage) and not boss_alerts:
+                    self._banner_hold_until = 0.0
                 self._prev_boss_id = cur_boss_id
                 self._prev_boss_name = boss["name_zh"] if boss else None
                 self._prev_final_stage = final_stage
+                self._prev_final_substage = final_substage
 
             if ev["alerts"] or boss_alerts:
                 ts = datetime.now().strftime("%H:%M:%S")
@@ -3597,7 +3866,11 @@ class OoTOverlayHUD:
                 if has_prio:
                     if top_alert.title.startswith("✨ 终局胜利"):
                         hold_s = 14.0
-                    elif top_alert.title.startswith(("🔱 最终决战", "🔥 最终决战", "🔥 加侬多夫倒下", "✨ 夺回大师之剑")):
+                    elif top_alert.title.startswith("⚡ 加侬倒下了"):
+                        hold_s = 12.0
+                    elif top_alert.title.startswith(("👁 第三眼睁开了", "🛡 邪恶之力暴走", "⚔ 致命一击命中")):
+                        hold_s = 6.5
+                    elif top_alert.title.startswith(("🔱 最终决战", "🔥 最终决战", "🔥 城堡开始崩塌", "✨ 重握大师之剑")):
                         hold_s = 10.5
                     else:
                         hold_s = 9.0 if ("【完整多轮路线】" in top_alert.detail or top_alert.title.startswith("⏳")) else (6.5 if top_alert.title.startswith(("🔔", "🔒")) else 5.5)
@@ -3617,6 +3890,10 @@ class OoTOverlayHUD:
                 warn_alerts = [a for a in ev["alerts"] if a.level == "warn"]
                 prox_alerts = [a for a in ev["alerts"] if a.title.startswith(("🔔", "🔒"))]
                 timed_alerts = [a for a in warn_alerts if a.title.startswith(("⏳", "🔒"))]
+                has_boss_warn = any(
+                    a.title.startswith(("⚡ 加侬倒下了", "🔥 城堡开始崩塌", "🛡 邪恶之力", "👁 第三眼睁开了"))
+                    for a in boss_alerts
+                )
                 if self.fs_hidden and not self.fs_manual_peek:
                     if boss_alerts:
                         self._show_fs_toast(boss_alerts, mon_rect or self._fs_monitor_rect, ev)
@@ -3629,7 +3906,7 @@ class OoTOverlayHUD:
                     elif warn_alerts and fs_mode == "distributed":
                         self._show_fs_toast(warn_alerts, mon_rect or self._fs_monitor_rect, ev)
                 if self.sound_enabled.get():
-                    if warn_alerts and (timed_alerts or not self.fs_hidden or fs_mode == "distributed"):
+                    if (warn_alerts and (timed_alerts or not self.fs_hidden or fs_mode == "distributed")) or has_boss_warn:
                         winsound.MessageBeep(winsound.MB_ICONEXCLAMATION)
                     elif good_alerts or any(a.title.startswith("✨ 终局胜利") for a in boss_alerts):
                         winsound.MessageBeep(winsound.MB_OK)
@@ -3690,19 +3967,27 @@ class OoTOverlayHUD:
 
     def _apply_final_desktop_theme(self, final_stage: str | None, active_boss: dict | None):
         is_final_boss = bool(active_boss and active_boss.get("is_final"))
-        if final_stage == "victory":
+        sub_eff = (active_boss or {}).get("final_subphase") or ""
+        if final_stage in ("victory", "ending", "credits"):
             frame_bg, frame_bd = BG_VICTORY, BORDER_FINAL_GOLD
             ban_bg, ban_bd, det_fg = BG_VICTORY_HDR, BORDER_FINAL_GOLD, NAVI_CYAN
-        elif final_stage in ("ganondorf", "ganon_p1", "ganon_p2") or is_final_boss:
-            is_ganon = final_stage in ("ganon_p1", "ganon_p2")
+        elif final_stage in ("escape", "escape_intro") or (final_stage == "ganon_p2" and sub_eff in ("finish", "invincible")):
+            frame_bg, frame_bd = BG_FINAL, ACCENT_RED
+            ban_bg, ban_bd, det_fg = BG_BOSS, BORDER_FINAL_GOLD, FG
+        elif (
+            final_stage in (
+                "ganondorf_intro", "ganondorf", "ganondorf_out",
+                "escape_out", "ruins",
+                "ganon_intro", "ganon_p1", "ganon_p2_intro", "ganon_p2", "ganon_p2_bind",
+            )
+            or is_final_boss
+        ):
+            is_ganon = final_stage in ("ganon_intro", "ganon_p1", "ganon_p2_intro", "ganon_p2", "ganon_p2_bind")
             frame_bg = BG_FINAL_GANON if is_ganon else BG_FINAL
             frame_bd = BORDER_FINAL_GOLD
             ban_bg = BG_FINAL_GANON_HDR if is_ganon else BG_FINAL_HDR
             ban_bd = BORDER_FINAL_GOLD
             det_fg = FG
-        elif final_stage == "escape":
-            frame_bg, frame_bd = BG_FINAL, ACCENT_RED
-            ban_bg, ban_bd, det_fg = BG_BOSS, BORDER_FINAL_GOLD, FG
         else:
             frame_bg, frame_bd = BG, BORDER
             ban_bg, ban_bd, det_fg = BG_CARD, BORDER, FG_DIM
@@ -3717,14 +4002,29 @@ class OoTOverlayHUD:
     def _show_idle_region_banner(self, ev: dict):
         boss = ev.get("active_boss")
         final_stage = ev.get("final_battle_stage")
+        final_substage = (boss or {}).get("final_subphase") or ev.get("final_substage") or ""
         if boss and boss.get("is_final"):
             phase = boss.get("final_phase") or final_stage or "ganondorf"
             if phase == "ganon_p2":
-                t_txt = "✨ 最终决战 · 夺回大师之剑！"
-                d_txt = "🧚 娜薇：「用大师之剑给他致命一击，为漫长的战斗画上句号吧！」"
+                sub = final_substage or "arm"
+                if sub == "finish":
+                    t_txt = "⚡ 加侬倒下了！· 用【大师之剑】致命一击！"
+                    c_fg = ACCENT_RED
+                elif sub == "evileye":
+                    t_txt = "👁 第三眼睁开了！· 用【光箭】射穿额头！"
+                    c_fg = BORDER_FINAL_GOLD
+                elif sub == "invincible":
+                    t_txt = "🛡 邪恶之力暴走！· 林克先躲开！"
+                    c_fg = ACCENT_RED
+                else:
+                    t_txt = "✨ 最终决战 · 魔兽加侬（持剑）"
+                    c_fg = BORDER_FINAL_GOLD
+                d_txt = f"🧚 娜薇：「{boss['navi_hint']}」"
+                self._set_banner_labels(t_txt, c_fg, d_txt)
+                return
             elif phase == "ganon_p1":
                 t_txt = "🔥 最终决战 · 魔兽加侬（前半战）"
-                d_txt = "🧚 娜薇：「这次一定要一起战斗！就算没有大师之剑也能对抗他！」"
+                d_txt = "🧚 娜薇：「这次一定要一起战斗！！因为我……是林克的搭档！！」"
             else:
                 t_txt = "🔱 最终决战 · 魔王加侬多夫"
                 d_txt = "🧚 娜薇：「林克，终于到最后的战斗了！我也会一直陪在你身边的！」"
@@ -3732,9 +4032,9 @@ class OoTOverlayHUD:
             return
         if final_stage == "victory":
             self._set_banner_labels(
-                "✨ 终局胜利 · 娜薇：「一切……都结束了呢……」",
+                "✨ 终局胜利 · 娜薇：「嘿，林克——这一次，真的陪你走到终点啦！」",
                 BORDER_FINAL_GOLD,
-                "「海拉鲁重回和平的这一天……也是我们分别的时刻呢。好了，回去吧，林克！」",
+                "「能一直飞在你身旁当林克的搭档，我真的很骄傲。再见了，勇敢的时之勇者！」",
             )
             return
         if final_stage == "escape":
@@ -3743,6 +4043,10 @@ class OoTOverlayHUD:
                 ACCENT_RED,
                 "「城堡快塌了！跟着塞尔达往下冲，途中注意击败铁甲武士打通出口！」",
             )
+            return
+        if final_stage is not None:
+            meta = self._get_final_stage_meta(final_stage, final_substage)
+            self._set_banner_labels(meta["banner_title"], BORDER_FINAL_GOLD, meta["banner_detail"])
             return
         if boss:
             self._show_banner(
@@ -3773,7 +4077,9 @@ class OoTOverlayHUD:
 
     def _show_banner(self, al: TrackerAlert, hold_sec: float = 4.0):
         color = ACCENT_BLUE
-        if al.title.startswith(("✨ 终局胜利", "🔱 最终决战", "🔥 最终决战", "🔥 加侬多夫倒下", "✨ 夺回大师之剑")):
+        if al.title.startswith(("⚡ 加侬倒下了", "🔥 城堡开始崩塌", "🛡 邪恶之力暴走")):
+            color = ACCENT_RED
+        elif al.title.startswith(("✨ 终局胜利", "🔱 最终决战", "🔥 最终决战", "✨ 重握大师之剑", "👁 第三眼睁开了", "⚔ 致命一击命中")):
             color = BORDER_FINAL_GOLD
         elif al.level == "good":
             color = ACCENT_GREEN
@@ -3800,13 +4106,16 @@ class OoTOverlayHUD:
         src_col = ACCENT_GREEN if ev["source"] == "live_memory" else ACCENT_BLUE
         boss = ev.get("active_boss")
         final_stage = ev.get("final_battle_stage")
+        final_substage = (boss or {}).get("final_subphase") or ev.get("final_substage") or ""
         self._apply_final_desktop_theme(final_stage, boss)
         if final_stage == "victory":
             title_txt, title_fg = "✨ 终局胜利 · 娜薇的告别", BORDER_FINAL_GOLD
-        elif final_stage in ("ganondorf", "ganon_p1", "ganon_p2") or (boss and boss.get("is_final")):
-            title_txt, title_fg = f"🔱 最终决战 · {ev['location_zh']} · {era_str}", BORDER_FINAL_GOLD
-        elif final_stage == "escape":
+        elif final_stage in ("ending", "credits"):
+            title_txt, title_fg = f"✨ 终局结局 · {ev['location_zh']}", BORDER_FINAL_GOLD
+        elif final_stage in ("escape", "escape_intro", "escape_out"):
             title_txt, title_fg = f"🔥 逃离加侬城堡 · {era_str}", BORDER_FINAL_GOLD
+        elif final_stage is not None or (boss and boss.get("is_final")):
+            title_txt, title_fg = f"🔱 最终决战 · {ev['location_zh']} · {era_str}", BORDER_FINAL_GOLD
         else:
             title_txt, title_fg = f"🧭 {ev['location_zh']} · {era_str}", FG
 
@@ -3837,6 +4146,7 @@ class OoTOverlayHUD:
             tuple((n["key"], n["reachable"], int(n["dist"])) for n in ev.get("nearby_hints", [])[:2]),
             boss["id"] if boss else None,
             final_stage,
+            final_substage,
             (boss or {}).get("final_phase"),
             tuple(b["id"] for b in bj.get("unlocked_undefeated", [])),
             tuple(b["id"] for b in bj.get("defeated", [])),
@@ -3897,9 +4207,17 @@ class OoTOverlayHUD:
     def _add_active_boss_card(self, boss: dict):
         if boss.get("is_final"):
             phase = boss.get("final_phase") or "ganondorf"
+            sub = boss.get("final_subphase") or "arm"
             if phase == "ganon_p2":
-                hdr_t = f"✨ 最终决战（终结阶段）· {boss['name_zh']}"
-                navi_q = "🧚 娜薇：「拿回大师之剑了！用它给加侬致命一击，为漫长的战斗画上句号吧！」"
+                if sub == "finish":
+                    hdr_t = f"⚡ 最终决战（致命一击！）· {boss['name_zh']}"
+                elif sub == "evileye":
+                    hdr_t = f"👁 最终决战（第三眼开启）· {boss['name_zh']}"
+                elif sub == "invincible":
+                    hdr_t = f"🛡 最终决战（邪恶之力暴走）· {boss['name_zh']}"
+                else:
+                    hdr_t = f"✨ 最终决战（后半·重握大师之剑）· {boss['name_zh']}"
+                navi_q = f"🧚 娜薇：「{boss['navi_hint']}」"
             elif phase == "ganon_p1":
                 hdr_t = f"🔥 最终决战（第二幕·前半）· {boss['name_zh']}"
                 navi_q = "🧚 娜薇：「这次一定要一起战斗！！因为我……是林克的搭档！！就算没有大师之剑，只凭手上的道具也能对抗他！」"
@@ -3919,7 +4237,7 @@ class OoTOverlayHUD:
         self.view.insert(tk.END, "\n".join(lines) + "\n", "boss_body")
         self.view.insert(tk.END, "\n", "sep")
 
-    def _add_final_stage_card(self, final_stage: str | None):
+    def _add_final_stage_card(self, final_stage: str | None, final_substage: str = ""):
         if final_stage == "escape":
             self.view.insert(tk.END, "🔥 最终战中场 · 城堡崩塌逃离战\n", "final_hdr")
             self.view.insert(
@@ -3937,14 +4255,23 @@ class OoTOverlayHUD:
             self.view.insert(tk.END, "✨ 终局胜利 · 漫长的冒险画上句号\n", "victory_hdr")
             self.view.insert(
                 tk.END,
-                "🧚 娜薇：「一切……都结束了呢……\n这次的冒险真的非常漫长。海拉鲁重回和平的这一天……也是我们分别的时刻呢。」\n",
+                "🧚 娜薇：「嘿，林克！终于还是陪你一路打到最后了呢。\n从德库树长老把你托付给我的那天起，我一直在你身边喊着『听我说呀』——结果真正守护了整个海拉鲁的人，是你呢！」\n",
                 "victory_navi",
             )
             self.view.insert(
                 tk.END,
-                "「好了，回去吧，林克！去取回原本属于你的时光吧！」\n—— 感谢你与娜薇一同走完这段《塞尔达传说 时之笛》的旅程 ✨\n",
+                "「从科奇里森林出发到今天，能一直飞在你身旁当你的搭档，是我最宝贵的回忆。再见了，勇敢的时之勇者——接下来的路，就放心去走吧！」\n—— 感谢你与时之妖精娜薇一同走完这段《塞尔达传说 时之笛》的旅程 ✨\n",
                 "victory_body",
             )
+            self.view.insert(tk.END, "\n", "sep")
+        elif final_stage is not None:
+            meta = self._get_final_stage_meta(final_stage, final_substage)
+            hdr_tag = "victory_hdr" if final_stage in ("ending", "credits") else "final_hdr"
+            navi_tag = "victory_navi" if final_stage in ("ending", "credits") else "final_navi"
+            body_tag = "victory_body" if final_stage in ("ending", "credits") else "final_body"
+            self.view.insert(tk.END, f"{meta['rail_hdr']}\n", hdr_tag)
+            self.view.insert(tk.END, f"{meta['banner_detail']}\n", navi_tag)
+            self.view.insert(tk.END, f"{meta['rail_body']}\n", body_tag)
             self.view.insert(tk.END, "\n", "sep")
 
     def _add_unlocked_boss_card(self, boss: dict, loc_zh: str, tag_suffix: str = ""):
@@ -3978,11 +4305,11 @@ class OoTOverlayHUD:
         if not reg:
             return
 
-        # 0. Active Boss battle card (or Final Escape / Final Victory ceremonial card)
+        # 0. Active Boss battle card (or Final Interlude / Escape / Final Victory ceremonial card)
         if ev.get("active_boss"):
             self._add_active_boss_card(ev["active_boss"])
-        elif ev.get("final_battle_stage") in ("escape", "victory"):
-            self._add_final_stage_card(ev.get("final_battle_stage"))
+        elif ev.get("final_battle_stage") is not None:
+            self._add_final_stage_card(ev.get("final_battle_stage"), ev.get("final_substage") or "")
 
         # Summary header for selected region right at the top
         auto_tag = "当前位置" if loc == ev["location"] else "手动预览"
@@ -4222,8 +4549,8 @@ class OoTOverlayHUD:
         active_boss = ev.get("active_boss")
         if active_boss:
             self._add_active_boss_card(active_boss)
-        elif ev.get("final_battle_stage") in ("escape", "victory"):
-            self._add_final_stage_card(ev.get("final_battle_stage"))
+        elif ev.get("final_battle_stage") is not None:
+            self._add_final_stage_card(ev.get("final_battle_stage"), ev.get("final_substage") or "")
         self._add_story_card(ev["story"])
 
         bj = ev.get("boss_journal") or {}

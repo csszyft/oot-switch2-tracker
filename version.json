@@ -1,7 +1,7 @@
 {
-  "version": "1.2.3",
-  "build": 202611160023,
-  "notes": "修复全屏拖动或鼠标点击锁定后 F9 无法解锁/锁定的问题、全屏期间保持任务栏图标不消失（点击可呼出主窗/右键关闭）并修复无边框窗口最小化",
+  "version": "1.2.4",
+  "build": 202611162004,
+  "notes": "重构最终决战与结局状态机（切场保活、防误发战斗结束、隔离梦境连战），修复高塔崩塌逃离提醒时机与旧通关档误判，补齐魔兽加侬后半战四阶段及致命一击提示，并重制娜薇原创终局告别文案",
   "files": {
     "launcher.py": {
       "sha256": "94ebe20a66c4f6a052026681d8d3fc87315240d3192a7458283b9a71ad58891e",
@@ -16,16 +16,16 @@
       "size": 12319
     },
     "overlay_hud.py": {
-      "sha256": "b531e3a550f133acee73656ec8529522e4d9de8d8d92a0e55ea8944a95d83f4b",
-      "size": 221052
+      "sha256": "d8d999b87572825f934e4e71dc49cd5619a4f3aac6e0af1da732dd567417391c",
+      "size": 242337
     },
     "tracker_engine.py": {
-      "sha256": "3cec6554b3b63019820ed95229b96739a172c90c65cd03b99bb9084bdc657b22",
-      "size": 138135
+      "sha256": "c0782d3fbbe6fec08514b8fefd81ac2279b8b7a517a6dacd436453619868717b",
+      "size": 157739
     },
     "save_reader.py": {
-      "sha256": "f24e7974cf13ff4932c34b151dbc9697d888577ee18e0d005e044cb0a8618644",
-      "size": 44564
+      "sha256": "3d803b08d743603bc3f14c3fedc512b586432ef15fd0ba94de8642dd435b1de4",
+      "size": 46622
     },
     "gamepad_ctrl.py": {
       "sha256": "b21e9faa8b2711151bc64d990432e467e9b6142d787eb5730570e75095bfacbc",
@@ -44,8 +44,8 @@
       "size": 2624
     },
     "oot_world_db.json": {
-      "sha256": "355d167276688c506978bea6ac36e6f7b8d32007dc672e4471cf8a523941ef48",
-      "size": 129697
+      "sha256": "b0de71109502a4ded442bffc000ccd1dd00caf570bfb93643dd10d848a712efc",
+      "size": 131407
     },
     "启动时之笛助手.bat": {
       "sha256": "766d0cbd1becabffc76d641a944ca3688b9d634aefed083c24fdb70cf72b80cc",
