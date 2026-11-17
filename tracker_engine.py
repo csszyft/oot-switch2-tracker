@@ -873,6 +873,7 @@ BOSS_BATTLES: list[dict[str, Any]] = [
         "appear_flags": ["ForestTemple_SageOfForest_BossAppearance"],
         "defeat_flags": ["HavePlayedEvent.Dm_ForestTemple_BossOut", "HavePlayedEvent.ForestTemple_SageOfForest_PhantomGanonDefeat", "HaveDefeatedEnemy_Enemy_DungeonBoss_PhantomGanon"],
         "journal_clear_flags": ["IsGet.Item_Medal_Forest"],
+        "require_pos_if_appear": True,
     },
     {
         "id": "miniboss_flare_dancer",
@@ -1468,10 +1469,14 @@ def detect_active_boss(
 
         # 1. Exact DungeonRoom match for dedicated Boss/Mini-Boss rooms (unaffected by hidden Minimap!)
         if in_boss_room:
+            if b.get("require_pos_if_appear") and not in_arena and not is_boss_battle_global and not appear_on:
+                continue
             return _ret_boss(b)
 
         # 2. Global IsBossBattle flag for main Dungeon Bosses in their matching scene
         if not b["is_miniboss"] and is_boss_battle_global:
+            if b.get("require_pos_if_appear") and not in_arena and not in_boss_room:
+                continue
             return _ret_boss(b)
 
         # 3. Dedicated Boss/Mini-Boss appear Bool flags
