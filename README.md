@@ -1,6 +1,6 @@
 # 塞尔达传说：时之笛（Switch 2 重制版）全程查漏与攻略助手
 
-> **纯 Python 零第三方依赖** · 实时内存 + 存档双源读取 · 175 项全收集防遗漏 · PS5 触控板 / 通用手柄免切屏操控 · 全屏原生 UI 安全区避让 · Amiibo 直连刷卡
+> **纯 Python 零第三方依赖** · 实时内存读取（存档兜底） · 175 项全收集防遗漏 · PS5 触控板 / 通用手柄免切屏操控 · 全屏原生 UI 安全区避让 · Amiibo 直连刷卡
 
 <p align="center">
   <img src="docs/showcase.png" alt="界面功能实拍展示：本区查漏、Boss攻略、Amiibo刷卡" width="100%" />
@@ -11,7 +11,7 @@
 ## ✨ 核心特性
 
 - **EXE 版与纯源码双版支持（后台自动热更新）**：[GitHub Releases](https://github.com/csszyft/oot-switch2-tracker/releases) 与 [Gitee Releases](https://gitee.com/csszyf/oot-switch2-tracker/releases) 均提供打包版和纯代码版。两版启动均直接进入主界面，并在后台自动检测 GitHub / Gitee 代码更新，有新版时增量同步并重启生效（标题栏也可点 `🔄` 手动检查）。纯源码仅需 Python 3.10–3.13 标准库，无需 `pip install`。
-- **双源自动同步（实时内存 + 存档回退）**：支持 **NX2navi (`ocarina.exe`)**、**Fritchii / Lichii (`lichii.exe`)** 与 **Hookshot (`hookshot.exe`)** 实时内存与存档，以及 **Eden / Yuzu / Citron / Suyu / Ryujinx** 存档槽位，实时识别场景切换与位置坐标。
+- **实时内存读取，存档自动兜底**：支持 **NX2navi (`ocarina.exe`)**、**Fritchii / Lichii (`lichii.exe`)** 与 **Hookshot (`hookshot.exe`)** 实时内存（存档兜底），以及 **Eden / Yuzu / Citron / Suyu / Ryujinx** 存档槽位，实时识别场景切换与位置坐标。
 - **175 项全收集精准判定**：完整覆盖 **100 只黄金骷髅蜘蛛、36 块心之碎片、12 首乐曲、4 个空瓶** 及 **37 个隐藏洞**，按当前形态与道具拆分为「可补」与「缺前置」，离开区域漏项自动提醒。
 - **主线导航 + 限时支线 + Boss 图鉴**：主线进度实时导航、大戈隆剑限时链高优先提醒、Boss/中Boss 攻略随推进解锁并在开战时自动切换。
 - **3D 方位与高低差雷达**：实时计算当前站位与附近收集品/隐藏洞的距离和高低差方向。
