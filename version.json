@@ -1,7 +1,7 @@
 {
   "version": "1.2.5",
-  "build": 202611170100,
-  "notes": "修复森之神殿幻影加侬 Boss 卡片常驻：SageOfForest_BossAppearance 为剧情永久标志，appear_flags / IsBossBattle / DungeonRoom 三条触发路径现在均要求玩家在竞技场附近，防止神殿大厅等非战斗区域误报激战",
+  "build": 202611182028,
+  "notes": "修复幻影加侬竞技场邻近判定 + 全海拉鲁缺前置清单补全蜘蛛/心片（成年期幼年蜘蛛曾隐身）",
   "files": {
     "launcher.py": {
       "sha256": "94ebe20a66c4f6a052026681d8d3fc87315240d3192a7458283b9a71ad58891e",
@@ -16,8 +16,8 @@
       "size": 12319
     },
     "overlay_hud.py": {
-      "sha256": "d8d999b87572825f934e4e71dc49cd5619a4f3aac6e0af1da732dd567417391c",
-      "size": 242337
+      "sha256": "78e88ae8bbed6381161c5cae3dbb743f2632c60141182d6866e2f562820e4567",
+      "size": 243276
     },
     "tracker_engine.py": {
       "sha256": "c06ca81e4548d7b4d9dbde27c18b06718c903a53b352b512a06759a99652ae7b",
