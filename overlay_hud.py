@@ -4507,25 +4507,37 @@ class OoTOverlayHUD:
                 text_tag="item_dim" if mdone else "item_fg",
             )
 
-        # 3. Temporarily Locked Quests (red dot + highlighted prerequisites + how-to-get + route)
+        # 3. Temporarily Locked items (red dot + highlighted prerequisites + how-to-get + route)
+        #    Include skulltulas & heart pieces too, not just quests — otherwise era-locked
+        #    collectibles (e.g. a child-era Skulltula while the player is adult) vanish from
+        #    every global checklist and can never be looked up without re-entering the region.
+        locked_items = [x for x in ev["all_items"] if not x.collected and not x.reachable]
         quests = [x for x in ev["all_items"] if x.kind == "quest"]
-        locked_q = [x for x in quests if not x.collected and not x.reachable]
         done_q = [x for x in quests if x.collected]
 
-        if locked_q:
-            self._add_section_header(f"● 暂缺前置支线 / 成长（{len(locked_q)} 项）", "hdr_red")
-            for it in locked_q:
+        if locked_items:
+            locked_items.sort(key=lambda it: (0 if it.kind == "quest" else 1, it.location, it.id))
+            self._add_section_header(f"● 全海拉鲁暂缺前置（{len(locked_items)} 项 · 含蜘蛛/心片/支线）", "hdr_red")
+            for it in locked_items:
                 loc_zh = self.db["locations"].get(it.location, it.location)
+                if it.kind == "skulltula":
+                    badge, btag, klabel = "🕷", "badge_red", "黄金骷髅蜘蛛"
+                elif it.kind == "heart_piece":
+                    badge, btag, klabel = "❤", "badge_red", "心之碎片"
+                else:
+                    badge, btag, klabel = "●", "badge_red", "支线"
                 guide_parts = []
                 if it.missing_guides:
                     guide_parts.append("前置获取：" + "；".join(it.missing_guides))
                 if it.guide:
-                    guide_parts.append("后续路线：" + it.guide)
+                    guide_parts.append("路线：" + it.guide)
+                night_tag = "（且需夜晚）" if it.night_only else ""
+                fl_p = f"[{it.floor}] " if getattr(it, "floor", "") else ""
                 self._add_row(
-                    "●",
-                    f"[{loc_zh}] {it.name}",
-                    sub="⚠ 缺前置：" + "、".join(it.missing_reqs),
-                    badge_tag="badge_red",
+                    badge,
+                    f"[{loc_zh} · {klabel}] {fl_p}{it.name}",
+                    sub="⚠ 缺前置：" + "、".join(it.missing_reqs) + night_tag,
+                    badge_tag=btag,
                     text_tag="item_fg",
                     sub_tag="sub_amber",
                     sub2="↳ " + "｜".join(guide_parts) if guide_parts else "",
